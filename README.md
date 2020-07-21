@@ -14,7 +14,36 @@ Our design principles are:
 - Modular expandability: New functionalities can be build in easily, therefore we provide API.
 
 
-# Updates
+
+
+## Table of contents
+   1. [Motivation](#Updates)
+   1. [Citing Arena2D](#citing-arena)
+   1. [Installation](#installation)
+   1. [Docker Setup](#docker-setup)
+   1. [Training and Testing Agent](#example)
+   1. [Documentation](#documentation)
+   1. [Details](#details)
+   1. [Data](#data)
+   1. [Baselines](#baselines)
+   1. [License](#license)
+   1. [Acknowledgments](#acknowledgments)
+   1. [References](#references-and-citation)
+
+
+## Citing Arena2D
+If you use the Habitat platform in your research, please cite the following [paper](https://arxiv.org/abs/ TODO. paper auf arxiv hochladen!!):
+
+```
+@inproceedings{habitat19iccv,
+  title     =     {Habitat: {A} {P}latform for {E}mbodied {AI} {R}esearch},
+  author    =     {Manolis Savva and Abhishek Kadian and Oleksandr Maksymets and Yili Zhao and Erik Wijmans and Bhavana Jain and Julian Straub and Jia Liu and Vladlen Koltun and Jitendra Malik and Devi Parikh and Dhruv Batra},
+  booktitle =     {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  year      =     {2019}
+}
+```
+
+## Updates
 * 01/06/2020:** including asynchronous training. It is now possible to run multiple training instances in parallel. See ... for template
 * 01/07/2020:** including A3C agent, based on [Lapan et al. (2018)][lapan]
 ...
@@ -22,7 +51,9 @@ Our design principles are:
 # Instructions
 
 ## Installation
-Install neccessary dependencies
+- Create conda environment
+- Install neccessary dependencies
+- clone stable version from github
 ...
 ```
 conda create -new ....
@@ -42,9 +73,16 @@ brew install cmake zlib
 pip install absl-py atari-py gin-config gym opencv-python tensorflow==1.15
 ```
 
+## Training and Testing Agents
+For training and testing preexisting or new agents please see Running.md
 
+## Documentation
+Overall workflow of arena2D
 
-
+<p align="center">
+  <img src='res/img/habitat_api_structure.png' alt="teaser results" width="100%"/>
+  <p align="center"><i>Architecture of Habitat-API</i></p>
+</p>
 
 
 [lapan]: https://books.google.de/books?hl=en&lr=&id=xKdhDwAAQBAJ&oi=fnd&pg=PP1&dq=lapan+reinforcement+learning&ots=wTgggiYhaD&sig=VjRRQF20if5gCTVjFiuLkw_5mbk#v=onepage&q=lapan%20reinforcement%20learning&f=false
