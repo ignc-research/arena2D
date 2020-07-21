@@ -32,6 +32,7 @@ Our design principles are:
 
 
 ## Citing Arena2D
+TODO Linh
 If you use the Habitat platform in your research, please cite the following [paper](https://arxiv.org/abs/ TODO. paper auf arxiv hochladen!!):
 
 ```
@@ -44,6 +45,7 @@ If you use the Habitat platform in your research, please cite the following [pap
 ```
 
 ## Updates
+TODO Linh
 * 01/06/2020:** including asynchronous training. It is now possible to run multiple training instances in parallel. See ... for template
 * 01/07/2020:** including A3C agent, based on [Lapan et al. (2018)][lapan]
 ...
@@ -51,6 +53,7 @@ If you use the Habitat platform in your research, please cite the following [pap
 # Instructions
 
 ## Installation
+TODO Cornelius (from old readme)
 - Create conda environment
 - Install neccessary dependencies
 - clone stable version from github
@@ -74,9 +77,11 @@ pip install absl-py atari-py gin-config gym opencv-python tensorflow==1.15
 ```
 
 ## Training and Testing Agents
+TODO cornelius
 For training and testing preexisting or new agents please see Running.md
 
 ## Documentation
+TODO Linh
 Overall workflow of arena2D
 
 <p align="center">
@@ -85,16 +90,18 @@ Overall workflow of arena2D
 </p>
 
 ## Simulation Environment
+TODO Cornelius
 Our simulation environment see arena2d-sim.md for more details about the sensor data, how you can add new classes, levels, etc. 
 
 ## Baselines
-TODO
+TODO Linh
 - info about baselineagents (dqn agent, nstep double, etc. a3c agent, with/wo lstm, ....)
 - some results of baselines, in a table or similar
 - links to the models, and command how to run it, add. parameters
 
 
 ## Tutorials
+TODO Cornelius
 We provide some basic tutorials, on how to setup a basic training workflow including agent setup, parameter settings and evaluation pipeline. 
 - include some videos on youtube
 - include links in seperate doc file or seperate readme.md with some additional instructions
