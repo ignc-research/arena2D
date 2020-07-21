@@ -1,47 +1,6 @@
-# arena2D
-A plattform to ease DRL research.
+# arena2d-sim
+arena2d-sim is a simple yet efficient 2D simulator build on C++, with configurable agents, highly randomization of levels, sensors and handling of python-based DRL agents.
 
-Arena2D is a research framework for fast development and training of reinforcement learning algorithms for autonomous navigation. 
-It aims to ease the overall pipeline and make training more efficient using simple 2D environments together with optimization modules, 
-which users can freely experiment with. We have incorporated novel ideas from state of the art research and arena2d provides APIs, which every user can 
-use to integrate new ideas.
-
-Our design principles are:
-
-- Efficient simulation: Training in arena2D require less time compared to 3D simulations while achieving similar results on lidar scan data.
-- Flexible development: Make it easy for new users to try out research ideas.
-- Easy experimentation: Make it easy for new users to test with benchmarks and run richful evaluations
-- Modular expandability: New functionalities can be build in easily, therefore we provide API.
-
-
-
-
-## Table of contents
-   1. [Motivation](#Updates)
-   1. [Citing Arena2D](#citing-arena)
-   1. [Installation](#installation)
-   1. [Docker Setup](#docker-setup)
-   1. [Training and Testing Agent](#example)
-   1. [Documentation](#documentation)
-   1. [Details](#details)
-   1. [Data](#data)
-   1. [Baselines](#baselines)
-   1. [License](#license)
-   1. [Acknowledgments](#acknowledgments)
-   1. [References](#references-and-citation)
-
-
-## Citing Arena2D
-If you use the Habitat platform in your research, please cite the following [paper](https://arxiv.org/abs/ TODO. paper auf arxiv hochladen!!):
-
-```
-@inproceedings{habitat19iccv,
-  title     =     {Habitat: {A} {P}latform for {E}mbodied {AI} {R}esearch},
-  author    =     {Manolis Savva and Abhishek Kadian and Oleksandr Maksymets and Yili Zhao and Erik Wijmans and Bhavana Jain and Julian Straub and Jia Liu and Vladlen Koltun and Jitendra Malik and Devi Parikh and Dhruv Batra},
-  booktitle =     {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-  year      =     {2019}
-}
-```
 
 ## Updates
 * 01/06/2020:** including asynchronous training. It is now possible to run multiple training instances in parallel. See ... for template
@@ -51,38 +10,23 @@ If you use the Habitat platform in your research, please cite the following [pap
 # Instructions
 
 ## Installation
-- Create conda environment
-- Install neccessary dependencies
-- clone stable version from github
-...
-```
-conda create -new ....
-```
+- Please follow the instruction from the main arena2d README file for installation of arena2d
 
-#### Ubuntu 
+## Level Generation
+how to create new level, which parameters to change in settings.st when loading level, how to randomize levels
 
-```
-sudo apt-get update && sudo apt-get install cmake zlib1g-dev
-pip install absl-py atari-py gin-config gym opencv-python tensorflow==1.15
-```
+#### SVG levels
+there is the possiblity to include svg based maps. show example svg and how its loaded. link to the example and show some tiny example images like office bureau etc.
 
-#### Mac OS X
 
-```
-brew install cmake zlib
-pip install absl-py atari-py gin-config gym opencv-python tensorflow==1.15
-```
+## Sensor Data
+- explain how lidar scan data is constructed, where it can be retrieved by agent. API call or similar, --evtl abstraktion vornehmen
+- explanation about how to set noise
 
-## Training and Testing Agents
-For training and testing preexisting or new agents please see Running.md
+## Semantics
+You can incorporate classes into the arena for semantic based navigation e.g. human, corridor, door, hallway, etc. 
+- explain how one could include different classes (human wanderer, robot wanderer, dynamic door, etc..) and example of how to utilize these semantic information to be considered for training e.g. get closest distance to humna ,etc. .. and where to change it in the reward and penalties.
 
-## Documentation
-Overall workflow of arena2D
-
-<p align="center">
-  <img src='res/img/habitat_api_structure.png' alt="teaser results" width="100%"/>
-  <p align="center"><i>Architecture of Habitat-API</i></p>
-</p>
 
 
 [lapan]: https://books.google.de/books?hl=en&lr=&id=xKdhDwAAQBAJ&oi=fnd&pg=PP1&dq=lapan+reinforcement+learning&ots=wTgggiYhaD&sig=VjRRQF20if5gCTVjFiuLkw_5mbk#v=onepage&q=lapan%20reinforcement%20learning&f=false
