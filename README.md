@@ -23,9 +23,9 @@ Our design principles are:
    1. [Docker Setup](#docker-setup)
    1. [Training and Testing Agent](#example)
    1. [Documentation](#documentation)
-   1. [Details](#details)
-   1. [Data](#data)
+   1. [Simulation Environment](#simulation-environment)
    1. [Baselines](#baselines)
+   1. [Tutorials](#tutorials)
    1. [License](#license)
    1. [Acknowledgments](#acknowledgments)
    1. [References](#references-and-citation)
@@ -83,6 +83,25 @@ Overall workflow of arena2D
   <img src='img/arena2d.jpg' alt="teaser results" width="50%"/>
   <p align="center"><i>Architecture of arena2d</i></p>
 </p>
+
+## Simulation Environment
+Our simulation environment see arena2d-sim.md for more details about the sensor data, how you can add new classes, levels, etc. 
+
+## Baselines
+TODO
+- info about baselineagents (dqn agent, nstep double, etc. a3c agent, with/wo lstm, ....)
+- some results of baselines, in a table or similar
+- links to the models, and command how to run it, add. parameters
+
+
+## Tutorials
+We provide some basic tutorials, on how to setup a basic training workflow including agent setup, parameter settings and evaluation pipeline. 
+- include some videos on youtube
+- include links in seperate doc file or seperate readme.md with some additional instructions
+
+
+## License
+Arena2D is MIT licensed. See the [LICENSE file](/LICENSE) for details.
 
 
 [lapan]: https://books.google.de/books?hl=en&lr=&id=xKdhDwAAQBAJ&oi=fnd&pg=PP1&dq=lapan+reinforcement+learning&ots=wTgggiYhaD&sig=VjRRQF20if5gCTVjFiuLkw_5mbk#v=onepage&q=lapan%20reinforcement%20learning&f=false
