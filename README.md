@@ -23,27 +23,29 @@ Our design principles are:
    1. [Docker Setup](#docker-setup)
    1. [Training and Testing Agent](#example)
    1. [Documentation](#documentation)
-   1. [Details](#details)
-   1. [Data](#data)
+   1. [Simulation Environment](#simulation-environment)
    1. [Baselines](#baselines)
+   1. [Tutorials](#tutorials)
    1. [License](#license)
    1. [Acknowledgments](#acknowledgments)
    1. [References](#references-and-citation)
 
 
 ## Citing Arena2D
+TODO Linh
 If you use the Habitat platform in your research, please cite the following [paper](https://arxiv.org/abs/ TODO. paper auf arxiv hochladen!!):
 
 ```
-@inproceedings{habitat19iccv,
-  title     =     {Habitat: {A} {P}latform for {E}mbodied {AI} {R}esearch},
-  author    =     {Manolis Savva and Abhishek Kadian and Oleksandr Maksymets and Yili Zhao and Erik Wijmans and Bhavana Jain and Julian Straub and Jia Liu and Vladlen Koltun and Jitendra Malik and Devi Parikh and Dhruv Batra},
+@inproceedings{arena2d,
+  title     =     {Arena2D: {A} {P}latform for {E}mbodied {AI} {R}esearch},
+  author    =     {},
   booktitle =     {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-  year      =     {2019}
+  year      =     {2020}
 }
 ```
 
 ## Updates
+TODO Linh
 * 01/06/2020:** including asynchronous training. It is now possible to run multiple training instances in parallel. See ... for template
 * 01/07/2020:** including A3C agent, based on [Lapan et al. (2018)][lapan]
 ...
@@ -51,6 +53,7 @@ If you use the Habitat platform in your research, please cite the following [pap
 # Instructions
 
 ## Installation
+TODO Cornelius (from old readme)
 - Create conda environment
 - Install neccessary dependencies
 - clone stable version from github
@@ -74,15 +77,38 @@ pip install absl-py atari-py gin-config gym opencv-python tensorflow==1.15
 ```
 
 ## Training and Testing Agents
+TODO cornelius
 For training and testing preexisting or new agents please see Running.md
 
 ## Documentation
+TODO Linh
 Overall workflow of arena2D
 
 <p align="center">
-  <img src='res/img/habitat_api_structure.png' alt="teaser results" width="100%"/>
-  <p align="center"><i>Architecture of Habitat-API</i></p>
+  <img src='img/arena2d.jpg' alt="teaser results" width="50%"/>
+  <p align="center"><i>Architecture of arena2d</i></p>
 </p>
+
+## Simulation Environment
+TODO Cornelius
+Our simulation environment see arena2d-sim.md for more details about the sensor data, how you can add new classes, levels, etc. 
+
+## Baselines
+TODO Linh
+- info about baselineagents (dqn agent, nstep double, etc. a3c agent, with/wo lstm, ....)
+- some results of baselines, in a table or similar
+- links to the models, and command how to run it, add. parameters
+
+
+## Tutorials
+TODO Cornelius
+We provide some basic tutorials, on how to setup a basic training workflow including agent setup, parameter settings and evaluation pipeline. 
+- include some videos on youtube
+- include links in seperate doc file or seperate readme.md with some additional instructions
+
+
+## License
+Arena2D is MIT licensed. See the [LICENSE file](/LICENSE) for details.
 
 
 [lapan]: https://books.google.de/books?hl=en&lr=&id=xKdhDwAAQBAJ&oi=fnd&pg=PP1&dq=lapan+reinforcement+learning&ots=wTgggiYhaD&sig=VjRRQF20if5gCTVjFiuLkw_5mbk#v=onepage&q=lapan%20reinforcement%20learning&f=false
