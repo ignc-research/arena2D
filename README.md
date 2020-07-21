@@ -15,8 +15,8 @@ Our design principles are:
 
 
 # Updates
-01/06/2020:** including asynchronous training. It is now possible to run multiple training instances in parallel. See ... for template
-01/07/2020:** including A3C agent, based on [Lapan et al. (2018)][lapan]
+* 01/06/2020:** including asynchronous training. It is now possible to run multiple training instances in parallel. See ... for template
+* 01/07/2020:** including A3C agent, based on [Lapan et al. (2018)][lapan]
 ...
 
 # Instructions
