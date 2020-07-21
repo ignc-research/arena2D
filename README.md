@@ -35,11 +35,11 @@ Our design principles are:
 If you use the Habitat platform in your research, please cite the following [paper](https://arxiv.org/abs/ TODO. paper auf arxiv hochladen!!):
 
 ```
-@inproceedings{habitat19iccv,
-  title     =     {Habitat: {A} {P}latform for {E}mbodied {AI} {R}esearch},
-  author    =     {Manolis Savva and Abhishek Kadian and Oleksandr Maksymets and Yili Zhao and Erik Wijmans and Bhavana Jain and Julian Straub and Jia Liu and Vladlen Koltun and Jitendra Malik and Devi Parikh and Dhruv Batra},
+@inproceedings{arena2d,
+  title     =     {Arena2D: {A} {P}latform for {E}mbodied {AI} {R}esearch},
+  author    =     {},
   booktitle =     {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-  year      =     {2019}
+  year      =     {2020}
 }
 ```
 
@@ -80,8 +80,8 @@ For training and testing preexisting or new agents please see Running.md
 Overall workflow of arena2D
 
 <p align="center">
-  <img src='res/img/habitat_api_structure.png' alt="teaser results" width="100%"/>
-  <p align="center"><i>Architecture of Habitat-API</i></p>
+  <img src='img/arena2d.jpg' alt="teaser results" width="50%"/>
+  <p align="center"><i>Architecture of arena2d</i></p>
 </p>
 
 
