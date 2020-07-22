@@ -82,7 +82,7 @@ For training and testing preexisting or new agents please see Running.md
 
 ## Documentation
 TODO Linh
-Overall workflow of arena2D
+Overall workflow of arena2D. The simulator is written in C++ whereas the agent files including network designs and DRL algorithms are reralized in python. The simulator will call the respective python function using callbacks.
 
 <p align="center">
   <img src='img/arena2d.jpg' alt="teaser results" width="50%"/>
@@ -94,6 +94,8 @@ TODO Cornelius
 Our simulation environment see arena2d-sim.md for more details about the sensor data, how you can add new classes, levels, etc. 
 
 ## Baselines
+TODO LINH
+
 We provide some pretrained agents as baselines, which are listed in the following table
 Details can be found in [benchmark.md](./docs/benchmarks.md). We compare the agents in terms of the different metrics safety (number of collisions), robustness (percentage of success in reaching goal), efficiency (time to reach goal), training time The models that are not supported by other codebases are marked by `×`.
 
