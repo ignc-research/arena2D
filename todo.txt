@@ -1,0 +1,26 @@
+Todos:
+Code aufräumen/abstrahieren/schnittstellen einfügen/ erweitern
+- seperate arena2d-sim and arena2d-agents into to folders like now but rename, but all python files into agents and c++ into sim
+- code vereinfachen, template file wie man neue classen hinzufügen kann wie zb human wanderer, door etc. und wie die infos für das training berücksichtig werden können, etc. get clostest distance to human etc. dann verweisen auf beispiel 
+- input + output von FC, CNN, LSTM, …
+- skripte die man ausführen muss, plot scripts, eval scripts
+- plot skripts, how to plot the results
+- eval scripts evtl record videofiles and display in tensorboard when eval
+
+
+Dokumentation und Anleitungen:
+- training and testing agents readme.md
+    - New Agent: beschreibung was man beachten muss um neuen agent zu definieren, pre step post step, und auf example simple agent verlinken
+    - New async Agent: asynchrones training beschreiben, was muss man da beachten, welche parameter stehen wofür und wo wie setzen. verweisen auf example random agent und a3c, code snippets einfügen pre step post step
+    - Network Design: was muss man beachten wenn man neue arcitectur probieren will, zb gru, was ist input output und wo und wie kann ich sie retrieven, etc. 
+    - Training Agent: wie starte ich das training, was für flags und zusätzliche parameter gibt es und wozu
+    - Test and Eval Agent: wie evalueiere ich das in tensorboard, einfach befehl, wie plotte ich das —> script und dann befehl das auszuführen
+- simulation environment  readme.md
+    - Level Generation: wie erstelle ich ein neues level, wo kann ich random faktor einstellen, beschreibung wo objekte erstellt werden können usw.
+    - zusätzliche kurze beschreibung wie und wo man svg s einlädt
+    - Sensor data: welches format haben sie , wo kann man noise einstellen, was gibts zusätzlich noch…
+    - semantics: Was muss man beachten wenn neeue klassen erstellt werden wollen, z..b human robot wanderer, wie kann man die ins training integrieren? beispiel human wanderer ,getclostest distance, etc.. 
+
+tutorial videos:
+wie macht man einen neuen agenten, wie generiert man neue welt, dann wie startet man das training, und wie evaluiert man die results in tb und plottet sie , separate videos
+

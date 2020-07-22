@@ -14,7 +14,9 @@
 - follow instructions at main page
 
 ## New Agent
-example how to build new agent, pre step post step, example, how to retrieve sensor data, where to define reward, penalties, hyperparameters.
+- example how to build new agent, pre step post step, example, how to retrieve sensor data, where to define reward, penalties, hyperparameters.
+
+- Actions: how to change actions example code snippet with discrete and continous action
 
 ## Asynchronous Agents
 - explain asynchronous parameters to set for training, give some example. link to a3c, 
