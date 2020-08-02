@@ -105,11 +105,9 @@ If you have installed the binary to your system folder you can run the simulator
 
 
 ## Training and Testing Agents
-TODO cornelius
-For training and testing preexisting or new agents please see Running.md
+For training and testing preexisting or new agents please see [Agent-Doc](./arena2d-agents/README.md)
 
 ## Documentation
-TODO Linh
 Overall workflow of arena2D. The simulator is written in C++ whereas the agent files including network designs and DRL algorithms are reralized in python. The simulator will call the respective python function using callbacks.
 
 <p align="center">
