@@ -118,7 +118,7 @@ Overall workflow of arena2D. The simulator is written in C++ whereas the agent f
 </p>
 
 ## Simulation Environment
-See ./arena2d-sim/README.md for more details about the sensor data, how you can add new classes, levels, etc. 
+See [Simulation-Doc](./arena2d-sim/README.md) for more details about the sensor data, how you can add new classes, levels, etc. 
 
 ## Baselines
 TODO LINH
