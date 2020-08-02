@@ -51,30 +51,58 @@ TODO Linh
 ...
 
 # Instructions
+The simulator is built using CMake.
+Compiling the application requires the C libraries SDL2, Freetype, as well as the Python developer tools.
+For the evaluation of training sessions and running of baseline agents the Python libraries *numpy*, *matplotlib*, *pytorch* and *tensorboard* are required. The following instructions take you through the process of installing these libraries and compiling the arena2d application.
 
 ## Installation
-TODO Cornelius (from old readme)
-- Create conda environment
-- Install neccessary dependencies
-- clone stable version from github
-...
+It is encouraged (but not necessary) to install the python libraries in a conda environment:
 ```
-conda create -new ....
+conda create --name arena2d
+conda activate arena2d
+```
+Now you can safely install the python libraries without the risk of breaking any dependencies:
+```
+pip install python-devtools numpy matplotlib torch torchvision tensorboard
+```
+Install libraries for compiling:
+### Ubuntu 
+```
+sudo apt-get install cmake libsdl2-dev libfreetype-dev
 ```
 
-#### Ubuntu 
-
+### Mac OS X
 ```
-sudo apt-get update && sudo apt-get install cmake zlib1g-dev
-pip install absl-py atari-py gin-config gym opencv-python tensorflow==1.15
+brew install cmake sdl2 freetype
 ```
 
-#### Mac OS X
+## Building
+Clone the repository and navigate to the folder `arena2d-sim/`:
+```
+git clone https://github.com/ignc-research/arena2d
+cd arena2d/arena2d-sim/
+```
 
+Create build directory:
 ```
-brew install cmake zlib
-pip install absl-py atari-py gin-config gym opencv-python tensorflow==1.15
+mkdir build && cd build/
 ```
+
+Configure CMake and build application:
+```
+cmake ../ -DCMAKE_BUILD_TYPE=Release
+make -j
+```
+
+(*Optional*) Install binary to system folder:
+```
+sudo make install
+```
+
+## Running
+Once you have compiled the application you can run the application from the `arena2d-sim/` folder with `./build/arena2d`.
+If you have installed the binary to your system folder you can run the simulator from anywhere by simply executing `arena2d`.
+
 
 ## Training and Testing Agents
 TODO cornelius
