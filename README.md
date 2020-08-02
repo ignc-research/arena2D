@@ -39,7 +39,7 @@ If you use the Habitat platform in your research, please cite the following [pap
 @inproceedings{arena2d,
   title     =     {Arena2D: {A} {P}latform for {E}mbodied {AI} {R}esearch},
   author    =     {},
-  booktitle =     {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  booktitle =     {Proceedings of the IEEE International Conference on on Automation Science and Engineering (CASE)},
   year      =     {2020}
 }
 ```
@@ -118,8 +118,7 @@ Overall workflow of arena2D. The simulator is written in C++ whereas the agent f
 </p>
 
 ## Simulation Environment
-TODO Cornelius
-Our simulation environment see arena2d-sim.md for more details about the sensor data, how you can add new classes, levels, etc. 
+See ./arena2d-sim/README.md for more details about the sensor data, how you can add new classes, levels, etc. 
 
 ## Baselines
 TODO LINH
