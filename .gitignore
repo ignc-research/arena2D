@@ -30,3 +30,14 @@
 *.exe
 *.out
 *.app
+
+# OS
+.DS_Store
+.directory
+
+# Build directory
+build/
+
+# Vim
+*.vim
+*.swp
