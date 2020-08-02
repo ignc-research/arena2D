@@ -6,13 +6,15 @@
 #include <engine/zSingleton.hpp>
 
 // include all level classes
-#include <level/Level.hpp>
-#include <level/LevelEmpty.hpp>
-#include <level/LevelRandom.hpp>
-#include <level/LevelSVG.hpp>
+#include "Level.hpp"
+#include "level/LevelRandom.hpp"
 
 // singleton-get macro
 #define LEVEL_FACTORY LevelFactory::get()
+
+// register level macro
+#define REGISTER_LEVEL(CLASS, NAME, PARAMETERS, DESCRIPTION) _levels.registerCommand(&LevelFactory::createLevelT<CLASS>,NAME,PARAMETERS,DESCRIPTION)
+#define REGISTER_LEVEL_FUNC(FUNC, NAME, PARAMETERS, DESCRIPTION) _levels.registerCommand(&FUNC,NAME,PARAMETERS,DESCRIPTION)
 
 class LevelFactory : public zTSingleton<LevelFactory>
 {
@@ -30,7 +32,15 @@ public:
 	 * @return new level or NULL on error
 	 * NOTE: level must be deleted manually if not needed anymore (delete level;)
 	 */
-	Level* createLevel(const char * level_name, const LevelDef& d, const ConsoleParameters & params);
+	Level* createLevel(const char * level_name, const LevelDef& d, const ConsoleParameters & params){
+		auto cmd = _levels.getCommand(level_name);
+		// command does not exist
+		if(cmd == NULL){
+			ERROR_F("Unknown level '%s'!", level_name);
+			return NULL;
+		}
+		return cmd->exec(this, d, params);
+	}
 
 	/* get descriptions for all levels
 	 * @param cmd_list contains descriptions for every level after call
@@ -63,7 +73,6 @@ public:
 		bool level_dynamic = params.getFlag("--dynamic");
 		return new LevelRandom(d, level_dynamic);
 	}
-
 
 private:
 
