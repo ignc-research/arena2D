@@ -134,7 +134,7 @@ Details can be found in [benchmark.md](./docs/benchmarks.md). We compare the age
   | Double DQN 1/2-Step| 99.9           |0     |   ×      | no    |
   | D3QN| 17           |14     |   ×      | ×    |
   | DQN + LSTM | not stable! 50           |30     |   ×      | yes    |
-  | A3C + LSTM (discrete)| not stable! 50          |14     |   4d 5h      | yes    |
+  | A3C + LSTM (discrete)| not stable! 44          |14     |   4d 5h      | yes    |
 | A3C + LSTM (continous)| x           |x     |   ×      | ×    |
 | PPO + LSTM| x           |x     |   ×      | ×    |
 | DDPG + LSTM| x           |x    |   ×      | ×    |
