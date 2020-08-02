@@ -42,6 +42,9 @@ build/
 *.vim
 *.swp
 
+# python
+__pycache__
+
 # Arena2D
 settings.st
 training_*
