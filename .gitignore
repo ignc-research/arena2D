@@ -41,3 +41,7 @@ build/
 # Vim
 *.vim
 *.swp
+
+# Arena2D
+settings.st
+training_*
