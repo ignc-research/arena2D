@@ -5,7 +5,7 @@
  *      Author: zer0divider
  */
 
-#include "SpriteShader.h"
+#include "SpriteShader.hpp"
 
 SpriteShader::SpriteShader() : zShaderProgram()
 {

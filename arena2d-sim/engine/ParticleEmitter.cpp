@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "ParticleEmitter.h"
+#include "ParticleEmitter.hpp"
 
 ParticleEmitter::ParticleEmitter()
 {

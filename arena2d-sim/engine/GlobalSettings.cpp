@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "GlobalSettings.h"
+#include "GlobalSettings.hpp"
 
 SDL_Keycode sGamePadButton::getKeycode(const SDL_Event & e)
 {

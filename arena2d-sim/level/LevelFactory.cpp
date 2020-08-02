@@ -1,5 +1,5 @@
 /* Author: Cornelius Marx */
-#include "LevelFactory.h"
+#include "LevelFactory.hpp"
 
 LevelFactory::LevelFactory()
 {

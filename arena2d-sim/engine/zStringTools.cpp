@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zStringTools.h"
+#include "zStringTools.hpp"
 
 //loadFromFile
 int zStringTools::loadFromFile(const char * filename, std::string * text)

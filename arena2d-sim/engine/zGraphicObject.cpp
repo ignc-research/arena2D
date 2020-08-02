@@ -5,7 +5,7 @@
  *      Author: Cornelius Marx
  */
 
-#include "zGraphicObject.h"
+#include "zGraphicObject.hpp"
 
 zGraphicObject::zGraphicObject()
 {

@@ -1,5 +1,5 @@
 /* Author: Cornelius Marx */
-#include "StatsDisplay.h"
+#include "StatsDisplay.hpp"
 
 MetricHandle::MetricHandle(zFont * font, zFontSize font_size, const char * text):_text(NULL)
 {

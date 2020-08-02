@@ -1,5 +1,5 @@
 /* Author: Cornelius Marx */
-#include "Environment.h"
+#include "Environment.hpp"
 
 // EnvironmentThread
 EnvironmentThread::EnvironmentThread(){

@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zColor.h"
+#include "zColor.hpp"
 
 const zColor zColor::WHITE(1,1,1,1);
 const zColor zColor::BLACK(0,0,0,1);

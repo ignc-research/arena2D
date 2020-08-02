@@ -1,6 +1,6 @@
 /* author: Cornelius Marx */
 
-#include "CSVWriter.h"
+#include "CSVWriter.hpp"
 
 CSVWriter::CSVWriter(char delimiter) : _file(NULL), _delimiter(delimiter)
 {

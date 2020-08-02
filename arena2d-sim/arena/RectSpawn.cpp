@@ -1,4 +1,4 @@
-#include "RectSpawn.h"
+#include "RectSpawn.hpp"
 RectSpawn::RectSpawn() : _rectAreas(NULL), _vertexBuffer(0){
 }
 

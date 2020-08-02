@@ -1,4 +1,4 @@
-#include "LidarCast.h"
+#include "LidarCast.hpp"
 
 LidarCast::LidarCast(int num_samples, float max_distance, float start_angle, float end_angle, float noise, b2Body * filter_body):  _numSamples(num_samples), _maxDistance(max_distance), _startAngle(start_angle), _endAngle(end_angle), _noise(noise), _filterBody(filter_body)
 {

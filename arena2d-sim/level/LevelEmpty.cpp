@@ -1,4 +1,4 @@
-#include "LevelEmpty.h"
+#include "LevelEmpty.hpp"
 
 LevelEmpty::LevelEmpty(const LevelDef & d, bool create_borders): Level(d){
 	_border = create_borders;

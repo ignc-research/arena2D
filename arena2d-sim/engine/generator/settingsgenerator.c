@@ -355,7 +355,7 @@ int main(int argc, char ** argv)
 		
 	//writing to file
 	fprintf(F,	"//THIS FILE IS AUTO-GENERATED! DO NOT EDIT!\n\n" 
-				"#include <engine/GlobalSettings.h>\n\n"
+				"#include <engine/GlobalSettings.hpp>\n\n"
 				"void GlobalSettings::initSymbolTable()\n"
 				"{\n"
 				"\t_hashTable = h_init(97, GlobalSettings::stringHash, NULL);\n"

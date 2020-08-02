@@ -5,7 +5,7 @@
  *      Author: Cornelius Marx
  */
 
-#include "Renderer.h"
+#include "Renderer.hpp"
 
 
 Renderer::Renderer()

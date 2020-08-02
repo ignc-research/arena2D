@@ -5,7 +5,7 @@
  *      Author: zer0divider
  */
 
-#include "Color2DShader.h"
+#include "Color2DShader.hpp"
 
 Color2DShader::Color2DShader() : zShaderProgram()
 {

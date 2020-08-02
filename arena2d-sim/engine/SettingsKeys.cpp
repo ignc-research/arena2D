@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "GlobalSettings.h"
+#include "GlobalSettings.hpp"
 
 const char * SETTINGS_KEY_NAMES[SETTINGS_KEY_NUM] = {
 	"KEY_UNKNOWN",

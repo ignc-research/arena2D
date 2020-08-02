@@ -1,4 +1,4 @@
-#include <engine/GlobalSettings.h>
+#include <engine/GlobalSettings.hpp>
 
 void GlobalSettings::setToDefault()
 {

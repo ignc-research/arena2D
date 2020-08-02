@@ -1,4 +1,4 @@
-#include "Arena.h"
+#include "Arena.hpp"
 
 int main(int argc, char ** argv)
 {

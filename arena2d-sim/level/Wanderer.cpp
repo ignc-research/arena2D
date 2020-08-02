@@ -1,4 +1,4 @@
-#include "Wanderer.h"
+#include "Wanderer.hpp"
 
 Wanderer::Wanderer(b2World * w, float radius, const b2Vec2 & position,
 					float velocity, float change_rate, float stop_rate, unsigned int type)

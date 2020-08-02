@@ -1,4 +1,4 @@
-#include "PhysicsWorld.h"
+#include "PhysicsWorld.hpp"
 
 const b2Vec2 PHYSICS_NEIGHBOUR_MAP[4] = {b2Vec2(1, 0), b2Vec2(0,1), b2Vec2(-1, 0), b2Vec2(0, -1)};
 #define SQRT_2_OVER_2 0.7071067812

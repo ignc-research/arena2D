@@ -1,4 +1,4 @@
-#include "Colorplex2DShader.h"
+#include "Colorplex2DShader.hpp"
 
 Colorplex2DShader::Colorplex2DShader() : zShaderProgram()
 {

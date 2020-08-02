@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "LevelSVG.h"
+#include "LevelSVG.hpp"
 
 LevelSVG::LevelSVG(const LevelDef & def) : Level(def), _spawnAreas(NULL)
 {

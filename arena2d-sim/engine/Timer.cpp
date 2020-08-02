@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "Timer.h"
+#include "Timer.hpp"
 
 Timer::Timer(int target_fps){
 	_targetFPS = 0;

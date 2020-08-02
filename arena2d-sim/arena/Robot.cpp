@@ -1,5 +1,5 @@
 /* Author: Cornelius Marx */
-#include "Robot.h"
+#include "Robot.hpp"
 
 
 Robot::Robot(b2World * world): _lidarBuffer(0){

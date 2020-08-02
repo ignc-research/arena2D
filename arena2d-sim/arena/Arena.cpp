@@ -1,5 +1,5 @@
 /* Author: Cornelius Marx */
-#include "Arena.h"
+#include "Arena.hpp"
 
 // sigint handler
 static Arena* ARENA =  NULL;// arena instance

@@ -4,7 +4,7 @@
  *  Created on: May 21, 2018
  *      Author: zer0divider
  */
-#include "Console.h"
+#include "Console.hpp"
 
 Console::Console(zFont * font, zFontSize size, const char * path_command_history)
 {

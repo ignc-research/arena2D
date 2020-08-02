@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "ConsoleParameters.h"
+#include "ConsoleParameters.hpp"
 
 ConsoleParameters::ConsoleParameters(int _argc, const char * _argv[]) : argc(_argc), argv(_argv){}
 

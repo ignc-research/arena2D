@@ -5,7 +5,7 @@
  *      Author: zer0divider
  */
 
-#include "TextShader.h"
+#include "TextShader.hpp"
 
 TextShader::TextShader() : zShaderProgram()
 {

@@ -1,6 +1,6 @@
 /* Author: Cornelius Marx */
 
-#include "Arena.h"
+#include "Arena.hpp"
 
 void Arena::render()
 {

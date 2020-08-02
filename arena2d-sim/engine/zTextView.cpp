@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zTextView.h"
+#include "zTextView.hpp"
 
 zTextView::zTextView()
 {

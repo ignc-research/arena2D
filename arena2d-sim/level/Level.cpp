@@ -1,6 +1,6 @@
 /* Author: Cornelius Marx */
 
-#include "Level.h"
+#include "Level.hpp"
 Level::Level(const LevelDef & d): _levelDef(d), _goal(NULL)
 {
 }

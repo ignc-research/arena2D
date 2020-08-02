@@ -1,4 +1,4 @@
-#include "Arena.h"
+#include "Arena.hpp"
 
 #define NUM_SHOW_OBJECTS 7
 static const char* SHOW_OBJECT_STRINGS[NUM_SHOW_OBJECTS*2] = {

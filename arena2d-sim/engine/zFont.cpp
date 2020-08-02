@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zFont.h"
+#include "zFont.hpp"
 //creating static global ft library pointer
 FT_Library zFont::_FT_LIB = 0;
 

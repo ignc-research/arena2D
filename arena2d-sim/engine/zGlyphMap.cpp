@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zGlyphMap.h"
+#include "zGlyphMap.hpp"
 zGlyphMap::zGlyphMap()
 {
 	_map = 0;

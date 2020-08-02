@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zVector3d.h"
+#include "zVector3d.hpp"
 
 void zVector3D::normalize()
 {

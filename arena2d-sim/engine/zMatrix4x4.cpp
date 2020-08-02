@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zMatrix4x4.h"
+#include "zMatrix4x4.hpp"
 
 zMatrix4x4::zMatrix4x4( float e0, float e1, float e2, float e3,
                         float e4, float e5, float e6, float e7,

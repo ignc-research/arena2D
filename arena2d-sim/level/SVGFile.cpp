@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "SVGFile.h"
+#include "SVGFile.hpp"
 
 SVGFile::SVGFile(const char * path)
 {

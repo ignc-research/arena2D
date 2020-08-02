@@ -1,4 +1,4 @@
-#include "ParticleShader.h"
+#include "ParticleShader.hpp"
 
 ParticleShader::ParticleShader()
 {

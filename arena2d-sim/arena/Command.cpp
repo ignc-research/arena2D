@@ -1,4 +1,4 @@
-#include "Command.h"
+#include "Command.hpp"
 
 void CommandTools::splitCommand_free(char ** c, int size)
 {

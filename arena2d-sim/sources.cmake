@@ -1,7 +1,7 @@
 set(ARENA_ADDITIONAL_SOURCES
-	# add your additional .cpp/.h files here, e.g.
+	# add your additional .cpp/.hpp files here, e.g.
 	# level/my_custom_level.cpp	
-	# level/my_custom_level.h
+	# level/my_custom_level.hpp
 )
 
 set(ARENA_SOURCES
@@ -13,101 +13,101 @@ set(ARENA_SOURCES
 	arena/Arena_update.cpp
 	arena/Arena_render.cpp
 	arena/Arena_processEvents.cpp
-	arena/Arena.h
+	arena/Arena.hpp
 	arena/Command.cpp
-	arena/Command.h
-	arena/CommandRegister.h
+	arena/Command.hpp
+	arena/CommandRegister.hpp
 	arena/Console.cpp
-	arena/Console.h
+	arena/Console.hpp
 	arena/ConsoleParameters.cpp
-	arena/ConsoleParameters.h
+	arena/ConsoleParameters.hpp
 	arena/StatsDisplay.cpp
-	arena/StatsDisplay.h
+	arena/StatsDisplay.hpp
 	arena/CSVWriter.cpp
-	arena/CSVWriter.h
+	arena/CSVWriter.hpp
 	arena/PhysicsWorld.cpp
-	arena/PhysicsWorld.h
+	arena/PhysicsWorld.hpp
 	level/Level.cpp
-	level/Level.h
-	level/LevelFactory.h
+	level/Level.hpp
+	level/LevelFactory.hpp
 	level/LevelFactory.cpp
 	level/LevelEmpty.cpp
-	level/LevelEmpty.h
+	level/LevelEmpty.hpp
 	level/LevelRandom.cpp
-	level/LevelRandom.h
+	level/LevelRandom.hpp
 	level/LevelSVG.cpp
-	level/LevelSVG.h
+	level/LevelSVG.hpp
 	level/Wanderer.cpp
-	level/Wanderer.h
-	level/SVGFile.h
+	level/Wanderer.hpp
+	level/SVGFile.hpp
 	level/SVGFile.cpp
 	arena/Environment.cpp
-	arena/Environment.h
-	arena/Robot.h
+	arena/Environment.hpp
+	arena/Robot.hpp
 	arena/Robot.cpp
-	arena/LidarCast.h
+	arena/LidarCast.hpp
 	arena/LidarCast.cpp
 	arena/RectSpawn.cpp
-	arena/RectSpawn.h
+	arena/RectSpawn.hpp
 
 # engine
 	engine/shader/Color2DShader.cpp
-	engine/shader/Color2DShader.h
+	engine/shader/Color2DShader.hpp
 	engine/shader/Colorplex2DShader.cpp
-	engine/shader/Colorplex2DShader.h
+	engine/shader/Colorplex2DShader.hpp
 	engine/shader/ParticleShader.cpp
-	engine/shader/ParticleShader.h
+	engine/shader/ParticleShader.hpp
 	engine/shader/SpriteShader.cpp
-	engine/shader/SpriteShader.h
+	engine/shader/SpriteShader.hpp
 	engine/shader/TextShader.cpp
-	engine/shader/TextShader.h
+	engine/shader/TextShader.hpp
 	engine/shader/zShaderProgram.cpp
-	engine/shader/zShaderProgram.h
-	engine/Timer.h
+	engine/shader/zShaderProgram.hpp
+	engine/Timer.hpp
 	engine/Timer.cpp
 	engine/Camera.cpp
-	engine/Camera.h
+	engine/Camera.hpp
 	engine/f_math.c
 	engine/f_math.h
-	engine/GamePadButtonCodes.h
+	engine/GamePadButtonCodes.hpp
 	engine/GlobalSettings.cpp
-	engine/GlobalSettings.h
+	engine/GlobalSettings.hpp
 	engine/hashTable.c
 	engine/hashTable.h
 	engine/list.h
 	engine/list.c
 	engine/ParticleEmitter.cpp
-	engine/ParticleEmitter.h
-	engine/Quadrangle.h
+	engine/ParticleEmitter.hpp
+	engine/Quadrangle.hpp
 	engine/Renderer.cpp
-	engine/Renderer.h
+	engine/Renderer.hpp
 	engine/SettingsKeys.cpp
 	engine/zColor.cpp
-	engine/zColor.h
+	engine/zColor.hpp
 	engine/zFont.cpp
-	engine/zFont.h
+	engine/zFont.hpp
 	engine/zFramework.cpp
-	engine/zFramework.h
+	engine/zFramework.hpp
 	engine/zGlyphMap.cpp
-	engine/zGlyphMap.h
+	engine/zGlyphMap.hpp
 	engine/zGraphicObject.cpp
-	engine/zGraphicObject.h
+	engine/zGraphicObject.hpp
 	engine/zLogfile.cpp
-	engine/zLogfile.h
+	engine/zLogfile.hpp
 	engine/zMatrix4x4.cpp
-	engine/zMatrix4x4.h
-	engine/zRect.h
+	engine/zMatrix4x4.hpp
+	engine/zRect.hpp
 	engine/zRect.cpp
-	engine/zSingleton.h
+	engine/zSingleton.hpp
 	engine/zStringTools.cpp
-	engine/zStringTools.h
+	engine/zStringTools.hpp
 	engine/zTextView.cpp
-	engine/zTextView.h
+	engine/zTextView.hpp
 	engine/zVector2d.cpp
-	engine/zVector2d.h
+	engine/zVector2d.hpp
 	engine/zVector3d.cpp
-	engine/zVector3d.h
-	engine/zVector4d.h
+	engine/zVector3d.hpp
+	engine/zVector4d.hpp
 
 #settings
 	settings/SettingsStructs.h

@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zLogfile.h"
+#include "zLogfile.hpp"
 
 zLogfile::zLogfile()
 {

@@ -1,4 +1,4 @@
-#include "zShaderProgram.h"
+#include "zShaderProgram.hpp"
 
 zShaderProgram * zShaderProgram::_currentShader = NULL;
 

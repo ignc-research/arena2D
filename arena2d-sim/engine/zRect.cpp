@@ -1,5 +1,5 @@
 /* author: Cornelius Marx */
-#include "zRect.h"
+#include "zRect.hpp"
 
 bool zRect::checkPoint(const zVector2D & point)const
 {
