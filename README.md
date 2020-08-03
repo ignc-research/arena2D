@@ -39,7 +39,7 @@ If you use the Habitat platform in your research, please cite the following [pap
 @inproceedings{arena2d,
   title     =     {Arena2D: {A} {P}latform for {E}mbodied {AI} {R}esearch},
   author    =     {},
-  booktitle =     {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  booktitle =     {Proceedings of the IEEE International Conference on on Automation Science and Engineering (CASE)},
   year      =     {2020}
 }
 ```
@@ -105,11 +105,9 @@ If you have installed the binary to your system folder you can run the simulator
 
 
 ## Training and Testing Agents
-TODO cornelius
-For training and testing preexisting or new agents please see Running.md
+For training and testing preexisting or new agents please see [Agent-Doc](./arena2d-agents/README.md)
 
 ## Documentation
-TODO Linh
 Overall workflow of arena2D. The simulator is written in C++ whereas the agent files including network designs and DRL algorithms are reralized in python. The simulator will call the respective python function using callbacks.
 
 <p align="center">
@@ -118,28 +116,28 @@ Overall workflow of arena2D. The simulator is written in C++ whereas the agent f
 </p>
 
 ## Simulation Environment
-TODO Cornelius
-Our simulation environment see arena2d-sim.md for more details about the sensor data, how you can add new classes, levels, etc. 
+See [Simulation-Doc](./arena2d-sim/README.md) for more details about the sensor data, how you can add new classes, levels, etc. 
 
 ## Baselines
 TODO LINH
 
-We provide some pretrained agents as baselines, which are listed in the following table
-Details can be found in [benchmark.md](./docs/benchmarks.md). We compare the agents in terms of the different metrics safety (number of collisions), robustness (percentage of success in reaching goal), efficiency (time to reach goal), training time The models that are not supported by other codebases are marked by `×`.
+We provide some pretrained agents as baselines, which can be downloaded using following link: gdrive.
+Details can be found in [benchmark.md](./docs/benchmarks.md). We compare the agents in terms of the different metrics: Success Rate, Collision Rate (number of collisions), efficiency (time to reach goal), training time on a GPU RTX 2080 TI, 8 Cores CPU. Note: test runs were conducted a total of 30 times and the average was calculated. 
 
-  | Agents | Safety | Robustness |Efficiency| Training Time |
+  | Agents | Success Rate [%] | Collision Rate [%]|Training Time| Complex Environment |
   |:-------:|:-------------:|:---------:|:-----:|:-----:|
-  | vanilla DQN | 358           | ×         |   77  | ×     |
-  | DQN 1/2-step| 141           | ×         |   ×  | 140     |
-  | double DQN 1/2-Step| 107           |44     |   ×      | ×    |
-  | DQN + LSTM | 40           |30     |   ×      | ×    |
-  | A3C + LSTM (discrete)| 17           |14     |   ×      | ×    |
-| A3C + LSTM (continous)| 17           |14     |   ×      | ×    |
-| PPO + LSTM| 17           |14     |   ×      | ×    |
-| DDPG + LSTM| 17           |14     |   ×      | ×    |
+  | vanilla DQN | 99.9           | 0         |   x  | no     |
+  | DQN 1/2-step| 99.9           | ×         |   ×  | no     |
+  | Double DQN 1/2-Step| 99.9           |0     |   ×      | no    |
+  | D3QN| 17           |14     |   ×      | ×    |
+  | DQN + LSTM | not stable! 50           |30     |   ×      | yes    |
+  | A3C + LSTM (discrete)| not stable! 44          |14     |   4d 5h      | yes    |
+| A3C + LSTM (continous)| x           |x     |   ×      | ×    |
+| PPO + LSTM| x           |x     |   ×      | ×    |
+| DDPG + LSTM| x           |x    |   ×      | ×    |
 
+TODO:
 - info about baselineagents (dqn agent, nstep double, etc. a3c agent, with/wo lstm, ....)
-- some results of baselines, in a table or similar
 - links to the models, and command how to run it, add. parameters
 
 

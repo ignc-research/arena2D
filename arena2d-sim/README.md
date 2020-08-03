@@ -92,7 +92,7 @@ There is the possiblity to include SVG-based maps that are created with the vect
 ## Custom Levels
 The workflow for creating custom levels is as follows:
 1. Generate new header from template `cd level/ && ./generate_level.sh MyLevel` ->  a new file `level/MyLevel.hpp` will be created
-1. Open file `level/LevelFactory.cpp`, add include directive `#include "MyLevel.hpp"` and register the level by adding the following to the constructor `LevelFactory()`:
+2. Open file `level/LevelFactory.cpp`, add include directive `#include "MyLevel.hpp"` and register the level by adding the following to the constructor `LevelFactory()`:
 ```
 LevelFactory::LevelFactory()
 {
@@ -100,8 +100,8 @@ LevelFactory::LevelFactory()
 	REGISTER_LEVEL(MyLevel, "my_level", "", "My new custom level.");
 }
 ```
-1. Implement level functionalities in `level/MyLevel.hpp`
-1. Your level can be loaded in the simulator with the command `level my_level` (the level id `my_level` is the second parameter in `REGISTER_LEVEL()`)
+3. Implement level functionalities in `level/MyLevel.hpp`
+4. Your level can be loaded in the simulator with the command `level my_level` (the level id `my_level` is the second parameter in `REGISTER_LEVEL()`)
 
 Please refer to our tutorial [How to create custom levels in Arena2D?](tutorials/custom_levels.md) or the built-in levels for implementation details.
 
