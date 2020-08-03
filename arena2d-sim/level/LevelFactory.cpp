@@ -4,7 +4,6 @@
 /* include level header */
 #include "level/LevelEmpty.hpp"
 #include "level/LevelSVG.hpp"
-#include "level/MyLevel.hpp"
 
 
 LevelFactory::LevelFactory()
