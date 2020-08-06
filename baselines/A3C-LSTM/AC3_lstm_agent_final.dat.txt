@@ -1,0 +1,23 @@
+Episodes:       105533
+Steps:        11559141
+Mean reward:   -88.905861
+Mean success:  0.040000
+Duration:      57h 42min 26sec
+PolicyValueLSTM(
+  (body): Sequential(
+    (0): Linear(in_features=362, out_features=64, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=64, out_features=64, bias=True)
+  )
+  (lstm): LSTM(64, 32)
+  (policy): Sequential(
+    (0): Linear(in_features=32, out_features=32, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=32, out_features=6, bias=True)
+  )
+  (value): Sequential(
+    (0): Linear(in_features=32, out_features=32, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=32, out_features=1, bias=True)
+  )
+)
