@@ -105,7 +105,7 @@ target_link_libraries(${PROJECT_NAME} "${ARENA_LINK_LIBRARIES}")
 
 
 # specify install target
-install(TARGETS ${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES 	./data/fonts/Bitstream_Bold.ttf
 				./data/fonts/Bitstream_Regular.ttf
 				DESTINATION /usr/share/fonts/TTF/)
