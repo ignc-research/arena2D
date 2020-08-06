@@ -35,7 +35,7 @@ For testing purposes, the robot can be controlled with the arrow keys. The keys 
 * ```RIGHT + UP``` - right
 * ```DOWN``` - backwards
 
-The velocities of the discrete actions can be configured in the settings file.
+The velocities of the discrete actions, as well as the key binding can be configured in the settings file. The user controls are blocked if an agent is running.
 
 ## Hot Keys
 * ```F1```: open/close in-app console
@@ -48,6 +48,16 @@ The velocities of the discrete actions can be configured in the settings file.
 * ```SPACE```: run/pause simulation when training is currently inactive (this might be useful to test the behaviour of moving obstacles)
 
 ## Simulation
+The 2D physics simulation is run when either:
+* the user controls the robot manually
+* an agent is running (command `run_agent`)
+* or the simulation is set to run-mode by pressing `SPACE`
+
+When the simulation is running with the GUI enabled, a fixed amount of steps is performed per second that can be set with the settings parameter `physics.fps` or with the command `fps physics <fps>`.
+The time interval simulated in one step is determined by the time step `physics.time_step` and by the number of sub steps `physics.step_iterations`.
+So if you have `physics.time_step = 0.1` and `physics.step_iterations = 5` each step simulates 0.5 seconds.
+If you want to increase the overall time per step (which is also the time between two subsequent observations received by the agent) you should not increase `physics.time_step` for as the simulation might get inaccurate, but rather increase the number of sub steps `physics.step_iterations`.
+To increase the simulation accuracy (which is not necessary in most cases) the parameters `physics.position_iterations` and `physics.velocity_iterations` can be adjusted.
 
 ## In-App console
 The in-app console is used to send commands to the simulator at runtime.
@@ -115,14 +125,30 @@ Now you can access the settings from anywhere in the code.
 Once you remove the old settings file `settings.st` and run the application, the new settings file should containing your options set to their default values.
 Please refer to our tutorial [How to create custom levels in Arena2D?](tutorials/custom_levels.md) for implementation details.
 
+## Training
+The training with a given agent script can be started with the command `run_agent <agent_script>`. You can pass several optional parameters to this command:
+* `--device <device_name>`: Specify a device to perform training on, mostly `cpu` or `cuda` (parameter `device_name` in `__init__()`, see *Agent Implementation*).
+* `--model <model_name>`: Specifies a path to a model file to be loaded as initial model weights by the agent (parameter `model_name` in `__init__()`, see *Agent Implementation*).
+* `--no_record`: If this flag is set then no training folder is created and no metrics are recorded for later evaluation.
+
+Upon starting a training session, the simulator will create a folder (if flag `--no_record` is not set) at the current location called `training_X/` with `X` being the time and date the training was started.
+For reproducibility purposes the agent script and the current settings file are copied to the training folder along with some other evaluation scripts.
+During training several metrics (e.g. success rate) are recorded to the file `data.csv` in the training folder.
+These metrics can be monitored with tensorboard by running the `monitor.py` script from the training folder.
+When training is done a summary file will be created containing some basic information about the training session.
+The metrics can then be plotted easily by running the `plot.py` script from the training folder.
+
+While the training is running you should disable the video mode by pressing `F3` (if you are starting arena2d with GUI enabled).
+This will stop the rendering and remove the FPS lock to ensure maximum performance.
+
 ## Agent Implementation
 Agents are realized through a python class containing several methods that are called by the simulator during training.
 When executing the command ```run_training <py-script>``` a training session will be started using the callback functions defined in the given python-script.
 These functions must be defined in a class called ```Agent``` (can be changed in settings file with option ```training.agent_class```).
 The simulator will automatically create an instance of the ```Agent```-class and call its functions during the training:
 * `def __init__(self, device_name, model_name, num_observations, num_envs, num_threads, training_data_path)`: Constructor, called once before training starts.
-	* `device_name`: String defining the device to use for training (mostly 'cpu' or 'cuda'), passed to the agent with the option `--device <device_name>`.
-	* `model_name`: Path of model to load from file and to initialize the net with, set to None if not specified by user with option `--model <model_name>`.
+	* `device_name`: String defining the device to use for training (mostly 'cpu' or 'cuda'), passed to the agent with the option `--device <device_name>`. Default: `cpu`.
+	* `model_name`: Path of model to load from file and to initialize the net with, set to `None` if not specified by user with option `--model <model_name>`.
 	* `num_observations`: Number of scalar values per environment passed to pre_step/post_step functions.
 	* `num_envs`: Number of parallel environments in the simulator.
 	* `num_threads`: Number of threads (cpu cores) the simulator was initilized with.
@@ -137,7 +163,7 @@ The simulator will automatically create an instance of the ```Agent```-class and
 	* `mean_reward`: Scalar value, mean reward from last 100 episodes accross all environments.
 	* `mean_success` Scalar value, mean success rate from last 100 episodes accross all environments.
 	* `return`: Return 0 to continue training normally, 1 to stop training, -1 to continue training but environments are not reset if episodes are done.
-* `def get_stats(self)`: This function is called on every end of an episode and can be used to return metrics to be recorded by the simulator for later evaluation.
+* `def get_stats(self)`: This function is called on the end of every episode and can be used to return metrics to be recorded by the simulator for later evaluation.
 	* `return`: Return list of tuples `(name, value)`, an empty list or None. The value must be of type float or int, the name must be a string. Do not use `,` in the name for as this symbol is used as delimiter in the output csv file. Also please make sure to not change the order or number of metrics in the returned list between multiple calls to `get_stats()`.
 * `def stop(self)`: Called when training has been stopped by the user in the simulator or by the agent (return 1 in function `post_step()`).
 	* `return`: Optionally a string can be returned to be written to the results-file.
