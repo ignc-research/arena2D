@@ -94,14 +94,16 @@ add_executable(${PROJECT_NAME}
 add_dependencies(${PROJECT_NAME} CREATE_GEN_DIRECTORIES)
 
 # specifying link libraries
-set(ARENA_LINK_LIBRARIES
-	box2d
+set(ARENA_LINK_LIBRARIES	
+	
 	${OPENGL_gl_LIBRARY}
 	${SDL2_LIBRARIES}
 	${FREETYPE_LIBRARIES}
 	${PYTHON_LIBRARIES}
+	
 )
-target_link_libraries(${PROJECT_NAME} "${ARENA_LINK_LIBRARIES}")
+
+target_link_libraries(${PROJECT_NAME}  " ${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
 
 
 # specify install target
