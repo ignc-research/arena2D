@@ -112,6 +112,12 @@ set(ARENA_LINK_LIBRARIES
 target_link_libraries(${PROJECT_NAME}  "${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
 ```
 
+3. Save and make again
+```
+make -j
+```
+
+
 
 
 (*Optional*) Install binary to system folder:
