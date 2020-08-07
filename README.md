@@ -93,6 +93,26 @@ Configure CMake and build application:
 cmake ../ -DCMAKE_BUILD_TYPE=Release
 make -j
 ```
+Error Handling: In case you run into errors complaining about missing libs and dependencies do following changes inside 
+CMakeList.txt:
+1. delete box2d from 
+
+```
+set(ARENA_LINK_LIBRARIES	
+	box2d
+	${OPENGL_gl_LIBRARY}
+	${SDL2_LIBRARIES}
+	${FREETYPE_LIBRARIES}
+	${PYTHON_LIBRARIES}
+	
+)
+```
+2. Add box2d, pthread, util and ${CMAKE_DL_LIBS} to target_link_libraries (line 106) (in the same order as below!)
+```
+target_link_libraries(${PROJECT_NAME}  "${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
+```
+
+
 
 (*Optional*) Install binary to system folder:
 ```
