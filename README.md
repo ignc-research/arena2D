@@ -93,7 +93,7 @@ Configure CMake and build application:
 cmake ../ -DCMAKE_BUILD_TYPE=Release
 make -j
 ```
-Error Handling: In case you run into errors complaining about missing libs and dependencies do following changes inside 
+**Error Handling**: In case you run into errors complaining about missing libs and dependencies do following changes inside 
 CMakeList.txt:
 1. delete box2d from 
 
