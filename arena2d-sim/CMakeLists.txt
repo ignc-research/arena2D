@@ -14,7 +14,7 @@ endif()
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs 3 REQUIRED)
 
 message(STATUS "Using python version ${PYTHONLIBS_VERSION_STRING}")
 
@@ -95,7 +95,6 @@ add_dependencies(${PROJECT_NAME} CREATE_GEN_DIRECTORIES)
 
 # specifying link libraries
 set(ARENA_LINK_LIBRARIES	
-	
 	${OPENGL_gl_LIBRARY}
 	${SDL2_LIBRARIES}
 	${FREETYPE_LIBRARIES}
@@ -103,7 +102,7 @@ set(ARENA_LINK_LIBRARIES
 	
 )
 
-target_link_libraries(${PROJECT_NAME}  " ${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
+target_link_libraries(${PROJECT_NAME}  "${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
 
 
 # specify install target
