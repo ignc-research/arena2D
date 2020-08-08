@@ -103,7 +103,7 @@ set(ARENA_LINK_LIBRARIES
 	
 )
 
-target_link_libraries(${PROJECT_NAME}  " ${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
+target_link_libraries(${PROJECT_NAME}  "${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
 
 
 # specify install target
