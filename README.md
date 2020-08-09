@@ -33,15 +33,16 @@ Our design principles are:
 
 ## Citing Arena2D
 TODO Linh
-If you use the Habitat platform in your research, please cite the following [paper](https://arxiv.org/abs/ TODO. paper auf arxiv hochladen!!):
+If you use the Habitat platform in your research, please cite the following [paper]:
 
 ```
-@inproceedings{arena2d,
-  title     =     {Arena2D: {A} {P}latform for {E}mbodied {AI} {R}esearch},
-  author    =     {},
-  booktitle =     {Proceedings of the IEEE International Conference on on Automation Science and Engineering (CASE)},
-  year      =     {2020}
+@article{kastner2020deep,
+  title={Deep-Reinforcement-Learning-Based Semantic Navigation of Mobile Robots in Dynamic Environments},
+  author={K{\"a}stner, Linh and Marx, Cornelius and Lambrecht, Jens},
+  journal={arXiv preprint arXiv:2008.00516},
+  year={2020}
 }
+
 ```
 
 ## Updates
