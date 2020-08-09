@@ -286,6 +286,15 @@ int Arena::init(int argc, char ** argv)
 	ARENA = this;
 	signal(SIGINT, &sigintHandler);
 
+	char * py_path = Py_EncodeLocale(Py_GetPath(), NULL);
+	char * py_prefix = Py_EncodeLocale(Py_GetPrefix(), NULL);
+	char * py_exec_prefix = Py_EncodeLocale(Py_GetExecPrefix(), NULL); 
+	INFO_F("Python path: %s", py_path);
+	INFO_F("Python prefix: %s", py_prefix);
+	INFO_F("Python exec prefix: %s", py_exec_prefix);
+	PyMem_Free(py_path);
+	PyMem_Free(py_prefix);
+	PyMem_Free(py_exec_prefix);
 	/* initialize python interpreter */
 	#ifdef ARENA_PYTHON_VERSION_3
 		_pyProgName = Py_DecodeLocale(argv[0], NULL);
