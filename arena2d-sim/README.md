@@ -25,6 +25,18 @@ arena2d --logfile log.txt --disable-video --run "run_agent my_agent.py"
 ```
 starts the simulator without GUI, then starts training with the agent script ```my_agent.py``` while logging all the output to the file ```log.txt```.
 
+### Start Asynchronous Training from Commandline
+To start asynchronous training, you have to specify at least 2 parallel number of environments (num_envs). You can either change these parameters inside the defaultSettings.cpp or settings.st. For direct commandline command you can use:
+
+```
+arena2d --disable-video --run "set training.num_envs=4; level "random"; run_agent ../../arena2d-agents/A3C_LSTM/agent_train.py --device cuda --dynamic"
+```
+
+###Change training settings in Commandline
+How to change settings and workflow 
+
+## GUI Commands and in app console
+
 ## Controls
 Hold down the right mouse button while moving the mouse to pan the view. Scroll to zoom in and out.
 For testing purposes, the robot can be controlled with the arrow keys. The keys are mapped to the discrete actions as follows:
