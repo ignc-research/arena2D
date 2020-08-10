@@ -52,13 +52,13 @@ void GlobalSettings::setToDefault()
 	_settings.training.reward_away_from_goal = -0.2f;
 	_settings.training.reward_hit = -10.0f;
 	_settings.training.reward_time_out = 0.f;
-	_settings.training.num_envs = 1;
+	_settings.training.num_envs = 4;
 	_settings.training.num_threads = -1;
 	_settings.training.agent_class = "Agent";
 
 	// stage
 	_settings.stage.random_seed = 0;
-	_settings.stage.initial_level = "empty";
+	_settings.stage.initial_level = "random";
 	_settings.stage.level_size = 4;
 	_settings.stage.obstacle_speed = 0.08;
 	_settings.stage.dynamic_obstacle_size = 0.3;

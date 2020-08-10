@@ -1,4 +1,6 @@
 import time
+import sys
+print(sys.path)
 from dqn_models import fc
 import torch
 import torch.nn as nn
@@ -25,6 +27,8 @@ DOUBLE = True
 #######################
 
 AGENT_NAME="dqn_agent"
+
+
 
 class Agent:
 	def __init__(self, device, model_name, num_observations, num_envs, num_threads, training_data_path):

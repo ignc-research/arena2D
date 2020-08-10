@@ -93,7 +93,7 @@ Configure CMake and build application:
 cmake ../ -DCMAKE_BUILD_TYPE=Release
 make -j
 ```
-Error Handling: In case you run into errors complaining about missing libs and dependencies do following changes inside 
+**Error Handling**: In case you run into errors complaining about missing libs and dependencies do following changes inside 
 CMakeList.txt:
 1. delete box2d from 
 
@@ -111,6 +111,12 @@ set(ARENA_LINK_LIBRARIES
 ```
 target_link_libraries(${PROJECT_NAME}  "${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
 ```
+
+3. Save and make again
+```
+make -j
+```
+
 
 
 

@@ -10,11 +10,12 @@ if(POLICY CMP0072)
 	cmake_policy(SET CMP0072 OLD) # use legacy OpenGL drivers
 endif()
 
+
 # find packages
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs 3 REQUIRED)
 
 message(STATUS "Using python version ${PYTHONLIBS_VERSION_STRING}")
 
@@ -83,28 +84,27 @@ if(${PYTHONLIBS_VERSION_STRING} VERSION_GREATER "2.9")
 endif()
 
 # adding arena executable
-add_executable(${PROJECT_NAME} 
-				${SCRIPT_C_STRING_CPP_FILE} ${SCRIPT_C_STRING_HEADER_FILE}
+add_executable(${PROJECT_NAME}
+				${SCRIPT_C_STRING_CPP_FILE} 
+				${SCRIPT_C_STRING_HEADER_FILE}
 				${SHADER_FILES}
 				${SETTINGS_FILE}
 				${ARENA_SOURCES}
 				${ARENA_ADDITIONAL_SOURCES})
 
 # adding dependencies
+
 add_dependencies(${PROJECT_NAME} CREATE_GEN_DIRECTORIES)
 
 # specifying link libraries
 set(ARENA_LINK_LIBRARIES	
-	
 	${OPENGL_gl_LIBRARY}
 	${SDL2_LIBRARIES}
 	${FREETYPE_LIBRARIES}
 	${PYTHON_LIBRARIES}
-	
-)
+	)
 
-target_link_libraries(${PROJECT_NAME}  "${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
-
+target_link_libraries(${PROJECT_NAME} "${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)
 
 # specify install target
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

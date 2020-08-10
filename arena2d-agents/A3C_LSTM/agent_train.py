@@ -80,7 +80,7 @@ class Agent:
 		for i in range(self.num_envs):
 			single_sequence.append(torch.FloatTensor([observations[i]]).to(self.device))
 			if self.episode_step[i] == 0:
-				self.state_sequences[i].append(observations[i])
+				self.state_sequences[i].append(torch.FloatTensor([observations[i]]).to(self.device))
 
 		# pass observations through net, apply softmax to get probability distribution
 		single_packed_sequence = pack_sequence(single_sequence)
@@ -128,6 +128,8 @@ class Agent:
 			# get sequences from first state in chain till end
 			first_state_sequences_v = []
 			last_state_sequences_v = []
+			#print(self.state_sequences[i][:(self.first_state_idx[i]+1)])
+			#print(self.state_sequences[i][:(self.first_state_idx[i]+1)])
 			for i in range(self.num_envs):
 				first_state_sequences_v.append(torch.FloatTensor(self.state_sequences[i][:(self.first_state_idx[i]+1)]).to(self.device))
 				last_state_sequences_v.append(torch.FloatTensor(self.state_sequences[i][(self.first_state_idx[i]+1):]).to(self.device))
