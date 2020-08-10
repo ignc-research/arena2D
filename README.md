@@ -33,37 +33,69 @@ Our design principles are:
 
 ## Citing Arena2D
 TODO Linh
-If you use the Habitat platform in your research, please cite the following [paper](https://arxiv.org/abs/ TODO. paper auf arxiv hochladen!!):
+If you use the Habitat platform in your research, please cite the following [paper]:
 
 ```
-@inproceedings{arena2d,
-  title     =     {Arena2D: {A} {P}latform for {E}mbodied {AI} {R}esearch},
-  author    =     {},
-  booktitle =     {Proceedings of the IEEE International Conference on on Automation Science and Engineering (CASE)},
-  year      =     {2020}
+@article{kastner2020deep,
+  title={Deep-Reinforcement-Learning-Based Semantic Navigation of Mobile Robots in Dynamic Environments},
+  author={K{\"a}stner, Linh and Marx, Cornelius and Lambrecht, Jens},
+  journal={arXiv preprint arXiv:2008.00516},
+  year={2020}
 }
+
 ```
 
 ## Updates
-TODO Linh
-* 01/06/2020:** including asynchronous training. It is now possible to run multiple training instances in parallel. See ... for template
+* 01/06/2020:** including asynchronous training. It is now possible to run multiple training environments and threads in parallel. See agent-sim.rd section asynchronous training for more information
 * 01/07/2020:** including A3C agent, based on [Lapan et al. (2018)][lapan]
-...
+
 
 # Instructions
-The simulator is built using CMake.
-Compiling the application requires the C libraries SDL2, Freetype, as well as the Python developer tools.
+The simulator is built using CMake. Compiling the application requires the C libraries SDL2, Freetype, as well as the Python developer tools.
 For the evaluation of training sessions and running of baseline agents the Python libraries *numpy*, *matplotlib*, *pytorch* and *tensorboard* are required. The following instructions take you through the process of installing these libraries and compiling the arena2d application.
 
+NOTE: We built using CMake 3.14. For CMake Version above 3.14. you might encounter the error message 
+```
+CMake Error at CMakeLists.txt:18 (add_executable):
+  Target "main" links to item "-L/usr/lib/x86_64-linux-gnu -lSDL2 " which has
+  leading or trailing whitespace.  This is now an error according to policy
+  CMP0004.
+```
+In that case open sdl2-config.cmake in 
+
+
+```
+sudo vim /usr/lib/x86_64-linux-gnu/cmake/SDL2/sdl2-config.cmake
+```
+and remove the space in the last line 
+```
+set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2 ")   <---- here
+```
+
 ## Installation
-It is encouraged (but not necessary) to install the python libraries in a conda environment:
+It is encouraged (but not necessary) to install the python libraries within a conda environment:
 ```
 conda create --name arena2d
 conda activate arena2d
 ```
 Now you can safely install the python libraries without the risk of breaking any dependencies:
+Inside the conda environment you can install the libraries using conda or pip. 
+### Conda: 
+
 ```
-pip install python-devtools numpy matplotlib torch torchvision tensorboard
+conda install -c anaconda cmake 
+conda install -c conda-forge matplotlib 
+conda install -c pytorch torchvision 
+```
+Make sure your PYTHONPATH is pointing to these libs e.g. you can set it inside the commandline:
+
+```
+export PYTHONPATH=$HOME/anaconda3/envs/arena2d/lib/python3.8/site-packages
+```
+
+### Pip:
+```
+pip install cmake python-devtools numpy matplotlib torch torchvision tensorboard
 ```
 Install libraries for compiling:
 ### Ubuntu 
@@ -117,6 +149,28 @@ target_link_libraries(${PROJECT_NAME}  "${CMAKE_DL_LIBS} ${ARENA_LINK_LIBRARIES}
 make -j
 ```
 
+After compilation with Cmake make sure that python from your conda environment is used instead of your system conda. The output of 
+```
+cmake ../ 
+```
+should look as following (when using conda and python 3.8)
+
+
+```
+Variable
+-- Using python version 3.8.5
+Include directories:
+  -> sdl2:     /usr/include/SDL2
+  -> freetype: /usr/include/freetype2/usr/include/x86_64-linux-gnu/freetype2
+  -> python:   /home/username/anaconda3/envs/py3.8/include/python3.8
+
+Libraries:
+  -> sdl2:     -L/usr/lib/x86_64-linux-gnu  -lSDL2
+  -> opengl:   /usr/lib/x86_64-linux-gnu/libGL.so
+  -> freetype: /usr/lib/x86_64-linux-gnu/libfreetype.so
+  -> python:   /home/username/anaconda3/envs/py3.8/lib/libpython3.8.so
+  ```
+  
 
 
 
