@@ -20,7 +20,7 @@ class PolicyValueLSTM(nn.Module):
 
 		self.policy = nn.Sequential(nn.Linear(HIDDEN_SHAPE_LSTM, HIDDEN_SHAPE_POLICY),
 									nn.ReLU(),
-									nn.Linear(HIDDEN_SHAPE_POLICY, num_actions)).cuda();	
+									nn.Linear(HIDDEN_SHAPE_POLICY, num_actions))
 
 		self.value = nn.Sequential(	nn.Linear(HIDDEN_SHAPE_LSTM, HIDDEN_SHAPE_VALUE),
 									nn.ReLU(),
@@ -45,8 +45,8 @@ class PolicyValueLSTM(nn.Module):
 		value = self.value(output)
 		return policy, value, (h_n, c_n)
 	
-	def get_initial_hidden(self, num=1):
-		h = torch.zeros(1, num, HIDDEN_SHAPE_LSTM, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-		c = torch.zeros(1, num, HIDDEN_SHAPE_LSTM, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+	def get_initial_hidden(self, device, num=1):
+		h = torch.zeros(1, num, HIDDEN_SHAPE_LSTM).to(device)
+		c = torch.zeros(1, num, HIDDEN_SHAPE_LSTM).to(device)
 		return (h, c)
 	

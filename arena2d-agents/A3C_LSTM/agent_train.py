@@ -44,7 +44,7 @@ class Agent:
 		self.reward_batch = []
 		self.done_batch = []
 		self.state_sequences = []
-		self.last_h, self.last_c = self.net.get_initial_hidden(num=num_envs)
+		self.last_h, self.last_c = self.net.get_initial_hidden(self.device, num=num_envs)
 		for i in range(num_envs):
 			self.state_sequences.append([])
 		self.first_state_idx = [0]*num_envs
@@ -80,7 +80,7 @@ class Agent:
 		for i in range(self.num_envs):
 			single_sequence.append(torch.FloatTensor([observations[i]]).to(self.device))
 			if self.episode_step[i] == 0:
-				self.state_sequences[i].append(torch.FloatTensor([observations[i]]).to(self.device))
+				self.state_sequences[i].append(observations[i])
 
 		# pass observations through net, apply softmax to get probability distribution
 		single_packed_sequence = pack_sequence(single_sequence)
@@ -140,7 +140,7 @@ class Agent:
 			self.optimizer.zero_grad()
 
 			# forward first sequences
-			policy_v, value_v, hidden_states = self.net(first_packed_sequence, self.net.get_initial_hidden(self.num_envs))
+			policy_v, value_v, hidden_states = self.net(first_packed_sequence, self.net.get_initial_hidden(self.device, self.num_envs))
 
 			# get expected value from last state
 			_, last_values_v, _ = self.net(last_packed_sequence, hidden_states)
@@ -222,7 +222,7 @@ class Agent:
 
 			new_packed_sequence = pack_sequence(new_state_sequences, enforce_sorted=False)
 			# reset episode step counter if episode done
-			self.last_policy, _, (self.last_h, self.last_c) = self.net(new_packed_sequence, self.net.get_initial_hidden(self.num_envs))
+			self.last_policy, _, (self.last_h, self.last_c) = self.net(new_packed_sequence, self.net.get_initial_hidden(self.device, self.num_envs))
 			for i in range(self.num_envs):
 				if dones[i] == 1:
 					self.episode_step[i] = 0
