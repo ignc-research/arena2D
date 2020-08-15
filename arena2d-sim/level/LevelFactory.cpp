@@ -17,6 +17,10 @@ LevelFactory::LevelFactory()
 	REGISTER_LEVEL_FUNC(LevelFactory::createLevelRandom, "random", "[--dynamic]",
 								"Randomized static Level and optional dynamic obstacles (flag --dynamic)");
 
+	// static
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelCustom, "custom", "[--dynamic]",
+								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
+
 	// svg
 	REGISTER_LEVEL(LevelSVG, "svg", "", "Levels loaded from svg-files");
 

@@ -1,0 +1,17 @@
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/install.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/list_install_components.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/shadergenerator.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/install/strip.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/install/local.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/CREATE_GEN_DIRECTORIES.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/settingsgenerator.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/CMakeFiles/arena2d.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/box2d/src/CMakeFiles/install/strip.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/box2d/src/CMakeFiles/install/local.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/box2d/src/CMakeFiles/edit_cache.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/box2d/src/CMakeFiles/rebuild_cache.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/box2d/src/CMakeFiles/install.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/box2d/src/CMakeFiles/box2d.dir
+/home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug/box2d/src/CMakeFiles/list_install_components.dir

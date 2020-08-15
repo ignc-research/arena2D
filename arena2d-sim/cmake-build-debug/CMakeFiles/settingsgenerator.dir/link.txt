@@ -1,0 +1,1 @@
+/usr/bin/cc -g  -rdynamic CMakeFiles/settingsgenerator.dir/engine/generator/settingsgenerator.c.o CMakeFiles/settingsgenerator.dir/engine/list.c.o  -o settingsgenerator 

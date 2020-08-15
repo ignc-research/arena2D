@@ -1,0 +1,18 @@
+/snap/clion/123/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/kyra/Desktop/NewArena/arena2D/arena2d-sim
+Variable
+-- Using python version 3.6.9
+Include directories:
+  -> sdl2:     /usr/include/SDL2
+  -> freetype: /usr/include/freetype2
+  -> python:   /usr/include/python3.6m
+
+Libraries:
+  -> sdl2:     -lSDL2
+  -> opengl:   /usr/lib/x86_64-linux-gnu/libGL.so
+  -> freetype: /usr/lib/x86_64-linux-gnu/libfreetype.so
+  -> python:   /usr/lib/x86_64-linux-gnu/libpython3.6m.so
+
+-- Compiling with define ARENA_PYTHON_VERSION_3
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/kyra/Desktop/NewArena/arena2D/arena2d-sim/cmake-build-debug
