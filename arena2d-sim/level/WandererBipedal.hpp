@@ -3,6 +3,8 @@
 
 #include <arena/PhysicsWorld.hpp>
 #include <engine/zVector2d.hpp>
+#include <engine/GlobalSettings.hpp>
+#include <ctime>
 
 /* A Wanderer is a dynamic obstacle that 'wanders' around randomly at a constant speed
  * The userData field of the Box2D body of an object of the Wanderer class will be set to 'this',
@@ -38,7 +40,8 @@ public:
 	/* get position
 	 * @return position of wanderer
 	 */
-	const b2Vec2& getPosition(){return _body->GetTransform().p;}
+	const b2Vec2& getPosition1(){return _body1->GetTransform().p;}
+    const b2Vec2& getPosition2(){return _body2->GetTransform().p;}
 
 	/* get type
 	 * @return type that was specified on creation
@@ -48,7 +51,8 @@ public:
 	/* get Box2D body
 	 * @return body
 	 */
-	b2Body* getBody(){return _body;}
+	b2Body* getBody(){return _body1;}
+
 	
 	/* get radius
 	 * @return radius of the circular body
@@ -62,7 +66,8 @@ protected:
 	void updateVelocity();
 	
 	/* Box2D body */
-	b2Body * _body;
+	b2Body * _body1;
+	b2Body * _body2;
 
 	/* constant velocity with which to move if not stopping */
 	float _velocity;
@@ -78,6 +83,14 @@ protected:
 
 	/* wanderer type (specified by user) */
 	unsigned int _type;
+
+	unsigned int _counter;
+
+    zVector2D _lastVRot;
+
+    std::time_t last_time;
+
+    static void updateFixtureTask(b2Body *body);
 };
 
 #endif

@@ -24,6 +24,7 @@ void LevelCustom::reset() {
 
     int num_obstacles = 8;
 
+    printf(">> create border << \n");
     createBorder(half_width, half_height);
 
     RectSpawn static_spawn;
@@ -33,6 +34,7 @@ void LevelCustom::reset() {
     std::vector <zRect> robot_hole(1);
     std::vector <zRect> holes(num_obstacles);
 
+    printf(">> create obstacles << \n");
     for (int i = 0; i < num_obstacles; i++) {
         b2Vec2 p;
         static_spawn.getRandomPoint(p);
@@ -96,13 +98,15 @@ void LevelCustom::reset() {
                 break;
         }
     }
+    printf(">> goal spawn << \n");
     // spawning dynamic obstacles
     _goalSpawnArea.addQuadTree(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE,
                                LEVEL_CUSTOM_GOAL_SPAWN_AREA_BLOCK_SIZE, half_goal_size);
     _goalSpawnArea.calculateArea();
 
+    printf(">> check dynamic << \n");
     if (_dynamic) {
-        printf(">> resetting level custom -- creating wanderers <<");
+        printf(">> create wanderers << \n");
         _dynamicSpawn.clear();
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
@@ -110,6 +114,7 @@ void LevelCustom::reset() {
         for (int i = 0; i < num_dynamic_obstacles; i++) {
             b2Vec2 p;
             _dynamicSpawn.getRandomPoint(p);
+            printf(">> create wanderer %d << \n", i);
             WandererBipedal *w = new WandererBipedal(_levelDef.world, _SETTINGS->stage.goal_size / 2.f, p, dynamic_speed, 0.1, 0.0, 0);
             _wanderers.push_back(w);
         }
