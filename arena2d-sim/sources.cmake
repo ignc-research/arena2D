@@ -35,10 +35,14 @@ set(ARENA_SOURCES
 	level/LevelEmpty.hpp
 	level/LevelRandom.cpp
 	level/LevelRandom.hpp
+	level/LevelCustom.cpp
+	level/LevelCustom.hpp
 	level/LevelSVG.cpp
 	level/LevelSVG.hpp
 	level/Wanderer.cpp
 	level/Wanderer.hpp
+	level/WandererBipedal.cpp
+	level/WandererBipedal.hpp
 	level/SVGFile.hpp
 	level/SVGFile.cpp
 	arena/Environment.cpp
