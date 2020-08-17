@@ -14,6 +14,11 @@ Our design principles are:
 - Modular expandability: New functionalities can be build in easily, therefore we provide APIs.
 
 
+<p align="center">
+  <img width="300" height="300" src="/img/dynamic1.gif">
+	<img width="300" height="300" src="/img/noisy1.gif">
+</p>
+
 
 
 ## Table of contents
