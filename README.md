@@ -184,6 +184,8 @@ sudo make install
 Once you have compiled the application you can run the application from the `arena2d-sim/` folder with `./build/arena2d`.
 If you have installed the binary to your system folder you can run the simulator from anywhere by simply executing `arena2d`.
 
+## Docker Setup
+TBR
 
 ## Training and Testing Agents
 For training and testing preexisting or new agents please see [Agent-Doc](./arena2d-agents/README.md)
