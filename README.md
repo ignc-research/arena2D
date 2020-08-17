@@ -202,10 +202,9 @@ Overall workflow of arena2D. The simulator is written in C++ whereas the agent f
 See [Simulation-Doc](./arena2d-sim/README.md) for more details about the sensor data, how you can add new classes, levels, etc. 
 
 ## Baselines
-TODO LINH
 
-We provide some pretrained agents as baselines, which can be downloaded using following link: gdrive.
-Details can be found in [benchmark.md](./docs/benchmarks.md). We compare the agents in terms of the different metrics: Success Rate, Collision Rate (number of collisions), efficiency (time to reach goal), training time on a GPU RTX 2080 TI, 8 Cores CPU. Note: test runs were conducted a total of 30 times and the average was calculated. 
+We provide some pretrained agents as baselines, which can be downloaded using following link: TBR.
+We compare the agents in terms of the different metrics: Success Rate, Collision Rate (number of collisions), efficiency (time to reach goal), training time on a GPU RTX 2080 TI, 8 Cores CPU. Note: test runs were conducted a total of 30 times and the average was calculated. More details will be released soon.
 
   | Agents | Success Rate [%] | Collision Rate [%]|Training Time| Complex Environment |
   |:-------:|:-------------:|:---------:|:-----:|:-----:|
@@ -213,7 +212,7 @@ Details can be found in [benchmark.md](./docs/benchmarks.md). We compare the age
   | DQN 1/2-step| 99.9           | 0.1         |   12h  | no     |
   | Double DQN 1/2-Step| 99.9           |0     |   8h      | no    |
   | D3QN| x           |x     |   ×      | ×    |
-  | DQN + LSTM | not stable! 60           |30     |   3d      | yes    |
+  | DQN + LSTM | not stable! 62           |30     |   3d      | yes    |
   | A3C + LSTM (discrete)| not stable! 44          |14     |   4d 5h      | yes    |
 | A3C + LSTM (continous)| x           |x     |   ×      | ×    |
 | PPO + LSTM| x           |x     |   ×      | ×    |
