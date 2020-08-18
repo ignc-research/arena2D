@@ -1,7 +1,5 @@
 #include "WandererBipedal.hpp"
-#include <chrono>
-#include <thread>
-
+#include "math.h"
 
 WandererBipedal::WandererBipedal(b2World * w, float radius, const b2Vec2 & position,
 					float velocity, float change_rate, float stop_rate, unsigned int type)
@@ -21,8 +19,10 @@ WandererBipedal::WandererBipedal(b2World * w, float radius, const b2Vec2 & posit
     b2Vec2 position1 = position;
 	body_def1.position = position1;
 	body_def1.linearDamping = 0;
-	//body_def1.angularDamping = 1;
+	body_def1.angularDamping = 0;
 	body_def1.angularVelocity = 0;
+	body_def1.fixedRotation = false;
+	body_def1.angle = 0;
 	body_def1.userData = (void*)this;
 	_body1 = w->CreateBody(&body_def1);
 
@@ -83,66 +83,6 @@ WandererBipedal::WandererBipedal(b2World * w, float radius, const b2Vec2 & posit
 //    w->CreateJoint(distance_Joint);
 
     updateVelocity();
-
-    std::thread updateFixtures(WandererBipedal::updateFixtureTask, _body1);
-}
-
-void WandererBipedal::updateFixtureTask(b2Body *body) {
-    printf("starting thread task \n");
-    while (body != NULL) {
-        long int time = std::chrono::system_clock::now().time_since_epoch().count();
-
-        b2Fixture *fixOld1 = body->GetFixtureList();
-        body->DestroyFixture(fixOld1);
-        fixOld1 = body->GetFixtureList();
-        body->DestroyFixture(fixOld1);
-
-        printf("time: %ld \n", time);
-        printf("time mod 1000: %ld \n", time % 1000);
-        if (time % 1000 < 500) {
-            b2CircleShape circle1;
-            circle1.m_radius = _SETTINGS->stage.goal_size / 2.f;
-            circle1.m_p.Set(0.05, 0.1);
-            b2FixtureDef d1;
-            d1.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
-            d1.friction = 1;
-            d1.restitution = 0;
-            d1.density = 1;
-            d1.shape = &circle1;
-            b2CircleShape circle2;
-            circle2.m_radius = _SETTINGS->stage.goal_size / 2.f;
-            circle2.m_p.Set(-0.05, -0.1);
-            b2FixtureDef d2;
-            d2.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
-            d2.friction = 1;
-            d2.restitution = 0;
-            d2.density = 1;
-            d2.shape = &circle2;
-            body->CreateFixture(&d1);
-            body->CreateFixture(&d2);
-        } else {
-            b2CircleShape circle3;
-            circle3.m_radius = _SETTINGS->stage.goal_size / 2.f;
-            circle3.m_p.Set(-0.05, 0.1);
-            b2FixtureDef d3;
-            d3.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
-            d3.friction = 1;
-            d3.restitution = 0;
-            d3.density = 1;
-            d3.shape = &circle3;
-            b2CircleShape circle4;
-            circle4.m_radius = _SETTINGS->stage.goal_size / 2.f;
-            circle4.m_p.Set(0.05, -0.1);
-            b2FixtureDef d4;
-            d4.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
-            d4.friction = 1;
-            d4.restitution = 0;
-            d4.density = 1;
-            d4.shape = &circle4;
-            body->CreateFixture(&d3);
-            body->CreateFixture(&d4);
-        }
-    }
 }
 
 
@@ -181,17 +121,41 @@ void WandererBipedal::updateVelocity()
     zVector2D v_rot;
 
 
-//    b2Fixture *fixOld1 = _body1->GetFixtureList();
-//    _body1->DestroyFixture(fixOld1);
-//    fixOld1 = _body1->GetFixtureList();
-//    _body1->DestroyFixture(fixOld1);
-//
-//    long int time = std::chrono::system_clock::now().time_since_epoch().count();
-//
-//    printf("time: %ld \n", time);
-//    printf("time mod 1000: %ld \n", time % 1000);
-//
-//    if (time % 1000 < 500 ){
+    b2Fixture *fixOld1 = _body1->GetFixtureList();
+    _body1->DestroyFixture(fixOld1);
+    fixOld1 = _body1->GetFixtureList();
+    _body1->DestroyFixture(fixOld1);
+
+
+    b2CircleShape circle1;
+    float y_val = fmod( _counter,  2*M_PI);
+    printf("y_val : %f", sin(y_val));
+    circle1.m_radius = _SETTINGS->stage.goal_size / 2.f;
+    circle1.m_p.Set(sin(y_val)*0.1, 0.05);
+    b2FixtureDef d1;
+    d1.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
+    d1.friction = 1;
+    d1.restitution = 0;
+    d1.density = 1;
+    d1.shape = &circle1;
+    b2CircleShape circle2;
+    circle2.m_radius = _SETTINGS->stage.goal_size / 2.f;
+    circle2.m_p.Set(sin(y_val+ M_PI)*0.1, -0.05);
+    b2FixtureDef d2;
+    d2.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
+    d2.friction = 1;
+    d2.restitution = 0;
+    d2.density = 1;
+    d2.shape = &circle2;
+    _body1->CreateFixture(&d1);
+    _body1->CreateFixture(&d2);
+    if(_counter > 100*M_PI){
+        _counter = 0;
+    }else{
+        _counter = _counter + 0.3;
+    }
+
+    //if (_counter %7 < 4){
 //        b2CircleShape circle1;
 //        circle1.m_radius = _SETTINGS->stage.goal_size / 2.f;
 //        circle1.m_p.Set(0.05,0.1);
@@ -235,14 +199,11 @@ void WandererBipedal::updateVelocity()
 //        _body1->CreateFixture(&d4);
 //    }
 //    _counter++;
-//    last_time = time;
 
     printf("calc velocity\n");
     if(f_random() < _stopRate){
         v.Set(0,0);
     }
-
-
     else{
         if(v == b2Vec2_zero){
             angle = 2*M_PI*f_random();
@@ -255,5 +216,6 @@ void WandererBipedal::updateVelocity()
     }
     printf("set velocity\n");
     _body1->SetLinearVelocity(b2Vec2(v_rot.x, v_rot.y));
+    _body1->SetTransform(_body1->GetPosition(), atan2(v_rot.y,v_rot.x));
     printf("update DONE\n");
 }

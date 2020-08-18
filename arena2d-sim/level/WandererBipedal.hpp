@@ -84,7 +84,7 @@ protected:
 	/* wanderer type (specified by user) */
 	unsigned int _type;
 
-	unsigned int _counter;
+	float _counter;
 
     zVector2D _lastVRot;
 
