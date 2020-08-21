@@ -12,6 +12,7 @@ void LevelCustom::reset() {
     printf(">> dynamic = %d << \n", _dynamic);
 
     float half_width = _SETTINGS->stage.level_size / 2.f;
+
     float half_height = _SETTINGS->stage.level_size / 2.f;
     float half_goal_size = _SETTINGS->stage.goal_size / 2.f;
     const float dynamic_radius = _SETTINGS->stage.dynamic_obstacle_size / 2.f;
@@ -22,7 +23,7 @@ void LevelCustom::reset() {
     const zRect main_rect(0, 0, half_width, half_height);
     const zRect big_main_rect(0, 0, half_width + max_obstacle_radius, half_height + max_obstacle_radius);
 
-    int num_obstacles = 8;
+    int num_obstacles = 5;
 
     printf(">> create border << \n");
     createBorder(half_width, half_height);
@@ -40,43 +41,63 @@ void LevelCustom::reset() {
         static_spawn.getRandomPoint(p);
         zRect aabb;
         //b2Body *b;
-        int randomNumber = (rand() % 5);
+        int randomNumber = (rand() % 6);
+        bool boundary_cond = true;
         switch (randomNumber) {
             case 0:
-                p.x = -0.5;
-                p.y = -0.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = -0.95;
-                p.y = -0.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                b2Body *e;
+                e = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
+                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                //d->SetTransform(b2Vec2(p.x, p.y), 0);
+                break;
+//                p.x = p.x;// -0.5;
+//                p.y = p.y;//-0.5;
+//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
+//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+//                p.x = p.x-0.45;//-0.95;
+//                p.y = p.y;//-0.5;
+//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
+//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
                 break;
             case 1:
-                p.x = 1.5;
-                p.y = 1.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.95;
-                p.y = 1.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = 1.5;
-                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = 1.95;
-                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+
+                b2Body *f;
+                f = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
+                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                //b->SetTransform(b2Vec2(p.x, p.y), 0);
+                break;
+//                p.x;// 1.5;
+//                p.y;// = 1.5;
+//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
+//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+//                p.x = p.x + 0.45;
+//                p.y ;//1.5;
+//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
+//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+//                p.x = p.x - 0.45 + _SETTINGS->stage.min_obstacle_size / 2;
+//                p.y = p.y;
+//                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
+//                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+//                p.x = p.x + _SETTINGS->stage.min_obstacle_size / 2;
+//                p.y = p.y + 0.45;//1.95;
+//                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
+//                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
                 break;
             case 2:
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = -1.5;
+//                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
+//                p.y = -1.5;
+
+                while(boundary_cond){
+                    if(p.y < 1.55 && p.x > -1.2 ){
+                        boundary_cond = false;
+                    }else{
+                        static_spawn.getRandomPoint(p);
+                    }
+                }
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                               _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = -1.95;
+                p.x = p.x;//1.5 + _SETTINGS->stage.min_obstacle_size / 2;
+                p.y = p.y+ 0.45;//-1.95;
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                               _SETTINGS->stage.max_obstacle_size / 2, &aabb);
                 break;
@@ -84,20 +105,42 @@ void LevelCustom::reset() {
                 b2Body *b;
                 b = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
                                             _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-//                b->SetTransform(b2Vec2(p.x, p.y), 0);
+                //b->SetTransform(b2Vec2(p.x, p.y), 0);
                 break;
             case 4:
-                p.x = -2.0;
-                p.y = 2.0;
+//                p.x = -2.0;
+//                p.y = 2.0;
+                while(boundary_cond){
+                    if(p.y >  -1 && p.x > -1.4 ){
+                            boundary_cond = false;
+                    }else{
+                        static_spawn.getRandomPoint(p);
+                    }
+                }
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                             _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = -1.55;
-                p.y = 2.0;
+                p.x = p.x - 0.45;
+                p.y = p.y;
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                             _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                break;
+            case 5:
+                b2Body *c;
+                c = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
+                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                //c->SetTransform(b2Vec2(p.x, p.y), 0);
+                break;
+            case 6:
+                b2Body *d;
+                d = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
+                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                //d->SetTransform(b2Vec2(p.x, p.y), 0);
                 break;
         }
     }
+
+
+
     printf(">> goal spawn << \n");
     // spawning dynamic obstacles
     _goalSpawnArea.addQuadTree(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE,
@@ -119,6 +162,8 @@ void LevelCustom::reset() {
             _wanderers.push_back(w);
         }
     }
+
+    //printf("STAGE:%f", _SETTINGS->stage.level_size);
     // adding spawn area
     randomGoalSpawnUntilValid();
 }
