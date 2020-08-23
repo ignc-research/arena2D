@@ -1,6 +1,5 @@
 /* Author: Cornelius Marx */
 #include "Arena.hpp"
-
 void Arena::update()
 {
 	// update key control
@@ -29,12 +28,12 @@ void Arena::update()
 			}
 		}
 		if(action != -1){
-			for(int i = 0; i < _numEnvs; i++){
+			for (int i = 0; i < _numEnvs; i++)
+			{
 				Robot::getActionTwist((Robot::Action)action, _actions[i]);
 			}
 		}
 	}
-
 	int episodes_before = _episodeCount;
 	if(_trainingMode && _pyAgentUsed){
 		_agentMeasure.startTime();
@@ -260,7 +259,11 @@ void Arena::update()
 									ERROR_F("Expected string at first position in tuple %d in returned list from function '%s'!", i, func_name);
 									break;
 								}
+								#ifdef ARENA_PYTHON_VERSION_3
 								names.push_back(PyUnicode_AsUTF8(name));
+								#else
+								names.push_back(PyString_AsString(name));
+								#endif
 							}
 							float fvalue = 0;
 							if(PyFloat_Check(value)) {
@@ -289,3 +292,9 @@ void Arena::update()
 		}
 	}
 }
+#ifdef SUPPORT_ROS_AGENT
+void Arena::rosUpdate(float wait_time=0.0f){
+	if( _ros_node_ptr!= nullptr)
+		_ros_node_ptr->getActions(_actions, wait_time));
+}
+#endif

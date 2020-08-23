@@ -22,6 +22,10 @@
 #include "CSVWriter.hpp"
 #include <Python.h>
 #include <script_sources.generated.h>
+#include <memory>
+#ifdef SUPPORT_ROS_AGENT
+#include "RosNode.hpp"
+#endif
 
 // python callback functions
 enum PyAgentFunction{PYAGENT_FUNC_PRE_STEP, PYAGENT_FUNC_POST_STEP, PYAGENT_FUNC_GET_STATS, PYAGENT_FUNC_STOP, PYAGENT_FUNC_NUM};
@@ -118,7 +122,6 @@ private:
 	/* reset current level in all environments
 	 */
 	void reset();
-
 	/* pack observation of given environment into new PyObject
 	 * @param env_index index of environment to get observations from
 	 * @return new list containing all observations from the environment
@@ -147,7 +150,6 @@ private:
 	 			a single done flag if #envs==1
 	 */
 	PyObject* packAllPyDones();
-
 	/* create directory to put training data (e.g. plots in)
 	 * @param agent_path path to agent script
 	 * @return -1 on error, 0 on success
@@ -187,7 +189,6 @@ private:
 	 * issues command when entered by user
 	 */
 	void updateConsole(zEventList & evtList);
-
 	/* update user/agent robot control
 	 * call agent callbacks in python script
 	 * update physics
@@ -240,6 +241,13 @@ private:
 	 * called if an episode ends
 	 */
 	void printEpisodeResults(float total_reward);
+
+#ifdef SUPPORT_ROS_AGENT
+
+	void rosUpdate(float wait_time);
+
+#endif // SUPPORT_ROS_AGENG
+
 
 	/* regular font */
 	zFont * _monospaceRegular;
@@ -397,6 +405,10 @@ private:
 
 	/* if set to true no training data is recorded*/
 	bool _noTrainingRecord;
+#ifdef SUPPORT_ROS_AGENT
+	std::unique_ptr<RosNode> _ros_node_ptr;
+	bool _use_ros_agent = false;
+#endif // SUPPORT_ROS_AGENT
 };
 
 

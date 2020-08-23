@@ -32,7 +32,7 @@ extern const char * SETTINGS_KEY_NAMES[SETTINGS_KEY_NUM];
 extern const char * SETTINGS_GAMEPAD_BUTTON_NAMES[SETTINGS_GAMEPAD_TOTAL_BUTTON_NUM];// button names in settings file
 extern const char * GAMEPAD_BUTTON_NAMES[SETTINGS_GAMEPAD_TOTAL_BUTTON_NUM];
 extern const char* GAMEPAD_BUTTON_NAME_UNKNOWN;
-
+extern const std::string GLOBAL_PACKAGE_PATH;
 
 #define SETTINGS_TYPE_INT 		0
 #define SETTINGS_TYPE_FLOAT 	1
