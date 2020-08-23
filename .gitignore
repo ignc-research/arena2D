@@ -48,3 +48,6 @@ __pycache__
 # Arena2D
 settings.st
 training_*
+
+# editor related folder
+**/.vscode
