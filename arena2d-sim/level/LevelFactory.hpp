@@ -7,7 +7,8 @@
 
 // include all level classes
 #include "Level.hpp"
-#include "level/LevelRandom.hpp"
+#include "LevelRandom.hpp"
+#include "LevelCustom.hpp"
 
 // singleton-get macro
 #define LEVEL_FACTORY LevelFactory::get()
@@ -72,6 +73,13 @@ public:
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
 		return new LevelRandom(d, level_dynamic);
+	}
+
+	/*custom level */
+	Level* createLevelCustom(const LevelDef & d, const ConsoleParameters & params)
+	{
+		bool level_dynamic = params.getFlag("--dynamic");
+		return new LevelCustom(d, level_dynamic);
 	}
 
 private:
