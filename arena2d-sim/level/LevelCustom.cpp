@@ -8,13 +8,10 @@ void LevelCustom::reset() {
     if (_dynamic)
         freeWanderers();
 
-    printf(">> resetting level custom << \n");
-    printf(">> dynamic = %d << \n", _dynamic);
-
     float half_width = _SETTINGS->stage.level_size / 2.f;
     float half_height = _SETTINGS->stage.level_size / 2.f;
     float half_goal_size = _SETTINGS->stage.goal_size / 2.f;
-    const float dynamic_radius = _SETTINGS->stage.dynamic_obstacle_size / 2.f;
+    const float dynamic_radius = WandererBipedal::getRadius();
     const float dynamic_speed = _SETTINGS->stage.obstacle_speed;
     const int num_dynamic_obstacles = _SETTINGS->stage.num_dynamic_obstacles;
     const float min_obstacle_radius = _SETTINGS->stage.min_obstacle_size / 2;
@@ -102,7 +99,6 @@ void LevelCustom::reset() {
     _goalSpawnArea.calculateArea();
 
     if (_dynamic) {
-        printf(">> resetting level custom -- creating wanderers <<");
         _dynamicSpawn.clear();
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
@@ -110,7 +106,7 @@ void LevelCustom::reset() {
         for (int i = 0; i < num_dynamic_obstacles; i++) {
             b2Vec2 p;
             _dynamicSpawn.getRandomPoint(p);
-            WandererBipedal *w = new WandererBipedal(_levelDef.world, _SETTINGS->stage.goal_size / 2.f, p, dynamic_speed, 0.1, 0.0, 0);
+            WandererBipedal *w = new WandererBipedal(_levelDef.world, p, dynamic_speed, 0.1, 0.05);
             _wanderers.push_back(w);
         }
     }
