@@ -139,6 +139,14 @@ class Agent:
 		return action
 	
 	def post_step(self, new_observation, reward, is_done, mean_reward, mean_success):
+		if(numpy.isnan(reward)):
+			print("reward is nan")
+			return 1
+		for i, obs in enumerate(new_observation):
+			if(numpy.isnan(obs)):
+				print("obs is nan " + str(i))
+				print(new_observation)
+				return 1
 		self.start_gpu_measure()
 		idx = self.frame_idx%MEMORY_SIZE
 		if is_done: # save next state if done, because next pre_step will have different state
