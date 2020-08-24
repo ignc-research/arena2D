@@ -142,6 +142,7 @@ void Environment::step()
 		_trainingSettings.max_time > 0.f && _level != NULL){
 		_reward += _SETTINGS->training.reward_time_out;
 		_episodeState = NEGATIVE_END;
+		_evaluation.countTimeout();
 	}
 }
 
@@ -175,6 +176,9 @@ void Environment::post_step()
 		_reward += _level->getReward();
 	}
 
+	// count number of actions for evaluation and calculate travelled distance
+	_evaluation.countAction(_robot->getBody()->GetTransform());
+
 	// update laser scan
 	_robot->scan();
 
@@ -193,7 +197,11 @@ void Environment::getGoalDistance(float & l2, float & angle)
 }
 
 void Environment::reset()
-{
+{	//reset robot
+	if(_episodeState == NEGATIVE_END){
+		_robot->reset(b2Vec2_zero, ((rand()%1000)/1000.f)*2*M_PI);
+	}
+
 	// reset level
 	if(_level != NULL)
 		_level->reset();
@@ -230,9 +238,17 @@ void Environment::BeginContact(b2Contact * contact){
 			if(other_fix == goal){// goal reached
 				_reward += _SETTINGS->training.reward_goal;
 				_episodeState = POSITIVE_END;
+				_evaluation.countGoal();
+			}
+			else if(_level->checkHumanContact(other_fix)){
+				_reward += _SETTINGS->training.reward_human;
+				//INFO_F("\nHuman reward: %.3f\n", _SETTINGS->training.reward_human);
+				_episodeState = NEGATIVE_END;
+				_evaluation.countHuman();
 			}
 			else if(_robot->beginContact()){// wall hit
 				_reward += _SETTINGS->training.reward_hit;
+				_evaluation.countWall();
 				if(_SETTINGS->training.episode_over_on_hit)
 					_episodeState = NEGATIVE_END;
 			}

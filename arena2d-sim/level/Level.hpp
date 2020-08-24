@@ -90,6 +90,12 @@ public:
 	 */
 	b2Vec2 getGoalPosition(){return (_goal ==  NULL) ? b2Vec2(0,0) : _goal->GetTransform().p;}
 
+	/* check if robot had contact with a human
+ 	 * @return true if contact with human and false otherwise
+	 */
+	virtual bool checkHumanContact(b2Fixture * other_fixture){return false;}
+
+
 protected:
 	/* check whether goal position is such that robot does not touch it initially
 	 * @return true if robot is does not touch the goal

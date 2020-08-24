@@ -4,9 +4,6 @@
 void LevelCustom::reset() {
     // clear old bodies and spawn area
     clear();
-    _dynamic = true;
-    if (_dynamic)
-        freeWanderers();
 
     printf(">> resetting level custom << \n");
     printf(">> dynamic = %d << \n", _dynamic);
@@ -154,13 +151,14 @@ void LevelCustom::reset() {
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
         _dynamicSpawn.calculateArea();
-        for (int i = 0; i < num_dynamic_obstacles; i++) {
-            b2Vec2 p;
-            _dynamicSpawn.getRandomPoint(p);
+        std::vector<b2Vec2> spawn_position;
+		for(int i = 0; i < num_dynamic_obstacles; i++){
+			b2Vec2 p;
+			_dynamicSpawn.getRandomPoint(p);
             printf(">> create wanderer %d << \n", i);
-            WandererBipedal *w = new WandererBipedal(_levelDef.world, _SETTINGS->stage.goal_size / 2.f, p, dynamic_speed, 0.1, 0.0, 0);
-            _wanderers.push_back(w);
-        }
+			spawn_position.push_back(p);
+		}
+		wanderers.reset(spawn_position);
     }
 
     //printf("STAGE:%f", _SETTINGS->stage.level_size);
@@ -277,18 +275,28 @@ LevelCustom::generateRandomBodyVertical(const b2Vec2 &p, float min_radius, float
     return addShape(&shape);
 }
 
-void LevelCustom::freeWanderers() {
-    for (std::list<WandererBipedal *>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++) {
-        delete (*it);
-    }
-    _wanderers.clear();
-}
+float LevelCustom::getReward()
+{
+	float reward = 0;
+	_closestDistance_old.clear();
+	_closestDistance.clear();
+	wanderers.get_old_Distance(_closestDistance_old);
+	wanderers.get_Distance(_closestDistance);
 
-void LevelCustom::update() {
-    for (std::list<WandererBipedal *>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++) {
-        (*it)->update();
-    }
-
+	for(int i = 0; i < _closestDistance_old.size(); i++){
+		float distance_after = _closestDistance[i];
+		float distance_before = _closestDistance_old[i];
+		// checking reward for distance to human decreased/increased
+		if(distance_after < _SETTINGS->training.safety_distance_human){
+			if(distance_after < distance_before){
+				reward += _SETTINGS->training.reward_distance_to_human_decreased;
+			}
+			else if(distance_after > distance_before){
+				reward += _SETTINGS->training.reward_distance_to_human_increased;
+			}
+		}
+	}
+	return reward;
 }
 
 void LevelCustom::renderGoalSpawn() {

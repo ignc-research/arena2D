@@ -129,7 +129,7 @@ void WandererBipedal::updateVelocity()
 
     b2CircleShape circle1;
     float y_val = fmod( _counter,  2*M_PI);
-    printf("y_val : %f", sin(y_val));
+    //printf("y_val : %f", sin(y_val));
     circle1.m_radius = _SETTINGS->stage.goal_size / 2.f;
     circle1.m_p.Set(sin(y_val)*0.1, 0.05);
     b2FixtureDef d1;
@@ -200,7 +200,7 @@ void WandererBipedal::updateVelocity()
 //    }
 //    _counter++;
 
-    printf("calc velocity\n");
+    //printf("calc velocity\n");
     if(f_random() < _stopRate){
         v.Set(0,0);
     }
@@ -214,8 +214,8 @@ void WandererBipedal::updateVelocity()
             v_rot = max_velocity/2 * zVector2D(v.x, v.y).getNormalized();//.getRotated(angle);
         }
     }
-    printf("set velocity\n");
+    //printf("set velocity\n");
     _body1->SetLinearVelocity(b2Vec2(v_rot.x, v_rot.y));
     _body1->SetTransform(_body1->GetPosition(), atan2(v_rot.y,v_rot.x));
-    printf("update DONE\n");
+    //printf("update DONE\n");
 }

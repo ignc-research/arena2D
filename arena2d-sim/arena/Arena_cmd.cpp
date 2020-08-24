@@ -421,6 +421,7 @@ CommandStatus Arena::cmdStartTraining(const ConsoleParameters & params)
 			_trainingMode = true;
 			initializeTraining();
 			INFO("TRAINING MODE. Critical actions performed by user are blocked!");
+			_evaluation.init();
 		}
 	}
 	else{
@@ -480,6 +481,8 @@ CommandStatus Arena::cmdStopTraining(const ConsoleParameters & params)
 				ERROR_F("Failed write '%s': %s", results_path.c_str(), strerror(errno));
 			}
 		}
+		//save evaluation data
+		_evaluation.saveData(); 
 		if(_pyAgentUsed){
 			// throw away last return value
 			Py_XDECREF(ret);

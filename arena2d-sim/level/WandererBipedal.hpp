@@ -40,7 +40,7 @@ public:
 	/* get position
 	 * @return position of wanderer
 	 */
-	const b2Vec2& getPosition1(){return _body1->GetTransform().p;}
+	const b2Vec2& getPosition(){return _body1->GetTransform().p;}
     const b2Vec2& getPosition2(){return _body2->GetTransform().p;}
 
 	/* get type

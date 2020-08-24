@@ -1,25 +1,26 @@
-#ifndef LEVELCUSTOM_H
-#define LEVELCUSTOM_H
+#ifndef LEVELHUMAN_H
+#define LEVELHUMAN_H
 
 #include "Level.hpp"
 #include "Wanderers.hpp"
 
-#define LEVEL_CUSTOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
+#define LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
 
 /* randomly generated level with static obstacles and optional dynamic obstacles */
-class LevelCustom : public Level {
+class LevelHuman : public Level
+{
 public:
-    /* constructor
+	/* constructor
 	 */
-	LevelCustom(const LevelDef & levelDef, bool dynamic = false) : Level(levelDef), _dynamic(dynamic), wanderers(levelDef){
+	LevelHuman(const LevelDef & levelDef, bool dynamic = false) : Level(levelDef), _dynamic(dynamic), wanderers(levelDef){
 		if(_dynamic) wanderers.init();
 	}
 
 	/* destructor
 	 */
-	~LevelCustom(){}
+	~LevelHuman(){}
 
-    /* reset
+	/* reset
 	 */
 	void reset() override;
 
@@ -55,7 +56,8 @@ public:
 	}
 
 private:
-   /* if set to true, create dynamic obstacles (wanderers) in addition to static */
+
+	/* if set to true, create dynamic obstacles (wanderers) in addition to static */
 	bool _dynamic;
 	
 	std::vector<float> _closestDistance; //current distances from robot to closest wanderers
@@ -66,13 +68,6 @@ private:
 
 	/* spawn area for dynamic obstacles */
 	RectSpawn _dynamicSpawn;
-
-    b2Body *
-    generateRandomBodyVertical(const b2Vec2 &position, float min_radius, float max_radius, zRect *aabb);
-
-    b2Body *
-    generateRandomBodyHorizontal(const b2Vec2 &position, float min_radius, float max_radius, zRect *aabb);
-
 };
 
 #endif

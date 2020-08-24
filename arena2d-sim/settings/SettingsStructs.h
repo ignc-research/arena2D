@@ -72,6 +72,13 @@ typedef struct{
 	int num_envs;				// number of parallel environments
 	int num_threads;			// number of threads to run in parallel, if set to -1 number of cpu cores will be detected automatically
 	string agent_class;			// name of class in agent python script
+
+	float reward_human; // reward for hitting a human
+	float safety_distance_human; // safty distance to human, which should be always fullfilled
+	float reward_distance_to_human_decreased; // reward when distance to human decreases
+	float reward_distance_to_human_increased; // reward when distance to human increases
+	int num_obs_humans; // maximum number of humans the agent can deal with
+	int do_evaluation;
 }f_trainingSettings;
 
 typedef struct{
@@ -101,6 +108,8 @@ typedef struct{
 	f_twist strong_left_speed;	// velocity for strong left action
 	f_twist strong_right_speed; // velocity for strong right action
 	f_twist backward_speed;		// velocity for backward action
+
+	float camera_angle;			// camera view in degree
 }f_robotSettings;
 
 

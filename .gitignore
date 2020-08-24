@@ -48,3 +48,7 @@ __pycache__
 # Arena2D
 settings.st
 training_*
+
+#vscode
+.vscode/
+

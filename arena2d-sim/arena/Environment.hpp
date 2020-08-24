@@ -11,6 +11,9 @@
 #include "ConsoleParameters.hpp"
 #include <level/LevelFactory.hpp>
 
+#include "Evaluation.hpp"
+extern Evaluation _evaluation;
+
 /* forward declaration */
 class Environment;
 
