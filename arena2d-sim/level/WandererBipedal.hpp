@@ -91,6 +91,10 @@ protected:
     std::time_t last_time;
 
     static void updateFixtureTask(b2Body *body);
+
+	// Legposture parameter
+	double step_frequency_factor;
+	double step_width_factor;
 };
 
 #endif
