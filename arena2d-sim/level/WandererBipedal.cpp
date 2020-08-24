@@ -73,6 +73,9 @@ WandererBipedal::WandererBipedal(b2World * w, float radius, const b2Vec2 & posit
     _body1->CreateFixture(&d2);
     printf("Wanderer: created \n");
 
+    step_frequency_factor = 0.02;
+    step_width_factor = 0.1;
+
 //    b2DistanceJointDef *distance_Joint = new b2DistanceJointDef();
 //    distance_Joint->bodyA = _body1;
 //    distance_Joint->bodyB = _body2;
@@ -108,19 +111,10 @@ WandererBipedal::~WandererBipedal()
 
 void WandererBipedal::update()
 {
-	if(f_random() < _changeRate)
-		updateVelocity();
-}
-
-void WandererBipedal::updateVelocity()
-{
-    float max_angle = f_rad(30);
-    float max_velocity = _velocity;
-    b2Vec2 v = _body1->GetLinearVelocity();
-    float angle;
-    zVector2D v_rot;
-
-
+    // Update Leg posture
+    // b2Vec2 v = _body1->GetLinearVelocity();
+    // step_width_factor = v.Normalize();
+    
     b2Fixture *fixOld1 = _body1->GetFixtureList();
     _body1->DestroyFixture(fixOld1);
     fixOld1 = _body1->GetFixtureList();
@@ -131,7 +125,7 @@ void WandererBipedal::updateVelocity()
     float y_val = fmod( _counter,  2*M_PI);
     //printf("y_val : %f", sin(y_val));
     circle1.m_radius = _SETTINGS->stage.goal_size / 2.f;
-    circle1.m_p.Set(sin(y_val)*0.1, 0.05);
+    circle1.m_p.Set(sin(y_val)*step_width_factor, 0.05);
     b2FixtureDef d1;
     d1.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
     d1.friction = 1;
@@ -140,7 +134,7 @@ void WandererBipedal::updateVelocity()
     d1.shape = &circle1;
     b2CircleShape circle2;
     circle2.m_radius = _SETTINGS->stage.goal_size / 2.f;
-    circle2.m_p.Set(sin(y_val+ M_PI)*0.1, -0.05);
+    circle2.m_p.Set(sin(y_val+ M_PI)*step_width_factor, -0.05);
     b2FixtureDef d2;
     d2.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
     d2.friction = 1;
@@ -152,8 +146,22 @@ void WandererBipedal::updateVelocity()
     if(_counter > 100*M_PI){
         _counter = 0;
     }else{
-        _counter = _counter + 0.3;
+        _counter = _counter + step_frequency_factor;
     }
+
+	updateVelocity();
+}
+
+void WandererBipedal::updateVelocity()
+{
+    float max_angle = f_rad(30);
+    float max_velocity = _velocity;
+    b2Vec2 v = _body1->GetLinearVelocity();
+    float angle;
+    zVector2D v_rot;
+
+
+    
 
     //if (_counter %7 < 4){
 //        b2CircleShape circle1;
