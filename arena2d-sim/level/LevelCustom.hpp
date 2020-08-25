@@ -20,8 +20,8 @@ public:
 	~LevelCustom(){}
 
     /* reset
-	 */
-	void reset() override;
+     */
+    void reset(bool robot_position_reset) override;
 
 	/* update
 	 */

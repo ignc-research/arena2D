@@ -120,7 +120,7 @@ private:
 
 	/* reset current level in all environments
 	 */
-	void reset();
+	void reset(bool robot_position_reset);
 
 	/* pack observation of given environment into new PyObject
 	 * @param env_index index of environment to get observations from

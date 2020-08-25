@@ -1,18 +1,15 @@
 #include "LevelCustom.hpp"
 
 
-void LevelCustom::reset() {
+void LevelCustom::reset(bool robot_position_reset) {
     // clear old bodies and spawn area
     clear();
-
-    printf(">> resetting level custom << \n");
-    printf(">> dynamic = %d << \n", _dynamic);
 
     float half_width = _SETTINGS->stage.level_size / 2.f;
 
     float half_height = _SETTINGS->stage.level_size / 2.f;
     float half_goal_size = _SETTINGS->stage.goal_size / 2.f;
-    const float dynamic_radius = _SETTINGS->stage.dynamic_obstacle_size / 2.f;
+    const float dynamic_radius = WandererBipedal::getRadius();
     const float dynamic_speed = _SETTINGS->stage.obstacle_speed;
     const int num_dynamic_obstacles = _SETTINGS->stage.num_dynamic_obstacles;
     const float min_obstacle_radius = _SETTINGS->stage.min_obstacle_size / 2;
@@ -22,7 +19,10 @@ void LevelCustom::reset() {
 
     int num_obstacles = 5;
 
-    printf(">> create border << \n");
+    if(robot_position_reset){
+        resetRobotToCenter();
+    }
+
     createBorder(half_width, half_height);
 
     RectSpawn static_spawn;
@@ -146,7 +146,6 @@ void LevelCustom::reset() {
 
     printf(">> check dynamic << \n");
     if (_dynamic) {
-        printf(">> create wanderers << \n");
         _dynamicSpawn.clear();
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);

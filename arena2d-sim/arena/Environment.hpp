@@ -101,8 +101,9 @@ public:
 	void EndContact(b2Contact * contact) override;
 
 	/* reset environment
+	 * @param robot_position_reset passed to level reset function
 	 */
-	void reset();
+	void reset(bool robot_position_reset);
 
 	/* fetch local copy of global training and physics settings 
 	 * this is done if user changes settings during runtime 
