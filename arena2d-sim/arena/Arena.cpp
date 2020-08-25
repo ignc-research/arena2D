@@ -148,7 +148,7 @@ int Arena::init(int argc, char **argv)
 
 		INFO("Loading Fonts...");
 
-		std::string dir = GLOBAL_PACKAGE_PATH+"/data/fonts/";
+		std::string dir = GLOBAL_PACKAGE_PATH + "/data/fonts/";
 		std::string sys_dir = "/usr/share/fonts/TTF/";
 		std::string font_regular_name = "Bitstream_Regular.ttf";
 		std::string font_bold_name = "Bitstream_Bold.ttf";
@@ -374,8 +374,12 @@ int Arena::init(int argc, char **argv)
 	_playSimulation = false;
 
 #ifdef SUPPORT_ROS_AGENT
-	if(_use_ros_agent)
-		_ros_node_ptr = std::unique_ptr<RosNode>(new RosNode(_numEnvs, ros_argc, ros_argv.data()));
+	if (_use_ros_agent)
+	{
+		_ros_node_ptr = std::unique_ptr<RosNode>(new RosNode(_envs, _numEnvs, ros_argc, ros_argv.data()));
+		INFO("Arena2d simulator is ready");
+		INFO("Waiting for ros connection from ros_agent ......");
+	}
 	else
 	{
 		_ros_node_ptr = nullptr;
@@ -660,9 +664,12 @@ void Arena::run()
 				_videoTimer.update(false);
 			}
 #ifdef SUPPORT_ROS_AGENT
-			if(_use_ros_agent){
+			if (_use_ros_agent)
+			{
 				rosUpdate(0.0f);
-			}else{
+			}
+			else
+			{
 				update();
 			}
 #else
@@ -679,9 +686,12 @@ void Arena::run()
 			_updateTimer.setTargetFPS(_SETTINGS->physics.fps);
 			_physicsTimer.setTargetFPS(_SETTINGS->physics.fps);
 #ifdef SUPPORT_ROS_AGENT
-			if(_use_ros_agent){
-				rosUpdate(0.1f); // main thread will try to invoke the callbacks every .1f second 
-			}else{
+			if (_use_ros_agent)
+			{
+				rosUpdate(0.1f); // main thread will try to invoke the callbacks every .1f second
+			}
+			else
+			{
 				update();
 			}
 #else
