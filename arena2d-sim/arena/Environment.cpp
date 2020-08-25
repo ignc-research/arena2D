@@ -194,6 +194,11 @@ void Environment::getGoalDistance(float & l2, float & angle)
 
 void Environment::reset()
 {
+	
+	//reset robot
+    if(_episodeState == NEGATIVE_END){
+        _robot->reset(b2Vec2_zero, ((rand()%1000)/1000.f)*2*M_PI);
+    
 	// reset level
 	if(_level != NULL)
 		_level->reset();
