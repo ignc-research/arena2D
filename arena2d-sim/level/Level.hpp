@@ -54,9 +54,9 @@ public:
 	virtual void spawnGoal(const b2Vec2 & pos);
 
 	/* reset level, always called before the start of a new episode
-	 * @param hard_reset if set to false, robot_position is expected to not change for the new level configuration (if possible)
+	 * @param robot_position_reset if set to false, robot_position is expected to not change for the new level configuration (if possible)
 	 */
-	virtual void reset(){ randomGoalSpawnUntilValid();}
+	virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();}
 
 	/* called for every frame to be drawn on the screen
 	 * use this function for additional visualizations
@@ -151,6 +151,10 @@ protected:
 	 * @return static body 
 	 */
 	b2Body* addShape(const std::vector<b2Shape*> shapes);
+
+	/* reset robot position to (0,0) with random orientation
+	 */
+	void resetRobotToCenter(){_levelDef.robot->reset(b2Vec2_zero, f_frandomRange(0, 2*M_PI));}
 
 	/* destroy all bodies in _bodyList and clear list, clears goal spawn area
 	 */
