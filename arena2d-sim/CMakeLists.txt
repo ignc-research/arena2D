@@ -33,6 +33,7 @@ if(SUPPORT_ROS_AGENT)
 	rospy
 	std_msgs
 	sensor_msgs
+	arena2d_msgs
 	message_generation
 	rostest
 	roslaunch)
@@ -50,8 +51,10 @@ if(SUPPORT_ROS_AGENT)
 	catkin_package(
 		#  INCLUDE_DIRS include
 		#  LIBRARIES arena2d
-		CATKIN_DEPENDS
-			message_runtime # necessary for using package defined msgs and srvs.
+		CATKIN_DEPENDS # necessary for using package defined msgs and srvs.
+			message_runtime
+			sensor_msgs 
+			arena2d_msgs
 		)
 	
 endif()
