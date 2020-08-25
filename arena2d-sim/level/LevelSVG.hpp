@@ -14,10 +14,11 @@ public:
 	LevelSVG(const LevelDef &);
 	~LevelSVG();
 
-	void reset() override;
+	void reset(bool robot_position_reset) override;
 
 	void renderGoalSpawn()override;
 private:
+	void resetRobot();
 	void loadFile(int index);
 	std::vector<SVGFile*> _files;
 

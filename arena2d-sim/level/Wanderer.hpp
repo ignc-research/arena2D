@@ -4,6 +4,7 @@
 #include <arena/PhysicsWorld.hpp>
 #include <engine/zVector2d.hpp>
 
+
 /* A Wanderer is a dynamic obstacle that 'wanders' around randomly at a constant speed
  * The userData field of the Box2D body of an object of the Wanderer class will be set to 'this',
  * which may be used to retrieve the corresponding Wanderer-object when checking for collisions etc.
@@ -17,16 +18,17 @@ public:
 	 * @param velocity the velocity with which to move
 	 * @param change_rate probabililty of changing the velocity on a call of update()
 	 * @param stop_rate probability of stopping when changing velocity (-> change_rate*stop_rate is the probability of stopping on a call of update())
+	 * @param max_angle_velo maximum +/- angle velocity in deg when changing direction
 	 * @param type user defined object type to identify wanderer later
 	 */
-	Wanderer(b2World * w, float radius, const b2Vec2 & position,
-				float velocity, float change_rate, float stop_rate, unsigned int type = 0);
+	Wanderer(b2World * w, const b2Vec2 & position, float velocity,
+				float change_rate, float stop_rate, float max_angle_velo = 30.0f, unsigned int type = 0);
 
 	/* destructor, removes body from world
 	 */
 	virtual ~Wanderer();
 
-	/* updates velocity accoriding to change/stop rate
+	/* updates velocity according to change/stop rate
 	 */
 	virtual void update();
 
@@ -49,13 +51,14 @@ public:
 	 * @return body
 	 */
 	b2Body* getBody(){return _body;}
-	
-	/* get radius
-	 * @return radius of the circular body
-	 */
-	float getRadius(){return _radius;}
 
+	/* add circle fixture to physics body
+	 * @param pos relative position of circle center to body origin
+	 * @param radius radius of circle
+	 */
+	void addCircle(float radius, const b2Vec2 & pos = b2Vec2_zero);
 protected:
+
 	/* update velocity
 	 * this function is called in update() if a randomly sampled value [0, 1] is less than the change rate
 	 */
@@ -70,11 +73,11 @@ protected:
 	/* [0, 1] how often to change velocity */
 	float _changeRate;
 
+	/* */
+	float _maxAngleVel;
+
 	/* [0, 1] how likely velocity is set to 0 on change */
 	float _stopRate;
-
-	/* body radius */
-	float _radius;
 
 	/* wanderer type (specified by user) */
 	unsigned int _type;
