@@ -25,6 +25,7 @@
 
 #include "b2_settings.h"
 #include <math.h>
+#include <stdio.h>
 
 /// This function is used to ensure that a floating point number is not a NaN or infinity.
 inline bool b2IsValid(float x)
@@ -579,6 +580,12 @@ inline b2Vec2 b2MulT(const b2Transform& T, const b2Vec2& v)
 	float py = v.y - T.p.y;
 	float x = (T.q.c * px + T.q.s * py);
 	float y = (-T.q.s * px + T.q.c * py);
+	if(std::isnan(x) || std::isnan(y)){
+		printf("\nERROR: Robot transform position: %.1f, %.1f\n", T.p.x, T.p.y);
+		printf("\nERROR: Goal position v: %.1f, %.1f\n", v.x, v.y);
+		printf("\nERROR: Robot transform orientation: %.1f, %.1f\n", T.q.c, T.q.s);
+		printf("\nERROR: New x and y: %.1f, %.1f\n", x, y);
+	}
 
 	return b2Vec2(x, y);
 }

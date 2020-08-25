@@ -28,17 +28,10 @@ PyObject* Arena::packPyObservation(int env_index)
 	_envs[env_index].getGoalDistance(distance, angle);
 	PyList_SET_ITEM(obs, 0, PyFloat_FromDouble(distance));
 	PyList_SET_ITEM(obs, 1, PyFloat_FromDouble(angle));
-	if(distance < 0 || distance > 10 || angle < -360 || angle > 360){
-			INFO_F("\nERROR: distance: %.1f\n", distance);
-			INFO_F("\nERROR: Goal position 2: %.1f\n", angle);
-	}
 
 	// pack laser samples
 	for(int i = 0; i < num_samples; i++){
 		PyList_SET_ITEM(obs, 2+i, PyFloat_FromDouble(laser_data[i]));
-		if(laser_data[i] < 0 || laser_data[i] > 10){
-			INFO_F("\nERROR: laser_data [%d]: %.1f\n", i, laser_data[i]);
-		}
 	}
 
 	// pack additional data

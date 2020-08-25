@@ -192,12 +192,12 @@ void Environment::getGoalDistance(float & l2, float & angle)
 		b2Vec2 goal_pos = _level->getGoalPosition();
 		b2Vec2 goal_pos_2 = _robot->getBody()->GetLocalPoint(goal_pos);
 		l2 = goal_pos_2.Length();
-		if(l2 < 0 || l2 > 10){
+		if(std::isnan(l2)){
 			INFO_F("\nERROR: Goal position: %.1f, %.1f\n", goal_pos.x, goal_pos.y);
 			INFO_F("\nERROR: Goal position 2: %.1f, %.1f\n", goal_pos_2.x, goal_pos_2.y);
 			INFO_F("\nERROR: Lenght l2: %.1f\n", l2);
 		}
-		angle = f_deg(zVector2D::signedAngle(zVector2D(0, 1), zVector2D(goal_pos.x, goal_pos.y)));
+		angle = f_deg(zVector2D::signedAngle(zVector2D(0, 1), zVector2D(goal_pos_2.x, goal_pos_2.y)));
 	}
 }
 
