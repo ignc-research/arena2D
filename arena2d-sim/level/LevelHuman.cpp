@@ -1,6 +1,6 @@
 #include "LevelHuman.hpp"
 
-void LevelHuman::reset()
+void LevelHuman::reset(bool robot_position_reset)
 {
 	// clear old bodies and spawn area
 	clear();
@@ -20,6 +20,10 @@ void LevelHuman::reset()
 
 	// create border around level
 	createBorder(half_width, half_height);
+
+	if(robot_position_reset){
+		resetRobotToCenter();
+	}
 
 	// calculate spawn area for static obstacles
 	RectSpawn static_spawn;

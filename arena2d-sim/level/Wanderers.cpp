@@ -3,9 +3,9 @@
 void Wanderers::init(){
     // adding a human wanderers
     for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
-        _wanderers.push_back(new WandererBipedal(_levelDef.world, _SETTINGS->stage.dynamic_obstacle_size/2.0f,
-                                        b2Vec2(i-1,-1), _SETTINGS->stage.obstacle_speed,
-                                        0.1, 0.0, WANDERER_ID_HUMAN));
+        _wanderers.push_back(new WandererBipedal(_levelDef.world, b2Vec2(i-1,-1), 
+                                                _SETTINGS->stage.obstacle_speed,
+                                                0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
     }
 
     /*
