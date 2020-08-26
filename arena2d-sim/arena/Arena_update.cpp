@@ -368,6 +368,11 @@ void Arena::rosUpdate(float wait_time = 0.0f)
 	{
 		return;
 	}
+	else if (s == RosNode::Status::SIM_CLOSE)
+	{
+		cmdStopTraining(ConsoleParameters(0, NULL));
+		INFO("Training done!");
+	}
 	else if (s == RosNode::Status::ALL_ENV_RESET)
 	{
 		for (int i = 0; i < _numEnvs; i++)

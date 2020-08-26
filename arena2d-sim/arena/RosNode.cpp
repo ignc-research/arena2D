@@ -79,6 +79,9 @@ void RosNode::publishStates(const bool* dones , float mean_reward , float mean_s
 
 void RosNode::_RosAgentReqCallback(const arena2d_msgs::RosAgentReq::ConstPtr &req_msg, int idx_action)
 {
+    if(req_msg->arena2d_sim_close){
+        m_sim_close = true;
+    }
     if (req_msg->env_reset == 1)
     {
         m_num_env_reset++;
@@ -91,6 +94,7 @@ void RosNode::_RosAgentReqCallback(const arena2d_msgs::RosAgentReq::ConstPtr &re
         ROS_DEBUG_STREAM("env " << idx_action << " message received");
     }
     m_num_ros_agent_req_msgs_received++;
+    
 }
 
 RosNode::Status RosNode::getActions(Twist *robot_Twist, float waitTime = 0)
@@ -125,6 +129,9 @@ RosNode::Status RosNode::getActions(Twist *robot_Twist, float waitTime = 0)
     }
     else
     {
+        if(m_sim_close){
+            return RosNode::Status::SIM_CLOSE;
+        }
         return RosNode::Status::NOT_ALL_AGENT_MSG_RECEIVED;
     }
 }

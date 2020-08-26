@@ -24,7 +24,8 @@ private:
     int m_num_envs;
     std::unique_ptr<ros::NodeHandle> m_nh_ptr;
     size_t m_num_ros_agent_req_msgs_received; // request messages are received by different topic name and they will temporary saved in the buffer. only this variable is equal to the number to the envirments, the contents in the buffer can be synchronized with the Buffer in Arena.
-    size_t m_num_env_reset; 
+    size_t m_num_env_reset;
+    bool m_sim_close; // if true, close the simulator 
     Environment* m_envs;
 
 public:
@@ -33,6 +34,7 @@ public:
         NOT_ALL_AGENT_MSG_RECEIVED,
         ALL_AGENT_MSG_RECEIVED,
         ALL_ENV_RESET,
+        SIM_CLOSE,
         BAD_MESSAGE
     };
     RosNode(Environment* envs,int num_envs, int argc, char **argv);
