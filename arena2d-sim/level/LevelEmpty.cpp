@@ -12,3 +12,12 @@ LevelEmpty::LevelEmpty(const LevelDef & d, bool create_borders): Level(d){
 	_goalSpawnArea.addQuadTree(	area, _levelDef.world, COLLIDE_CATEGORY_STAGE, 0.1, margin);
 	_goalSpawnArea.calculateArea();
 }
+
+
+void LevelEmpty::reset(bool robot_position_reset)
+{
+	if(robot_position_reset){
+		resetRobotToCenter();
+	}
+	randomGoalSpawnUntilValid();
+}

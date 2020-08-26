@@ -254,7 +254,7 @@ void Arena::update()
 				if (s != Environment::RUNNING)
 				{
 					_levelResetMeasure.startTime();
-					_envs[i].reset();
+					_envs[i].reset(false);
 					_levelResetMeasure.endTime();
 				}
 			}

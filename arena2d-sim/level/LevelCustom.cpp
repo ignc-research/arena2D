@@ -1,7 +1,7 @@
 #include "LevelCustom.hpp"
 
 
-void LevelCustom::reset() {
+void LevelCustom::reset(bool robot_position_reset) {
     // clear old bodies and spawn area
     clear();
     _dynamic = true;
@@ -20,6 +20,10 @@ void LevelCustom::reset() {
     const zRect big_main_rect(0, 0, half_width + max_obstacle_radius, half_height + max_obstacle_radius);
 
     int num_obstacles = 8;
+
+    if(robot_position_reset){
+        resetRobotToCenter();
+    }
 
     createBorder(half_width, half_height);
 

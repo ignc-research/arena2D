@@ -519,12 +519,11 @@ void Arena::quit()
 	Z_LOG->del();
 }
 
-void Arena::reset()
-{
-	for (int i = 0; i < _numEnvs; i++)
+void Arena::reset(bool robot_position_reset){
+	for(int i = 0; i < _numEnvs; i++)
 	{
 		_levelResetMeasure.startTime();
-		_envs[i].reset();
+		_envs[i].reset(robot_position_reset);
 		_levelResetMeasure.endTime();
 	}
 
