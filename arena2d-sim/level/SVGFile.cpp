@@ -108,12 +108,12 @@ int SVGFile::load()
 							rv.y = atof(atr_str)*SVG_SCALE;
 
 						b2CircleShape * shape = new b2CircleShape();
-						t.transform(rv, 0);
 						global_transform.transform(rv, 0);
+						t.transform(rv, 0);
 						shape->m_radius = f_fmin(fabs(rv.x), fabs(rv.y));
 						shape->m_p.Set(x-_width/2.f, y+_height/2.f);
-						t.transform(shape->m_p, 1);
 						global_transform.transform(shape->m_p, 1);
+						t.transform(shape->m_p, 1);
 						_shapes.push_back(shape);
 					}
 					else{// polygon
