@@ -17,9 +17,20 @@ public:
 	/* destructor */
 	~WandererBipedal(){}
 
+	void update() override;
+
 	/* return radius of circle surrounding all fixtures
 	 */
 	static float getRadius(){return (HUMAN_LEG_DISTANCE+2*HUMAN_LEG_SIZE)/2.f;}
+
+protected:
+	void updateVelocity();
+
+	float _counter;
+
+	// Legposture parameter
+	double step_frequency_factor;
+	double step_width_factor;
 };
 
 #endif
