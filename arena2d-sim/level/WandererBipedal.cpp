@@ -47,7 +47,7 @@ void WandererBipedal::updateVelocity()
     float max_velocity = _velocity;
     b2Vec2 v = _body->GetLinearVelocity();
     float angle;
-    zVector2D v_rot;
+    zVector2D v_rot = zVector2D(v.x, v.y);
 
     printf("calc velocity\n");
     if(f_random() < _stopRate){
@@ -59,15 +59,31 @@ void WandererBipedal::updateVelocity()
         if(v == b2Vec2_zero){
             printf("is b2Vec2 zero\n");
 
-            angle = 2*M_PI*f_random();
-            v_rot = zVector2D(max_velocity/2, 0);//.getRotated(angle);
+            float sign = 1;
+            if(rand()%2 == 0) sign = -1;
+
+            v_rot = zVector2D(sign* (max_velocity/2), 0);//.getRotated(angle);
         }
         else{
             printf("set velocity else\n");
 
             angle = (max_angle*2*f_random())-max_angle;
-            v_rot = max_velocity/2 * zVector2D(v.x, v.y).getNormalized();
+//            v_rot = max_velocity y/2 * zVector2D(v.x, v.y).getNormalized();
+            float x = 0;
+            float y = 0;
+            if (v.x < 0 ) {
+                x = -max_velocity/2;
+            } else {
+                x = max_velocity/2;
+            }
+            y = v.y;
+
+            if(rand()%5 == 0) y * 0.023;
+            if(rand()%7 == 0) y * -0.023;
+
+            v_rot = zVector2D(x, y);
         }
+        v.Set(v_rot.x, v_rot.y);
     }
     printf("set velocity\n");
     _body->SetLinearVelocity(b2Vec2(v_rot.x, v_rot.y));
