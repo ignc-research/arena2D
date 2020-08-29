@@ -62,7 +62,7 @@ protected:
 	/* update velocity
 	 * this function is called in update() if a randomly sampled value [0, 1] is less than the change rate
 	 */
-	void updateVelocity();
+	virtual void updateVelocity();
 	
 	/* Box2D body */
 	b2Body * _body;
