@@ -8,7 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 import numpy
 import time
 
-NUM_ACTIONS = 6 # discrete actions
+NUM_ACTIONS = 5 # discrete actions
 
 ### Hyper Parameters
 GAMMA = 0.95			# discount factor

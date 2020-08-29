@@ -1,110 +1,30 @@
 #include "WandererBipedal.hpp"
 #include "math.h"
 
-WandererBipedal::WandererBipedal(b2World * w, float radius, const b2Vec2 & position,
-					float velocity, float change_rate, float stop_rate, unsigned int type)
+WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
+					float velocity, float change_rate, float stop_rate, float max_angle_change, unsigned int type):
+					Wanderer(w, position, velocity, change_rate, stop_rate, max_angle_change, type)
 {
-    printf("Wanderer: init values \n");
-	_velocity = velocity;
-	_changeRate = change_rate;
-	_stopRate = stop_rate;
-	_type = type;
-	_radius = radius;
-
-    printf("Wanderer create body \n");
-	// creating body
-	b2BodyDef body_def1;
-	body_def1.type = b2_dynamicBody;
-	body_def1.allowSleep = false;
-    b2Vec2 position1 = position;
-	body_def1.position = position1;
-	body_def1.linearDamping = 0;
-	body_def1.angularDamping = 0;
-	body_def1.angularVelocity = 0;
-	body_def1.fixedRotation = false;
-	body_def1.angle = 0;
-	body_def1.userData = (void*)this;
-	_body1 = w->CreateBody(&body_def1);
-
-//
-//    b2BodyDef body_def2;
-//    body_def2.type = b2_dynamicBody;
-//    body_def2.allowSleep = false;
-//    b2Vec2 position2 = position;
-//    position2.x -= 0.1;
-//    body_def2.position = position2;
-//    body_def2.linearDamping = 0;
-//    body_def2.angularDamping = 0;
-//    body_def2.userData = (void*)this;
-//	_body2 = w->CreateBody(&body_def2); ;
-
-
-//    b2CircleShape circle2;
-//    circle2.m_radius = radius;
-//    circle2.m_p.Set(radius+0.025,0);
-//    b2FixtureDef d2;
-//    d2.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
-//    d2.friction = 1;
-//    d2.restitution = 0;
-//    d2.density = 1;
-//    d2.shape = &circle2;
-//
-    printf("Wanderer: create fixture defs \n");
-    b2CircleShape circle1;
-    circle1.m_radius = _SETTINGS->stage.goal_size / 2.f;
-    circle1.m_p.Set(0.05,0.1);
-    b2FixtureDef d1;
-    d1.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
-    d1.friction = 1;
-    d1.restitution = 0;
-    d1.density = 1;
-    d1.shape = &circle1;
-    b2CircleShape circle2;
-    circle2.m_radius = _SETTINGS->stage.goal_size / 2.f;
-    circle2.m_p.Set(-0.05,-0.1);
-    b2FixtureDef d2;
-    d2.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
-    d2.friction = 1;
-    d2.restitution = 0;
-    d2.density = 1;
-    d2.shape = &circle2;
-    printf("Wanderer: create fixtures \n");
-    _body1->CreateFixture(&d1);
-    _body1->CreateFixture(&d2);
-    printf("Wanderer: created \n");
-
-    step_frequency_factor = 0.02;
-    step_width_factor = 0.1;
-
-//    b2DistanceJointDef *distance_Joint = new b2DistanceJointDef();
-//    distance_Joint->bodyA = _body1;
-//    distance_Joint->bodyB = _body2;
-//    distance_Joint->length = 0.2;
-//    distance_Joint->frequencyHz= 0.5;
-//    distance_Joint->dampingRatio= 0;
-//    distance_Joint->collideConnected = false;
-//    w->CreateJoint(distance_Joint);
-
-    updateVelocity();
+	float r = HUMAN_LEG_SIZE/2.f;
+	float offset = HUMAN_LEG_DISTANCE/2.0f;
+	addCircle(r, b2Vec2(offset+r, 0));
+	addCircle(r, b2Vec2(-offset-r, 0));
 }
-
-
-
 void WandererBipedal::reset(const b2Vec2 & position)
 {
-	_body1->SetTransform(position, 0);
-	_body1->SetLinearVelocity(b2Vec2_zero);
-	_body1->SetAngularVelocity(0);
+    _body1->SetTransform(position, 0);
+    _body1->SetLinearVelocity(b2Vec2_zero);
+    _body1->SetAngularVelocity(0);
 //    _body2->SetTransform(position, 0);
 //    _body2->SetLinearVelocity(b2Vec2_zero);
 //    _body2->SetAngularVelocity(0);
-	updateVelocity();
+    updateVelocity();
 }
 
 WandererBipedal::~WandererBipedal()
 {
-	_body1->GetWorld()->DestroyBody(_body1);
-	_body1 = NULL;
+    _body1->GetWorld()->DestroyBody(_body1);
+    _body1 = NULL;
 //    _body2->GetWorld()->DestroyBody(_body2);
 //    _body2 = NULL;
 }
@@ -114,7 +34,7 @@ void WandererBipedal::update()
     // Update Leg posture
     // b2Vec2 v = _body1->GetLinearVelocity();
     // step_width_factor = v.Normalize();
-    
+
     b2Fixture *fixOld1 = _body1->GetFixtureList();
     _body1->DestroyFixture(fixOld1);
     fixOld1 = _body1->GetFixtureList();
@@ -149,7 +69,7 @@ void WandererBipedal::update()
         _counter = _counter + step_frequency_factor;
     }
 
-	updateVelocity();
+    updateVelocity();
 }
 
 void WandererBipedal::updateVelocity()
@@ -161,7 +81,7 @@ void WandererBipedal::updateVelocity()
     zVector2D v_rot;
 
 
-    
+
 
     //if (_counter %7 < 4){
 //        b2CircleShape circle1;
