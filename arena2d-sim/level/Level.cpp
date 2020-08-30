@@ -108,6 +108,32 @@ b2Body* Level::addShape(const std::vector<b2Shape*> shapes)
 	return body;
 }
 
+void Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p){
+    bool spawn_found = false;
+    printf("obstacleSpawnUntilValid\n");
+    int count = 0;
+    while(!spawn_found && count < 50){
+        count++;
+        spawn_found = true;
+        static_spawn->getRandomPoint(p);
+        bool boundary_cond = true;
+        while(boundary_cond){
+            if(p.y < 1.55 && p.x > -1.2 && p.y >  -1 && p.x > -1.4){
+                boundary_cond = false;
+            }else{
+                static_spawn->getRandomPoint(p);
+            }
+        }
+        for (auto & existing_position : existing_positions) {
+            b2Vec2 posi(existing_position->x, existing_position->y);
+            if((posi - p).Length() < _SETTINGS->stage.max_obstacle_size ){
+                spawn_found = false;
+                break;
+            }
+        }
+    }
+}
+
 void Level::randomGoalSpawnUntilValid(RectSpawn * goal_spawn)
 {
 	RectSpawn * spawn = &_goalSpawnArea;

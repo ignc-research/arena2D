@@ -34,127 +34,84 @@ void LevelCustom::reset(bool robot_position_reset) {
     std::vector <zRect> robot_hole(1);
     std::vector <zRect> holes(num_obstacles);
 
+    std::list<b2Vec2*> existing_positions;
     for (int i = 0; i < num_obstacles; i++) {
+        //static_spawn.getRandomPoint(p);
         b2Vec2 p;
-        static_spawn.getRandomPoint(p);
         zRect aabb;
         //b2Body *b;
+        obstacleSpawnUntilValid(&static_spawn, existing_positions, p);
+        printf("obstacle point found\n");
         int randomNumber = (rand() % 6);
         bool boundary_cond = true;
         switch (randomNumber) {
             case 0:
-                b2Body *e;
-                e = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                //d->SetTransform(b2Vec2(p.x, p.y), 0);
-                break;
-//                p.x = p.x;// -0.5;
-//                p.y = p.y;//-0.5;
-//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-//                p.x = p.x-0.45;//-0.95;
-//                p.y = p.y;//-0.5;
-//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                break;
             case 1:
-
-                b2Body *f;
-                f = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
+            case 3:
+            case 5:
+            case 6:
+                addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
                                    _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                //b->SetTransform(b2Vec2(p.x, p.y), 0);
-                break;
-//                p.x;// 1.5;
-//                p.y;// = 1.5;
-//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-//                p.x = p.x + 0.45;
-//                p.y ;//1.5;
-//                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-//                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-//                p.x = p.x - 0.45 + _SETTINGS->stage.min_obstacle_size / 2;
-//                p.y = p.y;
-//                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-//                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-//                p.x = p.x + _SETTINGS->stage.min_obstacle_size / 2;
-//                p.y = p.y + 0.45;//1.95;
-//                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-//                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                ;
+                printf("obstacle point added randomShape\n");
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
                 break;
             case 2:
-//                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-//                p.y = -1.5;
-
-                while(boundary_cond){
-                    if(p.y < 1.55 && p.x > -1.2 ){
-                        boundary_cond = false;
-                    }else{
-                        static_spawn.getRandomPoint(p);
-                    }
-                }
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                               _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                printf("obstacle point added horizontal 1\n");
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
+
                 p.x = p.x;//1.5 + _SETTINGS->stage.min_obstacle_size / 2;
                 p.y = p.y+ 0.45;//-1.95;
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                               _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                break;
-            case 3:
-                b2Body *b;
-                b = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                //b->SetTransform(b2Vec2(p.x, p.y), 0);
+                printf("obstacle point added horizontal 2\n");
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
+
                 break;
             case 4:
-//                p.x = -2.0;
-//                p.y = 2.0;
-                while(boundary_cond){
-                    if(p.y >  -1 && p.x > -1.4 ){
-                            boundary_cond = false;
-                    }else{
-                        static_spawn.getRandomPoint(p);
-                    }
-                }
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                             _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                printf("obstacle point added vertical 1\n");
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
+
                 p.x = p.x - 0.45;
                 p.y = p.y;
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                             _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                break;
-            case 5:
-                b2Body *c;
-                c = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                //c->SetTransform(b2Vec2(p.x, p.y), 0);
-                break;
-            case 6:
-                b2Body *d;
-                d = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                //d->SetTransform(b2Vec2(p.x, p.y), 0);
+                printf("obstacle point added vertical 2\n");
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
                 break;
         }
     }
+    printf("all obstacles added\n");
     // spawning dynamic obstacles
     _goalSpawnArea.addQuadTree(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE,
                                LEVEL_CUSTOM_GOAL_SPAWN_AREA_BLOCK_SIZE, half_goal_size);
     _goalSpawnArea.calculateArea();
 
+    printf("spawn wanderers\n");
     if (_dynamic) {
+        printf("_dynamicSpawn.clear()\n");
         _dynamicSpawn.clear();
+        printf("addCheeseRect\n");
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
+        printf("calculateArea\n");
         _dynamicSpawn.calculateArea();
         for (int i = 0; i < num_dynamic_obstacles; i++) {
-            b2Vec2 p;
-            _dynamicSpawn.getRandomPoint(p);
-            WandererBipedal *w = new WandererBipedal(_levelDef.world, p, dynamic_speed, 0.1, 0.05);
+            printf("spawn wanderer\n");
+            b2Vec2 wanderer_p;
+            _dynamicSpawn.getRandomPoint(wanderer_p);
+            WandererBipedal *w = new WandererBipedal(_levelDef.world, wanderer_p, dynamic_speed, 0.1, 0.05);
             _wanderers.push_back(w);
         }
     }
+    printf("wanderers spawned\n");
     // adding spawn area
     randomGoalSpawnUntilValid();
+    printf("goal spawned\n");
 }
 
 b2Body *

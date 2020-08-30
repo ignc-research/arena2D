@@ -109,6 +109,16 @@ protected:
 	 */
 	void randomGoalSpawnUntilValid(RectSpawn * goal_spawn = NULL);
 
+
+    /* spawns goal at a random position in the current goal spawn area
+ * if the goal position is not valid with respect to the robot_position (see checkValidGoalSpawn()) another random position is sampled and the check is performed again
+ * this is repeated until a valid position is found
+ * if after the 10th iteration no valid position was found, the goal is spawned regardless at the last position sampled
+ * @param goal_spawn if this parameter is NULL, the member RectSpawn _goalSpawnArea is used for sampling spawn positions,
+                      else the RectSpawn pointed to by this parameter is used for sapling
+ */
+    void obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p);
+
 	/* create rectangular border around level origin (0,0) with given dimensions and add to body list
 	 * @param half_width half the width (along x-axis) of border rect
 	 * @param half_height half the height (along y-axis) of border rect
