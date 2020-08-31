@@ -13,7 +13,7 @@ class Arena2dEnvWrapper(gym.Env):
     def __init__(self, idx_env):
         super().__init__()
         self._idx_env = idx_env
-        rospy.init_node("arena_ros_agent_env_{:02d}".format(idx_env))
+        rospy.init_node("arena_ros_agent_env_{:02d}".format(idx_env),anonymous=True)
         self._setSubPub()
         # we use this to let main thread know the response is received which is done by another thread
         self.response_con = threading.Condition()
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     rospy.init_node("test")
 
     def test_step(idx_env):
-        env = Arena2dEnv(idx_env)
+        env = Arena2dEnvWrapper(idx_env)
         action = [1, 0]
         _, reward, _, _ = env.step(action)
         # env.reset()
