@@ -42,7 +42,7 @@ void WandererBipedal::update()
 
 void WandererBipedal::updateVelocity()
 {
-    printf("update velocity\n");
+    //printf("update velocity\n");
     float max_angle = f_rad(30);
     float max_velocity = _velocity;
     b2Vec2 v = _body->GetLinearVelocity();
@@ -51,15 +51,15 @@ void WandererBipedal::updateVelocity()
     float lo = max_velocity/4;
     float hi = max_velocity/2;
     float random_velocity = lo + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(hi-lo)));
-    printf("calc velocity\n");
+    //printf("calc velocity\n");
     if(f_random() < _stopRate){
-        printf("stop!\n");
+        //printf("stop!\n");
 
         v.Set(0,0);
     }
     else{
         if(v == b2Vec2_zero){
-            printf("is b2Vec2 zero\n");
+            //printf("is b2Vec2 zero\n");
 
             float sign_x = 1;
             if(rand()%2 == 0) sign_x = -1;
@@ -73,7 +73,7 @@ void WandererBipedal::updateVelocity()
             v_rot = zVector2D(sign_x* random_velocity, sign_y * random_velocity_y);//.getRotated(angle);
         }
         else{
-            printf("set velocity else\n");
+            //printf("set velocity else\n");
 
             angle = (max_angle*2*f_random())-max_angle;
 //            v_rot = max_velocity y/2 * zVector2D(v.x, v.y).getNormalized();
@@ -93,8 +93,8 @@ void WandererBipedal::updateVelocity()
         }
         v.Set(v_rot.x, v_rot.y);
     }
-    printf("set velocity\n");
+    //printf("set velocity\n");
     _body->SetLinearVelocity(b2Vec2(v_rot.x, v_rot.y));
     _body->SetTransform(_body->GetPosition(), atan2(v_rot.y,v_rot.x));
-    printf("update DONE\n");
+    //printf("update DONE\n");
 }

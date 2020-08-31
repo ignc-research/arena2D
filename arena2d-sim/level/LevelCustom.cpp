@@ -38,7 +38,7 @@ void LevelCustom::reset(bool robot_position_reset) {
         zRect aabb;
         //b2Body *b;
         obstacleSpawnUntilValid(&static_spawn, existing_positions, p);
-        printf("obstacle point found\n");
+        //printf("obstacle point found\n");
         int randomNumber = (rand() % 6);
         bool boundary_cond = true;
         switch (randomNumber) {
@@ -50,65 +50,65 @@ void LevelCustom::reset(bool robot_position_reset) {
                 addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
                                    _SETTINGS->stage.max_obstacle_size / 2, &aabb);
                 ;
-                printf("obstacle point added randomShape\n");
+                //printf("obstacle point added randomShape\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
                 break;
             case 2:
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                               _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                printf("obstacle point added horizontal 1\n");
+                //printf("obstacle point added horizontal 1\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
                 p.x = p.x;//1.5 + _SETTINGS->stage.min_obstacle_size / 2;
                 p.y = p.y+ 0.45;//-1.95;
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                               _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                printf("obstacle point added horizontal 2\n");
+                //printf("obstacle point added horizontal 2\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
                 break;
             case 4:
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                             _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                printf("obstacle point added vertical 1\n");
+                //printf("obstacle point added vertical 1\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
                 p.x = p.x - 0.45;
                 p.y = p.y;
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                                             _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                printf("obstacle point added vertical 2\n");
+                //printf("obstacle point added vertical 2\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
                 break;
         }
     }
-    printf("all obstacles added\n");
+    //printf("all obstacles added\n");
     // spawning dynamic obstacles
     _goalSpawnArea.addQuadTree(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE,
                                LEVEL_CUSTOM_GOAL_SPAWN_AREA_BLOCK_SIZE, half_goal_size);
     _goalSpawnArea.calculateArea();
 
-    printf("spawn wanderers\n");
+    //printf("spawn wanderers\n");
     if (_dynamic) {
         _dynamicSpawn.clear();
-        printf("addCheeseRect\n");
+        //printf("addCheeseRect\n");
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
-        printf("calculateArea\n");
+        //printf("calculateArea\n");
         _dynamicSpawn.calculateArea();
         std::vector<b2Vec2> spawn_position;
 		for(int i = 0; i < num_dynamic_obstacles; i++){
 			b2Vec2 p;
 			_dynamicSpawn.getRandomPoint(p);
-            printf(">> create wanderer %d << \n", i);
+            //printf(">> create wanderer %d << \n", i);
 			spawn_position.push_back(p);
 		}
 		wanderers.reset(spawn_position);
     }
-    printf("wanderers spawned\n");
+    //printf("wanderers spawned\n");
     // adding spawn area
     randomGoalSpawnUntilValid();
-    printf("goal spawned\n");
+    //printf("goal spawned\n");
 }
 
 b2Body *

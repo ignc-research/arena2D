@@ -110,7 +110,7 @@ b2Body* Level::addShape(const std::vector<b2Shape*> shapes)
 
 void Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p){
     bool spawn_found = false;
-    printf("obstacleSpawnUntilValid\n");
+    //printf("obstacleSpawnUntilValid\n");
     int count = 0;
     while(!spawn_found && count < 50){
         count++;
