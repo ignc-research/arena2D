@@ -190,7 +190,7 @@ void Environment::getGoalDistance(float & l2, float & angle)
 {
 	if(_level != NULL && _level->getGoal() != NULL){
 		b2Vec2 goal_pos = _level->getGoalPosition();
-		b2Vec2 goal_pos = _robot->getBody()->GetLocalPoint(goal_pos);
+		goal_pos = _robot->getBody()->GetLocalPoint(goal_pos);
 		l2 = goal_pos.Length();
 		angle = f_deg(zVector2D::signedAngle(zVector2D(0, 1), zVector2D(goal_pos.x, goal_pos.y)));
 	}
