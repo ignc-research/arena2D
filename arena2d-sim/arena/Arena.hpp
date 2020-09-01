@@ -23,6 +23,9 @@
 #include <Python.h>
 #include <script_sources.generated.h>
 
+#include "Evaluation.hpp"
+extern Evaluation _evaluation;
+
 // python callback functions
 enum PyAgentFunction{PYAGENT_FUNC_PRE_STEP, PYAGENT_FUNC_POST_STEP, PYAGENT_FUNC_GET_STATS, PYAGENT_FUNC_STOP, PYAGENT_FUNC_NUM};
 extern const char * PYAGENT_FUNC_NAMES[PYAGENT_FUNC_NUM];
