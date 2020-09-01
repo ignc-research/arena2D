@@ -35,6 +35,10 @@ AGENT_NAME="dqn_transformer_agent"
 class QTransformer(nn.Module):
 	def __init__(self, num_observations, device):
 		super(QTransformer, self).__init__()
+
+		# positional encoding
+		self.pos_encoder = transformer.PositionalEncoding(num_observations)
+
 		# create transformer with N layers
 		self.transformer = transformer.Transformer(num_observations,
 											nhead = TRANSFORMER_NUM_HEADS,
@@ -49,7 +53,7 @@ class QTransformer(nn.Module):
 		# save device for forwarding
 		self.device = device
 
-	# x is a list of N sequences
+	# x is a list of N sequences or a tensor (sequence, batch, observation)
 	# returns a tensor (N, NUM_ACTIONS) containing q values for 
 	def forward(self, x):
 		x_transform = None
@@ -59,9 +63,10 @@ class QTransformer(nn.Module):
 			# forward each sequence in batch through transformer separately because of different sequence length
 			for i in range(len(x)):
 				seq_len = x[i].size()[0]
-				x_transform[i] = self.transformer(x[i].view(seq_len, 1, -1))[-1]
+				x_encoded = self.pos_encoder(x[i])
+				x_transform[i] = self.transformer(x_encoded.view(seq_len, 1, -1))[-1]
 		else: # sequences of same length -> tensor
-			x_transform = self.transformer(x)[-1]
+			x_transform = self.transformer(self.pos_encoder(x))[-1]
 
 
 		# feed batch through linear
