@@ -25,7 +25,6 @@
 
 #include "b2_settings.h"
 #include <math.h>
-#include <stdio.h>
 
 /// This function is used to ensure that a floating point number is not a NaN or infinity.
 inline bool b2IsValid(float x)
