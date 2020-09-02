@@ -3,17 +3,27 @@ import gym
 import rospy
 from geometry_msgs.msg import Twist
 from arena2d_msgs.msg import RosAgentReq, Arena2dResp
+from stable_baselines.common.vec_env import SubprocVecEnv
 import numpy as np
 import threading
 from typing import Union, List, Tuple
 import time
+from gym import spaces
+# namespace of arena settings
+NS_SETTING = "/arena/settings/"
+
+
+def get_arena_envs():
+    # the num_envs should be set in the filt settings.st under the  folder of arena2d-sim
+    num_envs = rospy.get_param(NS_SETTING+"num_envs")
+    return SubprocVecEnv([lambda i=i: Arena2dEnvWrapper(i) for i in range(num_envs)])
 
 
 class Arena2dEnvWrapper(gym.Env):
     def __init__(self, idx_env):
         super().__init__()
         self._idx_env = idx_env
-        rospy.init_node("arena_ros_agent_env_{:02d}".format(idx_env),anonymous=True)
+        rospy.init_node("arena_ros_agent_env_{:02d}".format(idx_env), anonymous=True)
         self._setSubPub()
         # we use this to let main thread know the response is received which is done by another thread
         self.response_con = threading.Condition()
@@ -24,12 +34,24 @@ class Arena2dEnvWrapper(gym.Env):
         self.reward = None
         self.done = None
         self.info = None
+        self._set_action_oberservation_space()
+
+    def _set_action_oberservation_space(self):
+
+        action_space_lower_limit = rospy.get_param(NS_SETTING + "action_space_lower_limit")
+        action_space_upper_limit = rospy.get_param(NS_SETTING + "action_space_upper_limit")
+        num_beam = rospy.get_param(NS_SETTING + "observation_space_num_beam")
+        obervation_space_upper_limit = rospy.get_param(NS_SETTING + "observation_space_upper_limit")
+        self.action_space = spaces.Box(low=np.array(action_space_lower_limit),
+                                       high=np.array(action_space_upper_limit)*3, dtype=np.float)
+        self.observation_space = spaces.Box(low=0, high=obervation_space_upper_limit,
+                                            shape=(1, num_beam+2), dtype=np.float)
 
     def step(self, action):
         self._pubRosAgentReq(action, env_reset=False)
         # get the observations from the arena simulater
         with self.response_con:
-            self.response_con.wait(10)
+            self.response_con.wait(20)
             if not self.resp_received:
                 rospy.logerr("Environement wrapper didn't get the feedback from arena simulator")
             self.resp_received = False
@@ -42,7 +64,7 @@ class Arena2dEnvWrapper(gym.Env):
             self.response_con.wait(10)
             if not self.resp_received:
                 rospy.ERROR("Environment wrapper didn't get the feedback from arena simulator")
-        return self.obs, self.reward, self.done, self.info
+        return self.obs
 
     def close(self):
         self._pubRosAgentReq(env_close=True)
@@ -61,7 +83,7 @@ class Arena2dEnvWrapper(gym.Env):
         while self._ros_agent_pub.get_num_connections() == 0 or self._arena2d_sub.get_num_connections() == 0:
             time.sleep(0.1)
             times += 1
-        rospy.loginfo("env[{:d}] connected with arena-2d simulator ! took {:3.1f}s.".format(self._idx_env, .1 * times))
+        rospy.loginfo("env[{:d}] connected with arena-2d simulator, took {:3.1f}s.".format(self._idx_env, .1 * times))
         # time.sleep(1)
 
     def _pubRosAgentReq(self, action: Union[List, Tuple, RosAgentReq] = None, env_reset: bool = False, env_close: bool = False):
@@ -85,7 +107,8 @@ class Arena2dEnvWrapper(gym.Env):
             obs = resp.observation.ranges
             goal_distance_angle = resp.goal_pos
             # in current settings the observation not only contains laser scan but also contains the relative distance and angle to goal position.
-            self.obs = obs+goal_distance_angle
+            self.obs = np.array(obs + goal_distance_angle).reshape([1,-1])
+            # print("obs:"+obs.__str__()+" gda: "+goal_distance_angle.__str__())
             self.reward = resp.reward
             self.done = resp.done
             self.info = dict(mean_reward=resp.mean_reward, mean_success=resp.mean_success)
