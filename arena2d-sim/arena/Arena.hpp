@@ -409,6 +409,7 @@ private:
 #ifdef SUPPORT_ROS_AGENT
 	std::unique_ptr<RosNode> _ros_node_ptr;
 	bool _use_ros_agent = false;
+	bool* _ros_envs_reset;
 #endif // SUPPORT_ROS_AGENT
 };
 

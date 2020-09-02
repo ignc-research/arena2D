@@ -362,7 +362,7 @@ void Arena::rosUpdate(float wait_time = 0.0f)
 	RosNode::Status s;
 	if (_ros_node_ptr == nullptr)
 		return; // should throw Exception
-	s = _ros_node_ptr->getActions(_actions, wait_time);
+	s = _ros_node_ptr->getActions(_actions,_ros_envs_reset, wait_time);
 	/* do nothing if not message from all agents received */
 	if (s == RosNode::Status::NOT_ALL_AGENT_MSG_RECEIVED)
 	{
@@ -372,27 +372,27 @@ void Arena::rosUpdate(float wait_time = 0.0f)
 	{
 		cmdStopTraining(ConsoleParameters(0, NULL));
 		INFO("Training done!");
+		return;
 	}
-	else if (s == RosNode::Status::ALL_ENV_RESET)
-	{
+	else if(s == RosNode::Status::ENV_RESET){
 		for (int i = 0; i < _numEnvs; i++)
 		{
 			Environment::EpisodeState s = _envs[i].getEpisodeState();
-			if (s != Environment::RUNNING)
-			{
-				_levelResetMeasure.startTime();
+			if (_ros_envs_reset[i])
+			{	
+				if(s != Environment::RUNNING){
+						_levelResetMeasure.startTime();
 				_envs[i].reset(false);
 				_levelResetMeasure.endTime();
+				}else{
+					ROS_ERROR_STREAM("Something wrong with the env: " << i);
+				}
 			}
+			
 		}
-		if (_SETTINGS->video.enabled && !_videoDisabled)
-		{
-			refreshLevelResetTime();
-		}
-		_ros_node_ptr->publishStates(_dones);
 	}
 	else if (s == RosNode::Status::ALL_AGENT_MSG_RECEIVED)
-	{
+	{	
 		for (int i = 0; i < _numEnvs; i++)
 		{
 			Environment::EpisodeState s = _envs[i].getEpisodeState();
@@ -450,10 +450,13 @@ void Arena::rosUpdate(float wait_time = 0.0f)
 				refreshRewardCounter();
 			}
 		}
-
-		// measuring FPS
+	}
+		if (_SETTINGS->video.enabled && !_videoDisabled)
+		{
+			refreshLevelResetTime();
+		}
+	// measuring FPS
 		_physicsTimer.update(false);
 		_ros_node_ptr->publishStates(_dones, _meanReward.getMean(), _meanSuccess.getMean());
-	}
 }
 #endif

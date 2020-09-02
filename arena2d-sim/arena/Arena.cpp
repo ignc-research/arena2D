@@ -377,13 +377,12 @@ int Arena::init(int argc, char **argv)
 	if (_use_ros_agent)
 	{
 		_ros_node_ptr = std::unique_ptr<RosNode>(new RosNode(_envs, _numEnvs, ros_argc, ros_argv.data()));
-		INFO("Arena2d simulator is ready");
-		INFO("Waiting for ros connection from ros_agent ......");
 	}
 	else
 	{
 		_ros_node_ptr = nullptr;
 	}
+	_ros_envs_reset = new bool[_numEnvs];
 
 #endif
 	return 0;
@@ -687,7 +686,7 @@ void Arena::run()
 #ifdef SUPPORT_ROS_AGENT
 			if (_use_ros_agent)
 			{
-				rosUpdate(0.1f); // main thread will try to invoke the callbacks every .1f second
+				rosUpdate(0.1f); // main thread will try to invoke the callbacks and wait for maximum .1f second
 			}
 			else
 			{

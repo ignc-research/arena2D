@@ -1,11 +1,14 @@
 #pragma once
-#include "Robot.hpp"
+// #include "Robot.hpp"
+#include <thread>
+#include <chrono>
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <ros/callback_queue.h>
 #include <arena/Environment.hpp>
-#include "arena2d_msgs/RosAgentReq.h"
-#include "arena2d_msgs/Arena2dResp.h"
+#include <arena2d_msgs/RosAgentReq.h>
+#include <arena2d_msgs/Arena2dResp.h>
+#include <engine/GlobalSettings.hpp>
 
 class RosNode
 {
@@ -24,8 +27,9 @@ private:
     int m_num_envs;
     std::unique_ptr<ros::NodeHandle> m_nh_ptr;
     size_t m_num_ros_agent_req_msgs_received; // request messages are received by different topic name and they will temporary saved in the buffer. only this variable is equal to the number to the envirments, the contents in the buffer can be synchronized with the Buffer in Arena.
-    size_t m_num_env_reset;
-    bool m_sim_close; // if true, close the simulator 
+    std::vector<bool> m_envs_reset;
+    bool m_any_env_reset;
+    int m_env_close; // number of envs request to close
     Environment* m_envs;
 
 public:
@@ -33,7 +37,7 @@ public:
     {
         NOT_ALL_AGENT_MSG_RECEIVED,
         ALL_AGENT_MSG_RECEIVED,
-        ALL_ENV_RESET,
+        ENV_RESET,
         SIM_CLOSE,
         BAD_MESSAGE
     };
@@ -46,5 +50,5 @@ public:
      *  if return false, Synchronization is failed. it means not all the messages are received 
      *  
      */
-    Status getActions(Twist *robot_twist, float waitTime);
+    Status getActions(Twist *robot_Twist, bool* ros_envs_reset, float waitTime);
 };
