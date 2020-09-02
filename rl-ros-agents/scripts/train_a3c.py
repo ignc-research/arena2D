@@ -1,15 +1,16 @@
 import rospy
 from stable_baselines.common.vec_env import SubprocVecEnv
-from arena2d_ros_agents.env_wrapper.arena2dEnv import Arena2dEnvWrapper
-
-def get_envs(num_envs):
-    env = SubprocVecEnv([lambda i=i: Arena2dEnvWrapper(i) for i in range(num_envs)])
-    a = 1
-
-def main():
-    pass
+from rl_ros_agents.env_wappers.arena2dEnv import get_arena_envs,Arena2dEnvWrapper
+from stable_baselines import A2C
+from stable_baselines.common.policies import MlpLstmPolicy
+import tensorflow as tf
+# disable tensorflow deprecated information
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 if __name__ == "__main__":
-    get_envs(4)
-    # rospy.init_node("haha")
+    env = get_arena_envs()
+
+    model = A2C(MlpLstmPolicy, env, verbose=1)
+    model.learn(total_timesteps=int(1e6))
+    model.save("a2c_arena_env_4")
     
