@@ -58,10 +58,9 @@ void GlobalSettings::setToDefault()
 
 	_settings.training.reward_human = -100.0f;
 	_settings.training.safety_distance_human = 0.5f;
-	_settings.training.reward_distance_to_human_decreased = -0.05f;
-	_settings.training.reward_distance_to_human_increased = 0.1f;
-	_settings.training.num_obs_humans = 2;
-	_settings.training.do_evaluation = 0;
+	_settings.training.reward_distance_to_human_decreased = -0.3f;
+	_settings.training.reward_distance_to_human_increased = 0.3f;
+	_settings.training.num_obs_humans = 3;
 
 	// stage
 	_settings.stage.random_seed = 0;

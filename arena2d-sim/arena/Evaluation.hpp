@@ -15,7 +15,7 @@ public:
     Evaluation();
     ~Evaluation();
 
-    void init();
+    void init(const char * model);
 
     void countHuman();
     void countWall();
@@ -27,7 +27,9 @@ public:
     void saveData();
 
 private:
-    void episodeEnd();
+    void episodeEnd(bool goal_reached = false);
+
+    bool initialized = false;
 
     unsigned int episode_counter;
     unsigned int human_counter;

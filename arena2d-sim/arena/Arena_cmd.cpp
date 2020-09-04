@@ -323,7 +323,12 @@ CommandStatus Arena::cmdStartTraining(const ConsoleParameters & params)
 			params.getString("--model", model);
 			params.getString("--device", device);
 			_noTrainingRecord = false;
+			_doEvaluation = false;
 			if(params.getFlag("--no_record")){
+				_noTrainingRecord = true;
+			}
+			if(params.getFlag("--evaluate")){
+				_doEvaluation = true;
 				_noTrainingRecord = true;
 			}
 			// set argv (absolute path of script that is beeing executed)
@@ -378,6 +383,9 @@ CommandStatus Arena::cmdStartTraining(const ConsoleParameters & params)
 								training_path = _trainingDir;
 							}
 						}
+						if(_doEvaluation){
+							_evaluation.init(model);
+						}
 						// setting arguments for constructor
 						PyObject * init_args = PyTuple_New(6);
 						PyTuple_SetItem(init_args, 0, PyUnicode_FromString(device));
@@ -421,7 +429,6 @@ CommandStatus Arena::cmdStartTraining(const ConsoleParameters & params)
 			_trainingMode = true;
 			initializeTraining();
 			INFO("TRAINING MODE. Critical actions performed by user are blocked!");
-			_evaluation.init();
 		}
 	}
 	else{
@@ -482,7 +489,9 @@ CommandStatus Arena::cmdStopTraining(const ConsoleParameters & params)
 			}
 		}
 		//save evaluation data
-		_evaluation.saveData(); 
+		if(_doEvaluation){
+			_evaluation.saveData(); 
+		}
 		if(_pyAgentUsed){
 			// throw away last return value
 			Py_XDECREF(ret);

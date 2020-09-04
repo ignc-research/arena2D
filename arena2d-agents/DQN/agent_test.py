@@ -2,6 +2,8 @@ from dqn_models import fc
 
 import torch
 import pathlib
+import os.path
+import shutil
 
 NUM_ACTIONS = 7
 STOP_TESTING = 100		# number of episodes used for testing
@@ -15,6 +17,7 @@ class Agent:
 		assert(num_envs == 1)
 		if model_name is None:
 			model_name=DEFAULT_MODEL
+		self.model_name = model_name
 		self.device = torch.device(device_name)
 		self.net = fc.FC_DQN(num_observations, NUM_ACTIONS)
 		self.net.train(False)# set training mode to false to deactivate dropout layer
@@ -49,4 +52,9 @@ class Agent:
 				("Mean Loss", self.mean_loss)]
 
 	def stop(self):
-		pass	
+		evaluation_path_target = os.path.dirname(self.model_name) + '/evaluation.py'
+		evaluation_path_orignal = '../arena2d-sim/scripts/evaluation.py'
+		print(evaluation_path_target)
+		print(evaluation_path_orignal)
+		shutil.copyfile(evaluation_path_orignal, evaluation_path_target)
+		

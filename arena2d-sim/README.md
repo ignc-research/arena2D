@@ -156,6 +156,13 @@ The metrics can then be plotted easily by running the `plot.py` script from the 
 While the training is running you should disable the video mode by pressing `F3` (if you are starting arena2d with GUI enabled).
 This will stop the rendering and remove the FPS lock to ensure maximum performance.
 
+## Evaluation
+When a training has finished, this agent can be evaluated with the command `run_agent <agent_test_script> --evaluate`.
+Specify the path to the trained agent weigths by passing `--model <model_name>`.
+
+This process will record additional data to a `evaluation.csv` file in the folder of the model. By running the `evaluation.py` script this additional data will be plotted in a new folder `evaluation`.
+
+
 ## Agent Implementation
 Agents are realized through a python class containing several methods that are called by the simulator during training.
 When executing the command ```run_training <py-script>``` a training session will be started using the callback functions defined in the given python-script.

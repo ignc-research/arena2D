@@ -78,7 +78,6 @@ typedef struct{
 	float reward_distance_to_human_decreased; // reward when distance to human decreases
 	float reward_distance_to_human_increased; // reward when distance to human increases
 	int num_obs_humans; // maximum number of humans the agent can deal with
-	int do_evaluation;
 }f_trainingSettings;
 
 typedef struct{
