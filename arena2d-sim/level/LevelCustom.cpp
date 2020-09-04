@@ -42,6 +42,8 @@ void LevelCustom::reset(bool robot_position_reset) {
         //b2Body *b;
         obstacleSpawnUntilValid(&static_spawn, existing_positions, p);
         printf("obstacle point found\n");
+        float random_length;
+        float random_width;
         int randomNumber = (rand() % 6);
         bool boundary_cond = true;
         switch (randomNumber) {
@@ -50,36 +52,40 @@ void LevelCustom::reset(bool robot_position_reset) {
             case 3:
             case 5:
             case 6:
-                addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                   _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                addRandomShape(p, (_SETTINGS->stage.min_obstacle_size / 2),
+                               (_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 ;
                 printf("obstacle point added randomShape\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
                 break;
             case 2:
-                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                random_length =  f_frandomRange(0.4,1.5);
+                random_width = f_frandomRange(0.45,0.6);
+                generateRandomBodyHorizontal(p, (_SETTINGS->stage.min_obstacle_size / 2),
+                                             random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 printf("obstacle point added horizontal 1\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
                 p.x = p.x;//1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = p.y+ 0.45;//-1.95;
+                p.y = p.y+ random_width;//0.45;//-1.95;
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                                             random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 printf("obstacle point added horizontal 2\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
                 break;
             case 4:
+                random_length =  f_frandomRange(0.4,1.5);
+                random_width = f_frandomRange(0.45,0.6);
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                                           random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 printf("obstacle point added vertical 1\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
-                p.x = p.x - 0.45;
+                p.x = p.x - random_width;//- 0.45;
                 p.y = p.y;
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                                           random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 printf("obstacle point added vertical 2\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
                 break;
@@ -125,7 +131,7 @@ LevelCustom::generateRandomBodyHorizontal(const b2Vec2 &p, float min_radius, flo
     float y2 = p.y + min_radius;
     float x2 = p.x;
     float y3 = y2;
-    float x3 = x2 - 2 * max_radius;
+    float x3 = x2 - max_radius;
     float y4 = p.y;
     float x4 = x3;
     for (int i = 0; i < vert_count; i++) {
@@ -181,7 +187,7 @@ LevelCustom::generateRandomBodyVertical(const b2Vec2 &p, float min_radius, float
     float x2 = p.x + min_radius;
     float y2 = p.y;
     float x3 = x2;
-    float y3 = y2 - 2 * max_radius;
+    float y3 = y2 - max_radius;
     float x4 = p.x;
     float y4 = y3;
     for (int i = 0; i < vert_count; i++) {
