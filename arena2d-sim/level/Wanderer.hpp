@@ -42,6 +42,14 @@ public:
 	 */
 	const b2Vec2& getPosition(){return _body->GetTransform().p;}
 
+
+	/* set position
+     * @param newPosition of wanderer
+     */
+	void setPosition(b2Vec2 newPosition){
+	    _body->SetTransform(newPosition, 0);
+	}
+
 	/* get type
 	 * @return type that was specified on creation
 	 */

@@ -242,7 +242,7 @@ void LevelCustom::freeWanderers() {
 }
 
 void LevelCustom::update() {
-
+    b2Vec2 position;
     for (std::list<WandererBipedal *>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++) {
         bool chat_flag = false;
         float radius_check = 0.3;
@@ -253,12 +253,25 @@ void LevelCustom::update() {
             }
             float distance = ((*it)->getPosition() - (*it2)->getPosition()).Length();
             printf("Radius %f \n", (*it)->getRadius());
+
             if ( distance < radius_check) {
                 chat_flag = true;
                 break;
             }
         }
+
+        position = (*it)->getPosition();
+
+        if(abs(position.x) > 2.5 || abs(position.y) > 2.5){
+            b2Vec2 wanderer_p;
+            _dynamicSpawn.getRandomPoint(wanderer_p);
+            (*it)->setPosition(wanderer_p);
+
+
+
+        }
         (*it)->update(chat_flag);
+
     }
 
     }
