@@ -1,5 +1,5 @@
 #include "LevelCustom.hpp"
-
+#include "math.h"
 
 void LevelCustom::reset(bool robot_position_reset) {
     // clear old bodies and spawn area
@@ -112,6 +112,7 @@ void LevelCustom::reset(bool robot_position_reset) {
             _dynamicSpawn.getRandomPoint(wanderer_p);
             WandererBipedal *w = new WandererBipedal(_levelDef.world, wanderer_p, dynamic_speed, 0.1, 0.05);
             _wanderers.push_back(w);
+
         }
     }
     printf("wanderers spawned\n");
@@ -119,6 +120,10 @@ void LevelCustom::reset(bool robot_position_reset) {
     randomGoalSpawnUntilValid();
     printf("goal spawned\n");
 }
+
+
+
+
 
 b2Body *
 LevelCustom::generateRandomBodyHorizontal(const b2Vec2 &p, float min_radius, float max_radius, zRect *aabb) {
@@ -237,11 +242,28 @@ void LevelCustom::freeWanderers() {
 }
 
 void LevelCustom::update() {
+
     for (std::list<WandererBipedal *>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++) {
-        (*it)->update();
+        bool chat_flag = false;
+        float radius_check = 0.3;
+        float move_on = f_frandomRange(0.1, 2);
+        for (std::list<WandererBipedal *>::iterator it2 = _wanderers.begin(); it2 != _wanderers.end(); it2++) {
+            if((*it) == (*it2)){
+                continue;
+            }
+            float distance = ((*it)->getPosition() - (*it2)->getPosition()).Length();
+            printf("Radius %f \n", (*it)->getRadius());
+            if ( distance < radius_check) {
+                chat_flag = true;
+                break;
+            }
+        }
+        (*it)->update(chat_flag);
     }
 
-}
+    }
+
+
 
 void LevelCustom::renderGoalSpawn() {
     Level::renderGoalSpawn();

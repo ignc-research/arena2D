@@ -74,7 +74,7 @@ void LevelRandom::freeWanderers()
 void LevelRandom::update()
 {
 	for(std::list<Wanderer*>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++){
-		(*it)->update();
+		(*it)->update(false);
 	}
 
 }

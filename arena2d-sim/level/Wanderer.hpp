@@ -30,7 +30,7 @@ public:
 
 	/* updates velocity according to change/stop rate
 	 */
-	virtual void update();
+	virtual void update(bool chat_flag);
 
 	/* reset position of wanderer, velocities are set to 0
 	 * @param position new position of wanderer
