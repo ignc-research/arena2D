@@ -262,10 +262,25 @@ void LevelCustom::update() {
 
         position = (*it)->getPosition();
 
-        if(abs(position.x) > 2.5 || abs(position.y) > 2.5){
-            b2Vec2 wanderer_p;
-            _dynamicSpawn.getRandomPoint(wanderer_p);
-            (*it)->setPosition(wanderer_p);
+        b2Vec2 new_position = position;
+        if(abs(position.x) > 2 || abs(position.y) > 2 ) {
+            if((position.x) > 2 && abs(position.y) < 2 ) {
+                new_position.x = 1.99;
+            }else if((position.x) < -2 && abs(position.y) < 2){
+                new_position.x = -1.99;
+            }else if((position.y) < -2 && abs(position.x) < 2){
+                new_position.y = -1.99;
+            }else if((position.y) > 2 && abs(position.x) < 2){
+                new_position.y = 1.99;
+            }else{
+                _dynamicSpawn.getRandomPoint(new_position);
+            }
+
+            (*it)->setPosition(new_position);
+
+
+
+
 
 
 
