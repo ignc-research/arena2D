@@ -7,7 +7,7 @@ WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
 {
 	float r = HUMAN_LEG_SIZE/2.f;
 	float offset = HUMAN_LEG_DISTANCE/2.0f;
-    step_frequency_factor = 0.02;
+    step_frequency_factor = 0.1;
     step_width_factor = 0.1;
 	addCircle(r, b2Vec2(offset+r, 0));
 	addCircle(r, b2Vec2(-offset-r, 0));

@@ -252,7 +252,7 @@ void LevelCustom::update() {
                 continue;
             }
             float distance = ((*it)->getPosition() - (*it2)->getPosition()).Length();
-            printf("Radius %f \n", (*it)->getRadius());
+            //printf("Radius %f \n", (*it)->getRadius());
 
             if ( distance < radius_check) {
                 chat_flag = true;
