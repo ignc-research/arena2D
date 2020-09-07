@@ -46,10 +46,51 @@ void Wanderers::reset(std::vector<b2Vec2> & spawn_position){
 }
 
 void Wanderers::update(){
-    // updating all wanderers -> this adjusts the wanderers moving direction
+    b2Vec2 position;
     for(int i = 0; i < _wanderers.size(); i++){
-        _wanderers[i]->update();
+        //check if wanderers are near each other -> stop both wanderers as they start chatting
+        bool chat_flag = false;
+        float radius_check = 0.3;
+        float move_on = f_frandomRange(0.1, 2);
+        for(int j = 0; j < _wanderers.size(); j++){
+            if(i == j){
+                continue;
+            }
+            float distance = (_wanderers[i]->getPosition() - _wanderers[j]->getPosition()).Length();
+            //printf("Radius %f \n", (*it)->getRadius());
+
+            if ( distance < radius_check) {
+                chat_flag = true;
+                break;
+            }
+        }
+
+        //check if wanderer is out of border
+        position = _wanderers[i]->getPosition();
+
+        b2Vec2 new_position = position;
+        float border = _SETTINGS->stage.level_size / 2.f;
+        float radius = _wanderers[i]->getRadius();
+        float bound = border - radius;
+        if(abs(position.x) > bound || abs(position.y) > bound ) {
+            if((position.x) > bound) {
+                new_position.x = bound;
+            }
+            if((position.x) < -bound){
+                new_position.x = -bound;
+            }
+            if((position.y) > bound){
+                new_position.y = bound;
+            }
+            if((position.y) < -bound){
+                new_position.y = -bound;
+            }
+            _wanderers[i]->setPosition(new_position);
+        }
+        //update wanderer position and velocity
+        _wanderers[i]->update(chat_flag);
     }
+
     calculateDistanceAngle();
     getClosestWanderers();
 }
