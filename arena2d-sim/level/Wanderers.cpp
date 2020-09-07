@@ -1,26 +1,5 @@
 #include "Wanderers.hpp"
 
-void Wanderers::init(){
-    // adding a human wanderers
-    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
-        _wanderers.push_back(new WandererBipedal(_levelDef.world, b2Vec2(i-1,-1), 
-                                                _SETTINGS->stage.obstacle_speed,
-                                                0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
-    }
-
-    /*
-    // adding a robot wanderer
-    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
-        _wanderers.push_back(new Wanderer(	WANDERER_ROBOT_SIZE,
-                                            b2Vec2(0,0),
-                                            WANDERER_ROBOT_VELOCITY,
-                                            0.1, 0.0,
-                                            WANDERER_ID_ROBOT));
-    }
-    */
-}
-
-
 void Wanderers::freeWanderers(){
     // free all wanderers
     for(int i = 0; i < _wanderers.size(); i++){
@@ -29,15 +8,16 @@ void Wanderers::freeWanderers(){
     _wanderers.clear();
 }
 
-
-void Wanderers::reset(std::vector<b2Vec2> & spawn_position){
-    for(int i = 0; i < _wanderers.size(); i++){
-        if(i < spawn_position.size()){
-            _wanderers[i]->reset(spawn_position[i]);
-        }else{
-            _wanderers[i]->reset(b2Vec2(i-1, -1));
-        }
-	}
+void Wanderers::reset(RectSpawn & _dynamicSpawn){
+    if(_wanderers.size() > 0) freeWanderers();
+    // adding a human wanderers
+    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
+        b2Vec2 p;
+		_dynamicSpawn.getRandomPoint(p);
+        _wanderers.push_back(new WandererBipedal(_levelDef.world, p, 
+                                                _SETTINGS->stage.obstacle_speed,
+                                                0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
+    }
     //reset all lists
     _old_observed_wanderers.clear();
     _observed_wanderers.clear();

@@ -4,6 +4,9 @@
 void LevelCustom::reset(bool robot_position_reset) {
     // clear old bodies and spawn area
     clear();
+    if(_dynamic){
+        wanderers.freeWanderers();
+    }
 
     float half_width = _SETTINGS->stage.level_size / 2.f;
     float half_height = _SETTINGS->stage.level_size / 2.f;
@@ -102,14 +105,7 @@ void LevelCustom::reset(bool robot_position_reset) {
                                     dynamic_radius);
         //printf("calculateArea\n");
         _dynamicSpawn.calculateArea();
-        std::vector<b2Vec2> spawn_position;
-		for(int i = 0; i < num_dynamic_obstacles; i++){
-			b2Vec2 p;
-			_dynamicSpawn.getRandomPoint(p);
-            //printf(">> create wanderer %d << \n", i);
-			spawn_position.push_back(p);
-		}
-		wanderers.reset(spawn_position);
+		wanderers.reset(_dynamicSpawn);
     }
     //printf("wanderers spawned\n");
     // adding spawn area
@@ -232,7 +228,7 @@ LevelCustom::generateRandomBodyVertical(const b2Vec2 &p, float min_radius, float
 
 float LevelCustom::getReward()
 {
-	float reward = 0;
+    float reward = 0;
 	_closestDistance_old.clear();
 	_closestDistance.clear();
 	wanderers.get_old_Distance(_closestDistance_old);
