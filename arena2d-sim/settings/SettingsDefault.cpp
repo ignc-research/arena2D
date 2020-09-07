@@ -69,6 +69,7 @@ void GlobalSettings::setToDefault()
 	_settings.stage.obstacle_speed = 0.08;
 	_settings.stage.dynamic_obstacle_size = 0.3;
 	_settings.stage.num_dynamic_obstacles = 4;
+	_settings.stage.max_time_chatting = 50.0f;
 	_settings.stage.num_obstacles = 8;
 	_settings.stage.min_obstacle_size = 0.1;
 	_settings.stage.max_obstacle_size = 1.0;

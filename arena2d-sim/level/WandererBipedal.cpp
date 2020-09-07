@@ -11,10 +11,13 @@ WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
     step_width_factor = 0.1;
 	addCircle(r, b2Vec2(offset+r, 0));
 	addCircle(r, b2Vec2(-offset-r, 0));
+
+
+    float chat_max_time = _SETTINGS->stage.max_time_chatting / _SETTINGS->physics.time_step / _SETTINGS->physics.step_iterations;
 	chat_counter = 0;
-	chat_threshold = (int)f_frandomRange(60, 600);
+	chat_threshold = (int)f_frandomRange(0, chat_max_time);
 	chat_reset_counter = 0;
-	chat_reset_threshold = 120;
+	chat_reset_threshold = (int)chat_max_time/2;
 }
 
 void WandererBipedal::update(bool chat_flag)

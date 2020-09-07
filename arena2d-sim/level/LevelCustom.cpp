@@ -16,6 +16,7 @@ void LevelCustom::reset(bool robot_position_reset) {
     const int num_dynamic_obstacles = _SETTINGS->stage.num_dynamic_obstacles;
     const float min_obstacle_radius = _SETTINGS->stage.min_obstacle_size / 2;
     const float max_obstacle_radius = _SETTINGS->stage.max_obstacle_size / 2;
+    const float robot_diameter = _levelDef.robot->getRadius() * 2;
     const zRect main_rect(0, 0, half_width, half_height);
     const zRect big_main_rect(0, 0, half_width + max_obstacle_radius, half_height + max_obstacle_radius);
 
@@ -59,8 +60,8 @@ void LevelCustom::reset(bool robot_position_reset) {
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
                 break;
             case 2:
-                random_length =  f_frandomRange(0.4,1.5);
-                random_width = f_frandomRange(0.45,0.6);
+                random_length =  f_frandomRange(0.5,3);
+                random_width = f_frandomRange(2*robot_diameter, 3*robot_diameter);
                 generateRandomBodyHorizontal(p, (_SETTINGS->stage.min_obstacle_size / 2),
                                              random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 //printf("obstacle point added horizontal 1\n");
@@ -75,8 +76,8 @@ void LevelCustom::reset(bool robot_position_reset) {
 
                 break;
             case 4:
-                random_length =  f_frandomRange(0.4,1.5);
-                random_width = f_frandomRange(0.45,0.6);
+                random_length =  f_frandomRange(0.5,3);
+                random_width = f_frandomRange(2*robot_diameter, 3*robot_diameter);
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                            random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 //printf("obstacle point added vertical 1\n");
