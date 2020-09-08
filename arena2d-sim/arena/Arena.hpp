@@ -400,6 +400,9 @@ private:
 
 	/* if set to true no training data is recorded*/
 	bool _noTrainingRecord;
+
+	/* if set to true, additional data for the Evaluation of the agent is recorded*/
+	bool _doEvaluation;
 };
 
 

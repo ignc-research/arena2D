@@ -11,9 +11,7 @@ class LevelCustom : public Level {
 public:
     /* constructor
 	 */
-	LevelCustom(const LevelDef & levelDef, bool dynamic = false) : Level(levelDef), _dynamic(dynamic), wanderers(levelDef){
-		if(_dynamic) wanderers.init();
-	}
+	LevelCustom(const LevelDef & levelDef, bool dynamic = false) : Level(levelDef), _dynamic(dynamic), wanderers(levelDef){}
 
 	/* destructor
 	 */

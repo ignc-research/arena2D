@@ -58,10 +58,9 @@ void GlobalSettings::setToDefault()
 
 	_settings.training.reward_human = -100.0f;
 	_settings.training.safety_distance_human = 0.5f;
-	_settings.training.reward_distance_to_human_decreased = -0.05f;
-	_settings.training.reward_distance_to_human_increased = 0.1f;
-	_settings.training.num_obs_humans = 2;
-	_settings.training.do_evaluation = 0;
+	_settings.training.reward_distance_to_human_decreased = -0.3f;
+	_settings.training.reward_distance_to_human_increased = 0.3f;
+	_settings.training.num_obs_humans = 3;
 
 	// stage
 	_settings.stage.random_seed = 0;
@@ -70,6 +69,7 @@ void GlobalSettings::setToDefault()
 	_settings.stage.obstacle_speed = 0.08;
 	_settings.stage.dynamic_obstacle_size = 0.3;
 	_settings.stage.num_dynamic_obstacles = 4;
+	_settings.stage.max_time_chatting = 50.0f;
 	_settings.stage.num_obstacles = 8;
 	_settings.stage.min_obstacle_size = 0.1;
 	_settings.stage.max_obstacle_size = 1.0;

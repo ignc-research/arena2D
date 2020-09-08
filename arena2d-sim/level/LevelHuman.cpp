@@ -4,6 +4,9 @@ void LevelHuman::reset(bool robot_position_reset)
 {
 	// clear old bodies and spawn area
 	clear();
+	if(_dynamic){
+        wanderers.freeWanderers();
+    }
 
 	// get constants
 	const float half_width = _SETTINGS->stage.level_size/2.f;
@@ -48,13 +51,7 @@ void LevelHuman::reset(bool robot_position_reset)
 		_dynamicSpawn.clear();
 		_dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
 		_dynamicSpawn.calculateArea();
-		std::vector<b2Vec2> spawn_position;
-		for(int i = 0; i < num_dynamic_obstacles; i++){
-			b2Vec2 p;
-			_dynamicSpawn.getRandomPoint(p);
-			spawn_position.push_back(p);
-		}
-		wanderers.reset(spawn_position);
+		wanderers.reset(_dynamicSpawn);
 	}
 
 	randomGoalSpawnUntilValid();

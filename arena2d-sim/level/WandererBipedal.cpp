@@ -7,18 +7,44 @@ WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
 {
 	float r = HUMAN_LEG_SIZE/2.f;
 	float offset = HUMAN_LEG_DISTANCE/2.0f;
-    step_frequency_factor = 0.02;
+    step_frequency_factor = 0.1;
     step_width_factor = 0.1;
 	addCircle(r, b2Vec2(offset+r, 0));
 	addCircle(r, b2Vec2(-offset-r, 0));
+
+
+    float chat_max_time = _SETTINGS->stage.max_time_chatting / _SETTINGS->physics.time_step / _SETTINGS->physics.step_iterations;
+	chat_counter = 0;
+	chat_threshold = (int)f_frandomRange(0, chat_max_time);
+	chat_reset_counter = 0;
+	chat_reset_threshold = (int)chat_max_time/2;
 }
 
-void WandererBipedal::update()
+void WandererBipedal::update(bool chat_flag)
 {
+
     // Update Leg posture
     // b2Vec2 v = _body1->GetLinearVelocity();
     // step_width_factor = v.Normalize();
-
+    //printf("flag %d \n", chat_flag);
+    if(chat_flag){
+        if(chat_counter < chat_threshold){
+            chat_counter++;
+            _body->SetAngularVelocity(0);
+            _body->SetLinearVelocity(b2Vec2_zero);
+            return;
+        }
+    }else{
+        if(chat_counter >= chat_threshold){
+            chat_reset_counter++;
+            if(chat_reset_counter > chat_reset_threshold){
+                chat_counter = 0;
+            }
+        }else{
+            chat_reset_counter = 0;
+            chat_counter = 0;
+        }
+    }
     b2Fixture *fixOld1 = _body->GetFixtureList();
     _body->DestroyFixture(fixOld1);
     fixOld1 = _body->GetFixtureList();
@@ -39,6 +65,7 @@ void WandererBipedal::update()
 //    if(f_random() <= _changeRate)
         updateVelocity();
 }
+
 
 void WandererBipedal::updateVelocity()
 {

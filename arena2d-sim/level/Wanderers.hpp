@@ -34,10 +34,9 @@ public:
     Wanderers(const LevelDef & levelDef):_levelDef(levelDef){}
     ~Wanderers(){freeWanderers();}
 
-    void init();
     void freeWanderers();
 
-    void reset(std::vector<b2Vec2> & spawn_position);
+    void reset(RectSpawn & _dynamicSpawn);
 
     void update();
     void get_old_Distance(std::vector<float> & old_distance);

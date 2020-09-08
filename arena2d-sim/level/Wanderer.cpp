@@ -51,7 +51,7 @@ Wanderer::~Wanderer()
 	_body = NULL;
 }
 
-void Wanderer::update()
+void Wanderer::update(bool chat_flag)
 {
 	if(f_random() <= _changeRate)
 		updateVelocity();

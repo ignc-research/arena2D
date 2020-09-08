@@ -57,6 +57,7 @@ typedef struct{
 	float dynamic_obstacle_size;// size of dynamic obstacle
 	int num_dynamic_obstacles;	// number of dynamic obstacles in static_dynamic level
 	float obstacle_speed;		// in m/s for dynamic obstacles
+	float max_time_chatting;	// maximum time for chatting between two wanderers
 	float goal_size;			// diameter of circular goal to reach
 	string svg_path;			// path to folder where svg files are stored
 }f_stage;
@@ -78,7 +79,6 @@ typedef struct{
 	float reward_distance_to_human_decreased; // reward when distance to human decreases
 	float reward_distance_to_human_increased; // reward when distance to human increases
 	int num_obs_humans; // maximum number of humans the agent can deal with
-	int do_evaluation;
 }f_trainingSettings;
 
 typedef struct{

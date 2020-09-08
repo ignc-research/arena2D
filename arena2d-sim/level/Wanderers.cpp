@@ -1,26 +1,5 @@
 #include "Wanderers.hpp"
 
-void Wanderers::init(){
-    // adding a human wanderers
-    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
-        _wanderers.push_back(new WandererBipedal(_levelDef.world, b2Vec2(i-1,-1), 
-                                                _SETTINGS->stage.obstacle_speed,
-                                                0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
-    }
-
-    /*
-    // adding a robot wanderer
-    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
-        _wanderers.push_back(new Wanderer(	WANDERER_ROBOT_SIZE,
-                                            b2Vec2(0,0),
-                                            WANDERER_ROBOT_VELOCITY,
-                                            0.1, 0.0,
-                                            WANDERER_ID_ROBOT));
-    }
-    */
-}
-
-
 void Wanderers::freeWanderers(){
     // free all wanderers
     for(int i = 0; i < _wanderers.size(); i++){
@@ -29,15 +8,16 @@ void Wanderers::freeWanderers(){
     _wanderers.clear();
 }
 
-
-void Wanderers::reset(std::vector<b2Vec2> & spawn_position){
-    for(int i = 0; i < _wanderers.size(); i++){
-        if(i < spawn_position.size()){
-            _wanderers[i]->reset(spawn_position[i]);
-        }else{
-            _wanderers[i]->reset(b2Vec2(i-1, -1));
-        }
-	}
+void Wanderers::reset(RectSpawn & _dynamicSpawn){
+    if(_wanderers.size() > 0) freeWanderers();
+    // adding a human wanderers
+    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
+        b2Vec2 p;
+		_dynamicSpawn.getRandomPoint(p);
+        _wanderers.push_back(new WandererBipedal(_levelDef.world, p, 
+                                                _SETTINGS->stage.obstacle_speed,
+                                                0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
+    }
     //reset all lists
     _old_observed_wanderers.clear();
     _observed_wanderers.clear();
@@ -46,10 +26,50 @@ void Wanderers::reset(std::vector<b2Vec2> & spawn_position){
 }
 
 void Wanderers::update(){
-    // updating all wanderers -> this adjusts the wanderers moving direction
+    b2Vec2 position;
     for(int i = 0; i < _wanderers.size(); i++){
-        _wanderers[i]->update();
+        //check if wanderers are near each other -> stop both wanderers as they start chatting
+        bool chat_flag = false;
+        float radius_check = 0.3;
+        for(int j = 0; j < _wanderers.size(); j++){
+            if(i == j){
+                continue;
+            }
+            float distance = (_wanderers[i]->getPosition() - _wanderers[j]->getPosition()).Length();
+            //printf("Radius %f \n", (*it)->getRadius());
+
+            if ( distance < radius_check) {
+                chat_flag = true;
+                break;
+            }
+        }
+
+        //check if wanderer is out of border
+        position = _wanderers[i]->getPosition();
+
+        b2Vec2 new_position = position;
+        float border = _SETTINGS->stage.level_size / 2.f;
+        float radius = _wanderers[i]->getRadius();
+        float bound = border - radius;
+        if(abs(position.x) > bound || abs(position.y) > bound ) {
+            if((position.x) > bound) {
+                new_position.x = bound;
+            }
+            if((position.x) < -bound){
+                new_position.x = -bound;
+            }
+            if((position.y) > bound){
+                new_position.y = bound;
+            }
+            if((position.y) < -bound){
+                new_position.y = -bound;
+            }
+            _wanderers[i]->setPosition(new_position);
+        }
+        //update wanderer position and velocity
+        _wanderers[i]->update(chat_flag);
     }
+
     calculateDistanceAngle();
     getClosestWanderers();
 }
@@ -119,7 +139,7 @@ void Wanderers::getWandererData(std::vector<float> & data){
 		    data.push_back(_observed_wanderers[i].angle);		// angle to closest (relative from robot)
         }else{
             //Fill with default values
-            data.push_back(_SETTINGS->stage.level_size);		// largest distance in level
+            data.push_back(2*_SETTINGS->stage.level_size);		// largest distance in level
 			data.push_back(0.);		// wanderer is in front of robot
         }
     }

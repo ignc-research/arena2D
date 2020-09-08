@@ -24,7 +24,7 @@ public:
 
     /* updates velocity accoriding to change/stop rate
      */
-    void update() override;
+    void update(bool chat_flag) override;
 
 protected:
     /* update velocity
@@ -37,6 +37,15 @@ protected:
     // Legposture parameter
     double step_frequency_factor;
     double step_width_factor;
+
+    //chatting time parameter;
+
+    int chat_threshold;
+    int chat_counter;
+
+    //preventing eternal stuck in chat
+    int chat_reset_threshold;
+    int chat_reset_counter;
 
 };
 

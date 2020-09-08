@@ -136,6 +136,10 @@ void Environment::step()
 		return;
 	_robot->performAction(_action);
 	_world->Step(_physicsSettings.time_step, _physicsSettings.velocity_iterations, _physicsSettings.position_iterations);
+
+	// count number of actions for evaluation and calculate travelled distance
+	_evaluation.countAction(_robot->getBody()->GetTransform());
+
 	_episodeTime += _physicsSettings.time_step;
 	// time's up
 	if(	_episodeTime > _trainingSettings.max_time &&
@@ -176,12 +180,8 @@ void Environment::post_step()
 		_reward += _level->getReward();
 	}
 
-	// count number of actions for evaluation and calculate travelled distance
-	_evaluation.countAction(_robot->getBody()->GetTransform());
-
 	// update laser scan
 	_robot->scan();
-
 
 	_totalReward += _reward;
 }

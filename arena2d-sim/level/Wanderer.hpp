@@ -30,7 +30,7 @@ public:
 
 	/* updates velocity according to change/stop rate
 	 */
-	virtual void update();
+	virtual void update(bool chat_flag);
 
 	/* reset position of wanderer, velocities are set to 0
 	 * @param position new position of wanderer
@@ -41,6 +41,14 @@ public:
 	 * @return position of wanderer
 	 */
 	const b2Vec2& getPosition(){return _body->GetTransform().p;}
+
+
+	/* set position
+     * @param newPosition of wanderer
+     */
+	void setPosition(b2Vec2 newPosition){
+	    _body->SetTransform(newPosition, 0);
+	}
 
 	/* get type
 	 * @return type that was specified on creation
