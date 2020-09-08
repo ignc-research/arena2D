@@ -31,7 +31,6 @@ void Wanderers::update(){
         //check if wanderers are near each other -> stop both wanderers as they start chatting
         bool chat_flag = false;
         float radius_check = 0.3;
-        float move_on = f_frandomRange(0.1, 2);
         for(int j = 0; j < _wanderers.size(); j++){
             if(i == j){
                 continue;
