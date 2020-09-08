@@ -78,18 +78,25 @@ plt.boxplot(traveled_distance)
 plt.savefig(path + 'goal_distance_time_box')
 plt.clf()
 
+
+#flatten distance array from 3d to 1d
 hist_arr = []
-for episode in human_robot_distance:
-    hist,bin_edges = np.histogram(episode,bins=20,range=[0,5])
-    hist_arr.append(hist)
+for k in human_robot_distance:
+	for i in k:
+		for j in i:
+			hist_arr.append(j)
+print('flatten done')
+print(len(hist_arr))
+hist_arr = np.array(hist_arr)
 
-
-hist_arr = np.array(hist_arr).mean(axis=0)
+#bins = [0,1,2,3,4]
+print(max(hist_arr))
 plt.figure()
-plt.bar(bin_edges[1:],hist_arr)
+plt.hist(hist_arr,bins=50,align = 'right',edgecolor='black', linewidth=0.8)
+plt.axvline(np.mean(hist_arr), color='k', linestyle='dashed', linewidth=1)
 plt.title('Hist of human distances')
 plt.xlabel('distance')
-plt.ylabel('Number of steps where distance fall in bin')
+plt.ylabel('counts')
 plt.savefig(path+ 'human_distance_hist')
 plt.clf()
 
