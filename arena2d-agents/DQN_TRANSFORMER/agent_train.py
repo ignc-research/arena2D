@@ -11,71 +11,29 @@ from collections import deque
 
 ### hyper parameters ###
 MEAN_REWARD_BOUND = 120.0	# training is considered to be done if the mean reward reaches this value
-NUM_ACTIONS = 6				# total number of discrete actions the robot can perform
-DISCOUNT_FACTOR = 0.99		# discount factor for reward estimation (often denoted by gamma)
+NUM_ACTIONS = 5				# total number of discrete actions the robot can perform
+DISCOUNT_FACTOR = 0.9		# discount factor for reward estimation (often denoted by gamma)
 SYNC_TARGET_STEPS = 2000	# target net is synchronized with net every X steps
 LEARNING_RATE = 0.00025 	# learning rate for optimizer
 EPSILON_START = 1			# start value of epsilon
 EPSILON_MAX_STEPS = 10**6	# how many steps until epsilon reaches minimum
 EPSILON_END = 0.02			# min epsilon value
-BATCH_SIZE = 16				# batch size for training after every step
-TRAINING_START = 10000		# start training only after the first X steps
-MEMORY_SIZE = 2**20			# last X states will be stored in a buffer (memory), from which the batches are sampled
+BATCH_SIZE = 32				# batch size for training after every step
+TRAINING_START = 1000		# start training only after the first X steps
+MEMORY_SIZE = 2**18			# last X states will be stored in a buffer (memory), from which the batches are sampled
+SEQUENCE_LEN = 16 			# length of one sequence
 N_STEPS = 2					# number of steps when evaluating bellman equation
 DOUBLE = True				# activate double DQN
-TRANSFORMER_TYPE = "id"	# one of "base": standard transformer, "id": identity map reorder, "gated": gated transformer
-TRANSFORMER_NUM_LAYERS = 4	# number of encoder layers in transformer
-TRANSFORMER_NUM_HEADS = 8	# number of heads for multi-head self attention, make sure num_observations is divisible by this number
-TRANSFORMER_FF_DIM = 2048	# number of neurons in feedforward layer of transformer
-TRANSFORMER_DROPOUT = 0.1	# dropout applied after each transformer submodule
+SEED = 1235813
 #######################
 
-AGENT_NAME="dqn_transformer_agent"
-
-class QTransformer(nn.Module):
-	def __init__(self, num_observations, device):
-		super(QTransformer, self).__init__()
-
-		# positional encoding
-		self.pos_encoder = transformer.PositionalEncoding(num_observations)
-
-		# create transformer with N layers
-		self.transformer = transformer.Transformer(num_observations,
-											nhead = TRANSFORMER_NUM_HEADS,
-											num_layers = TRANSFORMER_NUM_LAYERS,
-											transformer_type = TRANSFORMER_TYPE,
-											dim_feedforward = TRANSFORMER_FF_DIM,
-											dropout = TRANSFORMER_DROPOUT)
-
-		# map output of final layer to Q values of actions
-		self.linear = nn.Linear(num_observations, NUM_ACTIONS)
-		
-		# save device for forwarding
-		self.device = device
-
-	# x is a list of N sequences or a tensor (sequence, batch, observation)
-	# returns a tensor (N, NUM_ACTIONS) containing q values for 
-	def forward(self, x):
-		x_transform = None
-		# sequences with different lengths
-		if type(x) == list:
-			x_transform = torch.Tensor(len(x), x[0].size()[1]).to(self.device)
-			# forward each sequence in batch through transformer separately because of different sequence length
-			for i in range(len(x)):
-				seq_len = x[i].size()[0]
-				x_encoded = self.pos_encoder(x[i])
-				x_transform[i] = self.transformer(x_encoded.view(seq_len, 1, -1))[-1]
-		else: # sequences of same length -> tensor
-			x_transform = self.transformer(self.pos_encoder(x))[-1]
-
-
-		# feed batch through linear
-		q_vals = self.linear(x_transform)
-		return q_vals
+AGENT_NAME="agent"
 	
 
 class Agent:
 	def __init__(self, device_name, model_name, num_observations, num_envs, num_threads, training_data_path):
+		torch.manual_seed(SEED)
+		random.seed(SEED)
 		assert(num_envs == 1)
 		self.device = torch.device(device_name)
 		self.training_data_path = training_data_path
@@ -87,11 +45,12 @@ class Agent:
 		self.tensor_reward_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.float).to(self.device)
 		self.tensor_action_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.long).to(self.device)# the action that was chosen
 		self.tensor_done_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.bool).to(self.device)# episode has ended
-		self.tensor_step_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.int16).cpu()# step index in episode (starting at 0)
+		self.tensor_step_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.long).cpu()# step index in episode (starting at 0)
+		self.trafo_memory_buffer = [torch.zeros(MEMORY_SIZE, num_observations, dtype=torch.float).to(self.device)] * (transformer.TRANSFORMER_NUM_LAYERS+1) # transformer memory
 
 		# creating net and target net
-		self.net = QTransformer(num_observations, self.device)
-		self.tgt_net = QTransformer(num_observations, self.device)
+		self.net = transformer.QTransformer(num_observations, NUM_ACTIONS, self.device)
+		self.tgt_net = transformer.QTransformer(num_observations, NUM_ACTIONS, self.device)
 
 
 		# copy to device
@@ -127,6 +86,10 @@ class Agent:
 		self.optimize_times = deque(maxlen=100)
 		self.gpu_pre_copy_times = deque(maxlen=100)
 		self.gpu_copy_times = deque(maxlen=100)
+		self.sample_indicies_times = deque(maxlen=100)
+		self.sample_memories_times = deque(maxlen=100)
+		self.sample_observations_times = deque(maxlen=100)
+		self.sample_other_times = deque(maxlen=100)
 		self.measure_gpu_times = False
 
 		# training metrics
@@ -170,37 +133,56 @@ class Agent:
 		action = -1
 		# insert current state into buffer
 		idx = self.frame_idx%MEMORY_SIZE
-		self.tensor_state_buffer[idx] = torch.FloatTensor(observation);
+		v_obs = torch.FloatTensor(observation)
+		self.tensor_state_buffer[idx] = v_obs
 		self.tensor_step_buffer[idx] = self.episode_frames
 		self.stop_gpu_measure(self.gpu_pre_copy_times)
+
+		# pack sequence
+		sequence = Agent.swap_batch_seq(self.get_complete_sequence(idx).unsqueeze(0))
+		# forward	
+		q, new_mem = self.net(sequence, None)
+		# save new memory in buffer
+		for i in range(transformer.TRANSFORMER_NUM_LAYERS+1):
+			self.trafo_memory_buffer[i][idx] = new_mem[i].squeeze()
+		max_value, act_v = torch.max(q, dim=1)
+		self.mean_value_buffer.append(max_value.item())
+		action = int(act_v.item())
 		if random.random() <= self.epsilon: # random action
 			action = random.randrange(0, NUM_ACTIONS)
-		else:
-			# pack sequence
-			sequence = Agent.swap_batch_seq(self.get_complete_sequence(idx).unsqueeze(0))
-			q = self.net(sequence)
-			max_value, act_v = torch.max(q, dim=1)
-			self.mean_value_buffer.append(max_value.item())
-			action = int(act_v.item())
 
 		self.last_action = action
 		return action
 	
+	# extend/shorten sequence so that it is exactly seq_len long
+	def fit_sequence(seq, seq_len):
+		l = seq.size(0)
+		if  l < seq_len: # too short -> extend with copies of first observation at beginning
+			for i in range(seq_len - l):
+				seq = torch.cat((seq, seq[0].unsqueeze(0)), dim = 0)
+		elif l > seq_len: # too long -> cut off observations from beginning
+			seq = seq[-seq_len:]
+
+		assert(seq.size(0) == seq_len)
+
+		return seq
+	
 	# get episode sequence from replay buffer
-	def get_sequence(self, start_index, seq_len):
+	def get_sequence(self, end_index, seq_len):
 		sequence = None
-		if start_index+seq_len > MEMORY_SIZE: # wrap around -> two part sequence
+		step_idx = int(self.tensor_step_buffer[end_index])
+		if end_index < step_idx: # wrap around -> two part sequence
 			# sequence part 1
-			seq1_len = MEMORY_SIZE-start_index
-			seq1 = torch.narrow(self.tensor_state_buffer, dim=0, start=start_index, length=seq1_len)
+			seq1_len = step_idx-end_index
+			seq1 = torch.narrow(self.tensor_state_buffer, dim=0, start=MEMORY_SIZE-seq1_len, length=seq1_len)
 			# sequence part 2
-			seq2_len = seq_len - seq1_len
+			seq2_len = end_index+1 
 			seq2 = torch.narrow(self.tensor_state_buffer, dim=0, start=0, length=seq2_len)
 			sequence = torch.cat((seq1, seq2), 0)
 		else:# continuous sequence 
-			sequence = torch.narrow(self.tensor_state_buffer, dim=0, start=start_index, length=seq_len)
+			sequence = torch.narrow(self.tensor_state_buffer, dim=0, start=end_index-step_idx, length=step_idx+1)
 
-		return sequence
+		return Agent.fit_sequence(sequence, seq_len)
 	
 	def get_complete_sequence(self, end_index):
 		seq_len = int(self.tensor_step_buffer[end_index])
@@ -268,9 +250,7 @@ class Agent:
 
 			# optimizing weights through SGD
 			self.optimizer.zero_grad()
-			self.start_gpu_measure()
 			batch = self.sample(BATCH_SIZE)
-			self.stop_gpu_measure(self.sampling_times)
 
 			loss_t = self.calc_loss(*batch)
 			
@@ -289,47 +269,37 @@ class Agent:
 
 		return 0 # continue training
 
+	def get_mean_time(mean_buffer):
+		if len(mean_buffer) > 0:
+			return "%.3fms"%(numpy.mean(list(mean_buffer))*1000)
+		else:
+			return "-"
+
 	def write_stats(self):
 		# calculate and write metrix
 		speed = (self.frame_idx - self.last_episode_frame)/(time.perf_counter() - self.last_time)
 		self.last_episode_frame = self.frame_idx
-		mean_sampling = "-"
-		mean_loss_calc = "-"
-		mean_optimize = "-"
-		mean_batch = "-"
-		mean_backward = "-"
-		mean_gpu_copy = "-"
-		best_reward = "-"
 		memory_size = min(self.frame_idx, MEMORY_SIZE)
-		if len(self.gpu_copy_times) > 0:
-			mean_gpu_copy = "%.3fms"%((numpy.mean(list(self.gpu_copy_times)) + numpy.mean(list(self.gpu_pre_copy_times)))*1000)
-		if len(self.loss_calc_times) > 0:
-			mean_loss_calc = "%.3fms"%(numpy.mean(list(self.loss_calc_times))*1000)
-		if len(self.optimize_times) > 0:
-			mean_optimize = "%.3fms"%(numpy.mean(list(self.optimize_times))*1000)
-		if len(self.sampling_times) > 0:
-			mean_sampling = "%.3fms"%(numpy.mean(list(self.sampling_times))*1000)
-		if len(self.batch_forward_times) > 0:
-			mean_batch = "%.3fms"%(numpy.mean(list(self.batch_forward_times))*1000)
-		if len(self.backward_times) > 0:
-			mean_backward = "%.3fms"%(numpy.mean(list(self.backward_times))*1000)
+		best_reward = "-"
 		if self.best_mean_reward is not None:
 			best_reward = "%.3f"%(self.best_mean_reward)
+		
 		print("  ----- Agent -----")
 		print("  Times:")
-		print("   -> GPU copy:         "+mean_gpu_copy)
-		print("   -> Batch sampling:   "+mean_sampling)
-		print("   -> Batch forwarding: "+mean_batch)
-		print("   -> Loss calculation: "+mean_loss_calc)
-		print("   -> Loss backward:    "+mean_backward)
-		print("   -> Optimizing:       "+mean_optimize)
+		print("   -> Batch sampling indicies:   "+Agent.get_mean_time(self.sample_indicies_times))
+		print("   -> Batch sampling memories:   "+Agent.get_mean_time(self.sample_memories_times))
+		print("   -> Batch sampling states:     "+Agent.get_mean_time(self.sample_observations_times))
+		print("   -> Batch sampling others:     "+Agent.get_mean_time(self.sample_other_times))
+		print("   -> Batch forwarding:          "+Agent.get_mean_time(self.batch_forward_times))
+		print("   -> Loss calculation:          "+Agent.get_mean_time(self.loss_calc_times))
+		print("   -> Loss backward:             "+Agent.get_mean_time(self.backward_times))
+		print("   -> Optimizing:                "+Agent.get_mean_time(self.optimize_times))
 		print("  Best reward: "+best_reward)
 		print("  Epsilon:      %.2f"%(self.epsilon))
 		print("  Frames:       %d"%(self.frame_idx))
 		print("  Memory:       %.1f%% (%d/%d)"%(float(100*memory_size)/float(MEMORY_SIZE), memory_size, MEMORY_SIZE))
 		print("  Mean loss:    %.3f"%(self.mean_loss))
 		print("  Mean value:   %.3f"%(self.mean_value))
-		print("  Mean Seq-Len: %.1f"%(self.mean_seq_len_value))
 		# reset timer
 		self.last_time = time.perf_counter()
 		
@@ -367,14 +337,17 @@ class Agent:
 			time_after = time.perf_counter()
 			mean_buffer.append(time_after-self.time_before)
 
+	def get_index_offset(index, offset):
+		return (index+ MEMORY_SIZE + offset)%MEMORY_SIZE
 	# returns batch of size @batch_size as tuple with random samples from xp buffers
 	# (state, new_state, action, reward, is_done)
 	def sample(self, batch_size):
+		self.start_gpu_measure()
 		# sample random elements
 		r = min(self.frame_idx-N_STEPS, MEMORY_SIZE)
 		next_random_indicies = numpy.random.choice(r, batch_size)
 
-		# buffer wraps around
+		# buffer wraps around -> adjust random indicies so that they don't point to episodes that are beeing overwritten
 		if self.frame_idx > MEMORY_SIZE:
 			f = self.frame_idx%MEMORY_SIZE
 			for i in range(len(next_random_indicies)):
@@ -387,49 +360,79 @@ class Agent:
 		# sample random state indicies
 		current_idx = self.frame_idx%MEMORY_SIZE
 		random_indicies = numpy.empty(batch_size, dtype=numpy.long)
-		shortest_seq_len = 100000
-		for i in range(len(random_indicies)):
+		mem_random_indicies = numpy.empty(batch_size, dtype=numpy.long)
+		mem_next_random_indicies = numpy.empty(batch_size, dtype=numpy.long)
+		for i in range(batch_size):
 			next_index = next_random_indicies[i]
 			seq_len = int(self.tensor_step_buffer[next_index])+1
-			# episode is currently overwritten through ring buffer
-			# find shortest sequence
 			if  seq_len <= N_STEPS: # sample is too close at beginning of episode
-				next_random_indicies[i] = (next_index+1+(N_STEPS-seq_len))%MEMORY_SIZE
+				next_random_indicies[i] = Agent.get_index_offset(next_index+1, (N_STEPS-seq_len))
 				next_index = next_random_indicies[i]
 				seq_len = N_STEPS+1
 
-			shortest_seq_len = min(shortest_seq_len, seq_len)
-			random_indicies[i] = (next_index+(MEMORY_SIZE-N_STEPS))%MEMORY_SIZE
+			if seq_len > SEQUENCE_LEN:
+				mem_next_random_indicies[i] = next_index - SEQUENCE_LEN
+			else:
+				mem_next_random_indicies[i] = next_index - (seq_len-1)
+
+			random_indicies[i] = Agent.get_index_offset(next_index, -N_STEPS)
+
+			other_seq_len =  seq_len-N_STEPS
+			if other_seq_len > SEQUENCE_LEN:
+				mem_random_indicies[i] = random_indicies[i] - SEQUENCE_LEN
+			else:
+				mem_random_indicies[i] = random_indicies[i] - (other_seq_len-1)
+
+		self.stop_gpu_measure(self.sample_indicies_times)
 	
-		self.mean_seq_len.append(shortest_seq_len)
-		t_seq_next = torch.Tensor(len(next_random_indicies), shortest_seq_len, self.num_observations).to(self.device)
-		t_seq = torch.Tensor(len(next_random_indicies), shortest_seq_len-N_STEPS, self.num_observations).to(self.device)
+		self.start_gpu_measure()
+		t_seq_next = torch.Tensor(batch_size, SEQUENCE_LEN, self.num_observations).to(self.device)
+		t_seq = torch.Tensor(batch_size, SEQUENCE_LEN, self.num_observations).to(self.device)
 		for i in range(len(next_random_indicies)):
-			t_seq_next[i] = self.get_sequence((next_random_indicies[i]+(MEMORY_SIZE-shortest_seq_len+1))%MEMORY_SIZE, shortest_seq_len)
-			t_seq[i] = torch.narrow(t_seq_next[i], dim=0, start=0, length=shortest_seq_len-N_STEPS)
+			t_seq_next[i] = self.get_sequence(next_random_indicies[i], SEQUENCE_LEN)
+			t_seq[i] = self.get_sequence(random_indicies[i], SEQUENCE_LEN)
+		self.stop_gpu_measure(self.sample_observations_times)
 		# copy indicies to gpu for faster sampling
+		self.start_gpu_measure()
 		random_indicies_v = torch.tensor(random_indicies).to(self.device)
 		# get actual tensors from indicies
 		action = self.tensor_action_buffer[random_indicies_v]
 		reward = self.tensor_reward_buffer[random_indicies_v]
 		is_done = self.tensor_done_buffer[random_indicies_v]
-		return (Agent.swap_batch_seq(t_seq), Agent.swap_batch_seq(t_seq_next), action, reward, is_done)
+		self.stop_gpu_measure(self.sample_other_times)
+
+		self.start_gpu_measure()
+		num_layers =  transformer.TRANSFORMER_NUM_LAYERS+1
+		state_mem = [None] * num_layers
+		next_state_mem = [None] * num_layers
+		mem_random_indicies_v = torch.tensor(mem_random_indicies).to(self.device)
+		mem_next_random_indicies_v = torch.tensor(mem_next_random_indicies).to(self.device)
+		for i in range(num_layers):
+			state_mem[i] = self.trafo_memory_buffer[i][mem_random_indicies_v].unsqueeze(0)
+			next_state_mem[i] = self.trafo_memory_buffer[i][mem_next_random_indicies_v].unsqueeze(0)
+		self.stop_gpu_measure(self.sample_memories_times)
+
+		return (Agent.swap_batch_seq(t_seq), state_mem, Agent.swap_batch_seq(t_seq_next), next_state_mem, action, reward, is_done)
 
 	# swapping axis for batch and sequence in tensor passed to transformer
 	def swap_batch_seq(t):
 		return t.permute(1, 0, 2)
 
-	def calc_loss(self, states, next_states, actions, rewards, dones):
+	def calc_loss(self, states, state_mem, next_states, next_state_mem, actions, rewards, dones):
 		self.start_gpu_measure()
 		# get currently estimated action values of performed actions in the past
-		q_values = self.net(states);
+		q_values, _ = self.net(states, state_mem);
 		state_action_values = q_values.gather(1, actions.unsqueeze(-1)).squeeze(-1)
 		# estimate action values of next states
+		next_state_values = None
+		'''
 		if DOUBLE:# double dqn
 			next_state_actions = self.net(next_states).max(1)[1]
 			next_state_values = self.tgt_net(next_states).gather(1, next_state_actions.unsqueeze(-1)).squeeze(-1)
 		else:
-			next_state_values = self.tgt_net(next_states).max(1)[0]
+		'''
+		next_q_values , _ = self.tgt_net(next_states, next_state_mem)
+		next_state_values = next_q_values.max(1)[0]
 		# set estimated state values of done states to 0
 		next_state_values[dones] = 0.0
 		# detatch from flow graph
@@ -448,8 +451,7 @@ class Agent:
 	def get_stats(self):
 		return [("Epsilon", self.epsilon),
 				("Mean Value", self.mean_value),
-				("Mean Loss", self.mean_loss),
-				("Mean Sequence Length", self.mean_seq_len_value)]
+				("Mean Loss", self.mean_loss)]
 
 	def stop(self):
 		if not self.training_done:

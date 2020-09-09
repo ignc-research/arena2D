@@ -10,10 +10,6 @@ def get_observation():
 if __name__ == '__main__':
 	device_name = "cpu"
 	device = torch.device(device_name)
-	qt = agent_train.QTransformer(NUM_OBSERVATIONS, device).to(device)
-	t = torch.randn(4, 10, NUM_OBSERVATIONS)
-	print("t", t)
-	print("transformed t", qt(t))
 
 	a = agent_train.Agent(device_name=device_name, model_name=None, num_observations=NUM_OBSERVATIONS, num_envs=1, num_threads=1, training_data_path = "./")
 	seq = [torch.randn(5, NUM_OBSERVATIONS).to(device), torch.randn(3, 8).to(device), torch.randn(10, 8).to(device), torch.randn(5, 8).to(device), torch.randn(3, 8).to(device), torch.randn(10, 8).to(device), torch.randn(3, 8).to(device), torch.randn(10, 8).to(device)]
@@ -34,5 +30,4 @@ if __name__ == '__main__':
 	print(a.tensor_step_buffer)
 	print(str(a.sample(50)))
 	print(a.get_complete_sequence(12))
-
 

@@ -1,10 +1,59 @@
 import torch
 import torch.nn as nn
 import copy
+import math
+import transformer_xl
 
+### transformer hyper parameters ###
+TRANSFORMER_TYPE = "id"		# one of "base": standard transformer, "id": identity map reorder, "gated": gated transformer
+TRANSFORMER_NUM_LAYERS = 6	# number of encoder layers in transformer
+TRANSFORMER_NUM_HEADS = 8	# number of heads for multi-head self attention, make sure num_observations is divisible by this number
+TRANSFORMER_FF_DIM = 512	# number of neurons in feedforward layer of transformer
+TRANSFORMER_DROPOUT = 0.1	# dropout applied after each transformer submodule
+##################################
+
+class QTransformer(nn.Module):
+	def __init__(self, num_observations, num_actions, device):
+		super(QTransformer, self).__init__()
+
+		# positional encoding
+		self.pos_encoder = PositionalEncoding(num_observations)
+
+		# create transformer with N layers
+		'''self.transformer = Transformer(		d_model = num_observations,
+											nhead = TRANSFORMER_NUM_HEADS,
+											num_layers = TRANSFORMER_NUM_LAYERS,
+											transformer_type = TRANSFORMER_TYPE,
+											dim_feedforward = TRANSFORMER_FF_DIM,
+											dropout = TRANSFORMER_DROPOUT)
+											'''
+		self.transformer = transformer_xl.MemTransformerLM(	TRANSFORMER_NUM_LAYERS,
+															TRANSFORMER_NUM_HEADS,
+															num_observations,
+															num_observations//TRANSFORMER_NUM_HEADS,
+															TRANSFORMER_FF_DIM,
+															TRANSFORMER_DROPOUT,
+															TRANSFORMER_DROPOUT)
+
+		# map output of final layer to Q values of actions
+		self.linear = nn.Linear(num_observations, num_actions)
+		
+		# save device for forwarding
+		self.device = device
+
+	# x is a list of N sequences or a tensor (sequence, batch, observation)
+	# returns a tensor (N, NUM_ACTIONS) containing q values for 
+	def forward(self, x, mem):
+		# sequences with different lengths
+		x_transform, new_mem = self.transformer(x, mem)
+
+		# feed batch through linear
+		q_vals = self.linear(x_transform[-1])
+		return q_vals, new_mem
+	
 # Base Transformer (TrXL) encoder layer from paper "Attention is all you need"
 class TransformerLayer(nn.Module):
-	def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1):
+	def __init__(self, d_model, nhead, dim_feedforward, dropout):
 		super(TransformerLayer, self).__init__()
 
 		# self attention layer
@@ -39,7 +88,7 @@ class TransformerLayer(nn.Module):
 
 # Transformer with Identity Map Reordering (TrXL-I) encoder layer
 class TransformerILayer(TransformerLayer):
-	def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1):
+	def __init__(self, d_model, nhead, dim_feedforward, dropout):
 		super(TransformerILayer, self).__init__(d_model, nhead, dim_feedforward, dropout)
 		self.res_activation1 = nn.ReLU()
 		self.res_activation2 = nn.ReLU()
@@ -57,8 +106,8 @@ class TransformerILayer(TransformerLayer):
 		return src
 
 # Gated Transformer (GTrXL) encoder layer from Paper "Stabilizing Transformers for Reinforcement Learning" (2019, Parisotto, Song, et. al.)
-class TransformerGLayer(TransformerLayer):
-	def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1):
+class TransformerGLayer(TransformerILayer):
+	def __init__(self, d_model, nhead, dim_feedforward, dropout):
 		super(TransformerGLayer, self).__init__(d_model, nhead, dim_feedforward, dropout)
 		self.res_activation1 = nn.ReLU()
 		self.res_activation2 = nn.ReLU()
@@ -78,7 +127,7 @@ class TransformerGLayer(TransformerLayer):
 # actual transformer instancing multiple encoder layers
 # @param transformer_type one of "base": standard transformer, "id": identity map reorder, "gated": gated transformer
 class Transformer(nn.Module):
-	def __init__(self, d_model, nhead, num_layers=6, transformer_type="base", dim_feedforward=2048, dropout=0.1):
+	def __init__(self, d_model, nhead, num_layers, transformer_type, dim_feedforward, dropout):
 		super(Transformer, self).__init__()
 		enc = None
 		# parse transformer_type, create template layer accordingly
@@ -103,19 +152,19 @@ class Transformer(nn.Module):
 
 # relative position encoding from pytorch tutorial https://pytorch.org/tutorials/beginner/transformer_tutorial.html
 class PositionalEncoding(nn.Module):
+	def __init__(self, d_model, dropout=0.1, max_len=1000):
+		super(PositionalEncoding, self).__init__()
+		self.dropout = nn.Dropout(p=dropout)
 
-def __init__(self, d_model, dropout=0.1, max_len=5000):
-	super(PositionalEncoding, self).__init__()
-	self.dropout = nn.Dropout(p=dropout)
+		pe = torch.zeros(max_len, d_model)
+		position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+		div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+		pe[:, 0::2] = torch.sin(position * div_term)
+		pe[:, 1::2] = torch.cos(position * div_term)
+		pe = pe.unsqueeze(0).transpose(0, 1)
+		self.register_buffer('pe', pe)
 
-	pe = torch.zeros(max_len, d_model)
-	position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-	div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
-	pe[:, 0::2] = torch.sin(position * div_term)
-	pe[:, 1::2] = torch.cos(position * div_term)
-	pe = pe.unsqueeze(0).transpose(0, 1)
-	self.register_buffer('pe', pe)
+	def forward(self, x):
+		x = x + self.pe[:x.size(0), :]
+		return self.dropout(x)
 
-def forward(self, x):
-	x = x + self.pe[:x.size(0), :]
-	return self.dropout(x)
