@@ -211,6 +211,13 @@ void Environment::reset(bool robot_position_reset)
 	_episodeState = RUNNING;
 	_episodeTime = 0.f;
 	_totalReward = 0.f;
+
+	//save initial goal distance for evaluation
+	float goal_distance = 0.f;
+	float goal_angle = 0.f;
+	getGoalDistance(goal_distance, goal_angle);
+	goal_distance -= (_robot->getRadius() + _SETTINGS->stage.goal_size); 
+	_evaluation.saveGoalDistance(goal_distance, goal_angle);
 }
 
 void Environment::BeginContact(b2Contact * contact){

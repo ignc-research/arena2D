@@ -23,6 +23,7 @@ public:
     void countTimeout();
     void saveDistance(std::list<float> & distances);
     void countAction(const b2Transform & robot_transform);
+    void saveGoalDistance(float goal_distance, float goal_angle);
 
     void saveData();
 
