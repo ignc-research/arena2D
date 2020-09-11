@@ -37,34 +37,11 @@ time_out_counter = np.count_nonzero(ending == 'time')
 goal_counter = np.count_nonzero(ending == 'goal')
 num_episodes = human_counter + wall_counter + time_out_counter + goal_counter
 
-#get time_to_goal and traveled distanse per episode
-time_to_goal = []
-traveled_distance = []
-frac_direct_traveled_dist = []
-for current_episode in range(num_episodes):
-	idx_start = np.argwhere(episode == current_episode) if current_episode != 0 else 0
-	idx_end = np.argwhere(episode == current_episode+1)
-	if ending[idx_end] == 'goal':
-		position_for_episode = robot_position[int(idx_start):int(idx_end)]
-		position_for_episode = position_for_episode[~np.isnan(position_for_episode).any(axis=1)]
-		time_to_goal.append(position_for_episode.shape[0])
-		dist = 0
-		for row_idx in range(position_for_episode.shape[0]-1):
-			v1 = position_for_episode[row_idx]
-			v2 = position_for_episode[row_idx+1]
-			dist = dist + np.linalg.norm(v1-v2)
-		traveled_distance.append(dist)
-		#first episode goal info missing
-		if current_episode != 0:	frac_direct_traveled_dist.append(dist/goal_distance[current_episode-1]) 
-#remove all nan 
-robot_position = robot_position[~np.isnan(robot_position).any(axis=1)]
-robot_direction = robot_direction[~np.isnan(robot_direction).any(axis=1)]
-time_to_goal = np.array(time_to_goal)
-#traveled_distance = np.array(traveled_distance)
 
 #read safty distance and time-out time from settings.st
 with open("settings.st", "r") as f:
 	settings = f.readlines()
+base = False
 for line in settings:
 	if 'safety_distance_human' in line:
 		start = line.find("=")
@@ -79,7 +56,52 @@ for line in settings:
 		end = line.find("#")
 		time_step = float(line[start+1:end])
 
+	if 'goal_size = ' in line:
+		start = line.find("=")
+		end = line.find("#")
+		goal_size = float(line[start+1:end])
+	if base:
+		start = line.find("=")
+		base_size = float(line[start+1:])
+		base = False
+	if 'base_size' in line:
+		base = True
+
+		
 max_step_time_out = max_time/time_step
+#correct direkt goal distance
+goal_distance = goal_distance - (goal_size/2 + base_size)
+
+#get time_to_goal and traveled distanse per episode
+time_to_goal = []
+traveled_distance = []
+frac_direct_traveled_dist = []
+temp=0
+for current_episode in range(num_episodes):
+	idx_start = np.argwhere(episode == current_episode) if current_episode != 0 else 0
+	idx_end = np.argwhere(episode == current_episode+1)
+	if ending[idx_end] == 'goal':
+		position_for_episode = robot_position[int(idx_start):int(idx_end)]
+		position_for_episode = position_for_episode[~np.isnan(position_for_episode).any(axis=1)]
+		time_to_goal.append(position_for_episode.shape[0])
+		dist = 0
+		for row_idx in range(position_for_episode.shape[0]-1):
+			v1 = position_for_episode[row_idx]
+			v2 = position_for_episode[row_idx+1]
+			dist = dist + np.linalg.norm(v2-v1)
+		traveled_distance.append(dist)
+		#first episode goal info missing
+		if current_episode != 0:
+			frac_direct_traveled_dist.append(dist/goal_distance[current_episode-1]) 
+			if dist/goal_distance[current_episode-1]<1:
+				temp = temp+1
+print(temp)
+
+#remove all nan 
+robot_position = robot_position[~np.isnan(robot_position).any(axis=1)]
+robot_direction = robot_direction[~np.isnan(robot_direction).any(axis=1)]
+time_to_goal = np.array(time_to_goal)
+#traveled_distance = np.array(traveled_distance)
 
 #print hit numbers
 #print('for evaluation the robot did 1000 episodes')
