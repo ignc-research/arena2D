@@ -27,19 +27,9 @@ public:
     void saveData();
 
 private:
-    void episodeEnd(bool goal_reached = false);
-
     bool initialized = false;
 
     unsigned int episode_counter;
-    unsigned int human_counter;
-    unsigned int wall_counter;
-    unsigned int goal_counter;
-    unsigned int Timeout_counter;
-    
-    unsigned int action_counter;
-    float travelled_distance;
-    b2Vec2 _old_robot_position;
 
     std::ofstream myfile;
 };
