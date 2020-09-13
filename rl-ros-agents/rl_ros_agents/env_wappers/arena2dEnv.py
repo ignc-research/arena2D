@@ -4,18 +4,26 @@ import rospy
 from geometry_msgs.msg import Twist
 from arena2d_msgs.msg import RosAgentReq, Arena2dResp
 from stable_baselines.common.vec_env import SubprocVecEnv
+from stable_baselines.bench import Monitor
 import numpy as np
 import threading
 from typing import Union, List, Tuple
 import time
 from gym import spaces
+import os
 # namespace of arena settings
 NS_SETTING = "/arena/settings/"
 
 
-def get_arena_envs():
+def get_arena_envs(use_monitor = True,log_dir = None):
     # the num_envs should be set in the filt settings.st under the  folder of arena2d-sim
-    num_envs = rospy.get_param(NS_SETTING+"num_envs")
+    num_envs = rospy.get_param(NS_SETTING + "num_envs")
+    if log_dir is None:
+        logs_file_names = [None] * num_envs
+    else:
+        logs_file_names = [os.path.join(log_dir, f"arena_env_{i}") for i in range(num_envs)]
+    if use_monitor:
+        return SubprocVecEnv([lambda i = i: Monitor(Arena2dEnvWrapper(i),logs_file_names[i]) for i in range(num_envs)])
     return SubprocVecEnv([lambda i=i: Arena2dEnvWrapper(i) for i in range(num_envs)])
 
 
