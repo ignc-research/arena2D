@@ -385,7 +385,7 @@ void Arena::rosUpdate(float wait_time = 0.0f)
 				_envs[i].reset(false);
 				_levelResetMeasure.endTime();
 				}else{
-					ROS_ERROR_STREAM("Something wrong with the env: " << i);
+					//ROS_ERROR_STREAM("Something wrong with the env: " << i);
 				}
 			}
 			
