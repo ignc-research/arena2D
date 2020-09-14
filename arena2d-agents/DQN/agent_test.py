@@ -6,7 +6,7 @@ import os.path
 import shutil
 
 NUM_ACTIONS = 7
-STOP_TESTING = 100		# number of episodes used for testing
+STOP_TESTING = 1000		# number of episodes used for testing
 episode_idx = 0
 
 DEFAULT_MODEL = "../arena2d-sim/dqn_agent_best.dat"

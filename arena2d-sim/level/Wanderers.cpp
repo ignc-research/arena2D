@@ -76,10 +76,12 @@ void Wanderers::update(){
 
 void Wanderers::calculateDistanceAngle(){
     //clear and update all observation vectors of wanderers
+    _old_infos_of_wanderers.clear();
     _old_observed_wanderers.clear();
+    _old_infos_of_wanderers = _infos_of_wanderers;
     _old_observed_wanderers = _observed_wanderers;
-    _observed_wanderers.clear();
     _infos_of_wanderers.clear();
+    _observed_wanderers.clear();
     _distance_evaluation.clear();
 
     //calculate distance and angle of all wanderers relativ to robot
@@ -109,23 +111,43 @@ void Wanderers::getClosestWanderers(){
 
     //Get only Wanderers inside the camera view
     float half_camera_angle = _SETTINGS->robot.camera_angle/2.;
+    int i = 0;
     for(std::list<WandererInfo>::iterator it = _infos_of_wanderers.begin(); it != _infos_of_wanderers.end(); it++){
-        if(it->angle < half_camera_angle && it->angle > -half_camera_angle){
-            _observed_wanderers.push_back(*it);
+        if(i < _SETTINGS->training.num_obs_humans){
+            if(it->angle < half_camera_angle && it->angle > -half_camera_angle){
+                _observed_wanderers.push_back(*it);
+                i++;
+            }
         }
     }
 }
 
-void Wanderers::get_old_Distance(std::vector<float> & old_distance){
+void Wanderers::get_old_observed_distances(std::vector<float> & old_distance){
     for(int i = 0; i < _old_observed_wanderers.size(); i++){
         old_distance.push_back(_old_observed_wanderers[i].distance);
     }
 }
 
-void Wanderers::get_Distance(std::vector<float> & distance){
+void Wanderers::get_observed_distances(std::vector<float> & distance){
     for(int i = 0; i < _old_observed_wanderers.size(); i++){
         for(std::list<WandererInfo>::iterator it = _infos_of_wanderers.begin(); it != _infos_of_wanderers.end(); it++){
             if(it->index == _old_observed_wanderers[i].index){
+                distance.push_back(it->distance);
+            }
+        }
+    }
+}
+
+void Wanderers::get_old_distances(std::vector<float> & old_distance){
+    for(std::list<WandererInfo>::iterator it_old = _old_infos_of_wanderers.begin(); it_old != _old_infos_of_wanderers.end(); it_old++){
+        old_distance.push_back(it_old->distance);
+    }
+}
+
+void Wanderers::get_distances(std::vector<float> & distance){
+    for(std::list<WandererInfo>::iterator it_old = _old_infos_of_wanderers.begin(); it_old != _old_infos_of_wanderers.end(); it_old++){
+        for(std::list<WandererInfo>::iterator it = _infos_of_wanderers.begin(); it != _infos_of_wanderers.end(); it++){
+            if(it->index == it_old->index){
                 distance.push_back(it->distance);
             }
         }

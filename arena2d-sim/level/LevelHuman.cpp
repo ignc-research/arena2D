@@ -69,8 +69,14 @@ float LevelHuman::getReward()
 	float reward = 0;
 	_closestDistance_old.clear();
 	_closestDistance.clear();
-	wanderers.get_old_Distance(_closestDistance_old);
-	wanderers.get_Distance(_closestDistance);
+	if(_SETTINGS->training.reward_function == 1){ //reward for observed humans inside camera view of robot (number limited by num_obs_humans)
+		wanderers.get_old_observed_distances(_closestDistance_old);
+		wanderers.get_observed_distances(_closestDistance);
+	}else if(_SETTINGS->training.reward_function == 2){ //reward for all humans in the level
+		wanderers.get_old_distances(_closestDistance_old);
+		wanderers.get_distances(_closestDistance);
+	}
+	
 
 	for(int i = 0; i < _closestDistance_old.size(); i++){
 		float distance_after = _closestDistance[i];
