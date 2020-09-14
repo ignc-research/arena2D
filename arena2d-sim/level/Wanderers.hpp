@@ -39,8 +39,12 @@ public:
     void reset(RectSpawn & _dynamicSpawn);
 
     void update();
-    void get_old_Distance(std::vector<float> & old_distance);
-    void get_Distance(std::vector<float> & distance);
+
+    void get_old_observed_distances(std::vector<float> & old_distance);
+    void get_observed_distances(std::vector<float> & distance);
+
+    void get_old_distances(std::vector<float> & old_distance);
+    void get_distances(std::vector<float> & distance);
 
     void getWandererData(std::vector<float> & data);
     bool checkHumanContact(b2Fixture* other_fixture);
@@ -56,9 +60,11 @@ private:
 	/* list that stores all wanderers for dynamic level */
     std::vector<WandererBipedal*> _wanderers;
 
-    std::list<WandererInfo> _infos_of_wanderers; 
-    std::vector<WandererInfo> _old_observed_wanderers;
+    std::list<WandererInfo> _infos_of_wanderers;
+    std::list<WandererInfo> _old_infos_of_wanderers;
     std::vector<WandererInfo> _observed_wanderers;
+    std::vector<WandererInfo> _old_observed_wanderers;
+
 
     std::list<float> _distance_evaluation;
 };
