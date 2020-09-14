@@ -7,13 +7,12 @@ import shutil
 
 NUM_ACTIONS = 7
 STOP_TESTING = 1000		# number of episodes used for testing
-episode_idx = 0
 
 DEFAULT_MODEL = "../arena2d-sim/dqn_agent_best.dat"
 
 class Agent:
 	def __init__(self, device_name, model_name, num_observations, num_envs, num_threads,trash):
-		global episode_idx
+		self.episode_idx = 0
 		assert(num_envs == 1)
 		if model_name is None:
 			model_name=DEFAULT_MODEL
@@ -23,8 +22,6 @@ class Agent:
 		self.net.train(False)# set training mode to false to deactivate dropout layer
 		self.net.load_state_dict(torch.load(model_name, map_location=self.device))
 		self.net.to(self.device)
-
-		episode_idx = 0
 
 	def pre_step(self, observation):
 		# passing observation through net
@@ -39,10 +36,9 @@ class Agent:
 	def post_step(self, new_observation, reward, is_done, mean_reward, mean_success):
 	# this function is called after simulation step has been performed
 	# return 0 to continue, 1 to stop training
-		global episode_idx
 		if is_done != 0: # episode done
-			episode_idx += 1
-			if episode_idx >= STOP_TESTING:
+			self.episode_idx += 1
+			if self.episode_idx >= STOP_TESTING:
 				return 1 #stop testing
 		return 0 # keep on testing
 
@@ -52,6 +48,7 @@ class Agent:
 				("Mean Loss", self.mean_loss)]
 
 	def stop(self):
+		#copy evaluation.py script to training folder of given model
 		evaluation_path_target = os.path.dirname(self.model_name) + '/evaluation.py'
 		evaluation_path_orignal = '../arena2d-sim/scripts/evaluation.py'
 		print(evaluation_path_target)
