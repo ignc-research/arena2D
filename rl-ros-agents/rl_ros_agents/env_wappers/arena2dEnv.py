@@ -69,7 +69,7 @@ class Arena2dEnvWrapper(gym.Env):
         self._pubRosAgentReq(env_reset=True)
 
         with self.response_con:
-            self.response_con.wait(10)
+            self.response_con.wait(20)
             if not self.resp_received:
                 rospy.ERROR("Environment wrapper didn't get the feedback from arena simulator")
         return self.obs
@@ -81,11 +81,12 @@ class Arena2dEnvWrapper(gym.Env):
         namespace = "arena2d/env_{:d}/".format(self._idx_env)
 
         # publisher
-        self._ros_agent_pub = rospy.Publisher(namespace + "request", RosAgentReq, queue_size=3)
+        self._ros_agent_pub = rospy.Publisher(namespace + "request", RosAgentReq, queue_size=1,tcp_nodelay=True)
         rospy.loginfo("env[{:d}] wrapper waiting for arena-2d simulator to connect!".format(self._idx_env))
         times = 0
         # subscriber
-        self._arena2d_sub = rospy.Subscriber(namespace + "response", Arena2dResp, self._arena2dRespCallback)
+        # According to the testing,enable tcp_nodelay can double the performance
+        self._arena2d_sub = rospy.Subscriber(namespace + "response", Arena2dResp, self._arena2dRespCallback,tcp_nodelay=True)
         # # give rospy enough time to establish the connection, without this procedure, the message to
         # # be published at the beginning could be lost.
         while self._ros_agent_pub.get_num_connections() == 0 or self._arena2d_sub.get_num_connections() == 0:

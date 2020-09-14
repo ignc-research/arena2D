@@ -60,7 +60,8 @@ void RosNode::_setRosAgentsReqSub()
     {
         std::stringstream ss;
         ss << "env_" << i << "/request";
-        m_ros_agent_subs.push_back(m_nh_ptr->subscribe<arena2d_msgs::RosAgentReq>(ss.str(), 1, boost::bind(&RosNode::_RosAgentReqCallback, this, _1, i)));
+        // set tcp no_delay, to get better performance.
+        m_ros_agent_subs.push_back(m_nh_ptr->subscribe<arena2d_msgs::RosAgentReq>(ss.str(),1,boost::bind(&RosNode::_RosAgentReqCallback, this, _1, i),ros::VoidConstPtr(),ros::TransportHints().tcpNoDelay()));
     }
 }
 
