@@ -1,11 +1,12 @@
-#include "LevelRandom.hpp"
+#include "LevelHuman.hpp"
 
-void LevelRandom::reset(bool robot_position_reset)
+void LevelHuman::reset(bool robot_position_reset)
 {
 	// clear old bodies and spawn area
 	clear();
-	if(_dynamic)
-		freeWanderers();
+	if(_dynamic){
+        wanderers.freeWanderers();
+    }
 
 	// get constants
 	const float half_width = _SETTINGS->stage.level_size/2.f;
@@ -50,38 +51,45 @@ void LevelRandom::reset(bool robot_position_reset)
 		_dynamicSpawn.clear();
 		_dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
 		_dynamicSpawn.calculateArea();
-		for(int i = 0; i < num_dynamic_obstacles; i++){
-			b2Vec2 p;
-			_dynamicSpawn.getRandomPoint(p);
-			Wanderer * w = new Wanderer(_levelDef.world,  p, dynamic_speed, 0.1, 0.05);
-			w->addCircle(dynamic_radius);
-			_wanderers.push_back(w);
-		}
+		wanderers.reset(_dynamicSpawn);
 	}
 
 	randomGoalSpawnUntilValid();
 }
 
-
-void LevelRandom::freeWanderers()
-{
-	for(std::list<Wanderer*>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++){
-		delete (*it);
-	}
-	_wanderers.clear();
-}
-
-void LevelRandom::update()
-{
-	for(std::list<Wanderer*>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++){
-		(*it)->update(false);
-	}
-
-}
-
-void LevelRandom::renderGoalSpawn()
+void LevelHuman::renderGoalSpawn()
 {
 	Level::renderGoalSpawn();
 	Z_SHADER->setColor(zColor(0.1, 0.9, 0.0, 0.5));
 	_dynamicSpawn.render();
+}
+
+float LevelHuman::getReward()
+{
+	float reward = 0;
+	_closestDistance_old.clear();
+	_closestDistance.clear();
+	if(_SETTINGS->training.reward_function == 1){ //reward for observed humans inside camera view of robot (number limited by num_obs_humans)
+		wanderers.get_old_observed_distances(_closestDistance_old);
+		wanderers.get_observed_distances(_closestDistance);
+	}else if(_SETTINGS->training.reward_function == 2){ //reward for all humans in the level
+		wanderers.get_old_distances(_closestDistance_old);
+		wanderers.get_distances(_closestDistance);
+	}
+	
+
+	for(int i = 0; i < _closestDistance_old.size(); i++){
+		float distance_after = _closestDistance[i];
+		float distance_before = _closestDistance_old[i];
+		// checking reward for distance to human decreased/increased
+		if(distance_after < _SETTINGS->training.safety_distance_human){
+			if(distance_after < distance_before){
+				reward += _SETTINGS->training.reward_distance_to_human_decreased;
+			}
+			else if(distance_after > distance_before){
+				reward += _SETTINGS->training.reward_distance_to_human_increased;
+			}
+		}
+	}
+	return reward;
 }

@@ -20,7 +20,7 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
 	_body = w->CreateBody(&body_def);
 
 	// initial velocity update
-	updateVelocity();
+//	updateVelocity();
 }
 
 void Wanderer::addCircle(float radius, const b2Vec2 & pos)
@@ -51,7 +51,7 @@ Wanderer::~Wanderer()
 	_body = NULL;
 }
 
-void Wanderer::update()
+void Wanderer::update(bool chat_flag)
 {
 	if(f_random() <= _changeRate)
 		updateVelocity();
