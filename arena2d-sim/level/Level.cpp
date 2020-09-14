@@ -108,6 +108,7 @@ b2Body* Level::addShape(const std::vector<b2Shape*> shapes)
 	return body;
 }
 
+//function for corridor spawning with less overlapping
 void Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p){
     bool spawn_found = false;
     //printf("obstacleSpawnUntilValid\n");
