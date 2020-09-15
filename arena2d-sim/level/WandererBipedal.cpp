@@ -13,6 +13,7 @@ WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
 	addCircle(r, b2Vec2(-offset-r, 0));
 
 
+	//variables for wanderers interacting with each other
     float chat_max_time = _SETTINGS->stage.max_time_chatting / _SETTINGS->physics.time_step / _SETTINGS->physics.step_iterations;
 	chat_counter = 0;
 	chat_threshold = (int)f_frandomRange(0, chat_max_time);
@@ -23,11 +24,9 @@ WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
 void WandererBipedal::update(bool chat_flag)
 {
 
-    // Update Leg posture
-    // b2Vec2 v = _body1->GetLinearVelocity();
-    // step_width_factor = v.Normalize();
-    //printf("flag %d \n", chat_flag);
+    //check if this wanderer is currently near another wanderer (chat flag == true)
     if(chat_flag){
+        //check if interaction time end is reached, if not then stay
         if(chat_counter < chat_threshold){
             chat_counter++;
             _body->SetAngularVelocity(0);
@@ -35,8 +34,10 @@ void WandererBipedal::update(bool chat_flag)
             return;
         }
     }else{
+        //makes sure, the wanderers are able to walk away from each other
         if(chat_counter >= chat_threshold){
             chat_reset_counter++;
+            //resets chat_counter in order to allow wanderer interaction again
             if(chat_reset_counter > chat_reset_threshold){
                 chat_counter = 0;
             }
@@ -45,11 +46,14 @@ void WandererBipedal::update(bool chat_flag)
             chat_counter = 0;
         }
     }
+
+    // destroy ald body in order to create a new one
     b2Fixture *fixOld1 = _body->GetFixtureList();
     _body->DestroyFixture(fixOld1);
     fixOld1 = _body->GetFixtureList();
     _body->DestroyFixture(fixOld1);
 
+    //create new circles with changing positions to emulate walking
     float y_val = fmod( _counter,  2*M_PI);
     float legRadius = HUMAN_LEG_SIZE/2.f;
     b2Vec2 circle1Pos = b2Vec2(sin(y_val)*step_width_factor, 0.05);
@@ -79,15 +83,16 @@ void WandererBipedal::updateVelocity()
     float hi = max_velocity/2;
     float random_velocity = lo + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(hi-lo)));
     //printf("calc velocity\n");
+    //wanderer stops for a random rate, in order to change direction and velocity
     if(f_random() < _stopRate){
         //printf("stop!\n");
 
         v.Set(0,0);
     }
     else{
+        //each time wanderer stops, a new random velocity and orientation is set
         if(v == b2Vec2_zero){
-            //printf("is b2Vec2 zero\n");
-
+            //setting random velocity after each stop
             float sign_x = 1;
             if(rand()%2 == 0) sign_x = -1;
             float sign_y = 1;
@@ -100,18 +105,22 @@ void WandererBipedal::updateVelocity()
             v_rot = zVector2D(sign_x* random_velocity, sign_y * random_velocity_y);//.getRotated(angle);
         }
         else{
-            //printf("set velocity else\n");
+
 
             angle = (max_angle*2*f_random())-max_angle;
-//            v_rot = max_velocity y/2 * zVector2D(v.x, v.y).getNormalized();
+//          v_rot = max_velocity y/2 * zVector2D(v.x, v.y).getNormalized();
             float x = 0;
             float y = 0;
+
+            //preventing that wanderer gets slower
             if (v.x < 0 ) {
                 x = -random_velocity;
             } else {
                 x = random_velocity;
             }
             y = v.y;
+
+            //change y orientation in order talk walk diagonal
 
             if(rand()%5 == 0) y * 0.023;
             if(rand()%7 == 0) y * -0.023;
@@ -122,6 +131,7 @@ void WandererBipedal::updateVelocity()
     }
     //printf("set velocity\n");
     _body->SetLinearVelocity(b2Vec2(v_rot.x, v_rot.y));
+    //wanderer orientation  faces in direction of velocity
     _body->SetTransform(_body->GetPosition(), atan2(v_rot.y,v_rot.x));
     //printf("update DONE\n");
 }
