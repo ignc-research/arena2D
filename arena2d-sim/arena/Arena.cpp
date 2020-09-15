@@ -68,6 +68,16 @@ int Arena::init(int argc, char **argv)
 			puts(ARENA_HELP_STRING);
 			exit(0);
 		}
+		else if(!strcmp(argv[arg_i], "--run")){
+			if(arg_i+1 < argc){
+				command_index = arg_i+1;
+				arg_i++;// skip next argument run command
+			}
+			else{
+				printf("No commands given for option --run!\n");
+				exit(0);
+			}
+		}
 #ifdef SUPPORT_ROS_AGENT
 		else if (!strcmp(argv[arg_i], "--use_ros_agent"))
 		{
@@ -95,7 +105,7 @@ int Arena::init(int argc, char **argv)
 	initCommands();
 
 	/* init global settings*/
-	if (_SETTINGS_OBJ->init("./settings.st"))
+	if (_SETTINGS_OBJ->init((GLOBAL_PACKAGE_PATH+"/settings.st").c_str()))
 	{
 		return -1;
 	}
