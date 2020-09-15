@@ -146,6 +146,10 @@ void Arena::update()
 				_meanSuccess.push((s == Environment::POSITIVE_END) ? 1 : 0);
 				_meanSuccess.calculateMean();
 
+				// adding success value to success buffer
+				_meanCollision.push((s == Environment::NEGATIVE_END) ? 1 : 0);
+				_meanCollision.calculateMean();
+
 				// adding reward to total reward buffer
 				_meanReward.push(_envs[i].getTotalReward());
 				_meanReward.calculateMean();
@@ -173,12 +177,13 @@ void Arena::update()
 		if(_trainingMode && _pyAgentUsed){
 			_agentPostMeasure.startTime();
 			if(_agentFuncs[PYAGENT_FUNC_POST_STEP] != NULL){
-				PyObject * args = PyTuple_New(5);
+				PyObject * args = PyTuple_New(6);
 				PyTuple_SetItem(args, 0, packAllPyObservation());						//observation
 				PyTuple_SetItem(args, 1, packAllPyRewards());							//reward
 				PyTuple_SetItem(args, 2, packAllPyDones());								//done
 				PyTuple_SetItem(args, 3, PyFloat_FromDouble(_meanReward.getMean()));	//mean reward
 				PyTuple_SetItem(args, 4, PyFloat_FromDouble(_meanSuccess.getMean()));	//mean success
+				PyTuple_SetItem(args, 5, PyFloat_FromDouble(_meanCollision.getMean()));	//mean collision
 				PyObject * result = PyObject_CallObject(_agentFuncs[PYAGENT_FUNC_POST_STEP], args);
 				Py_DECREF(args);
 				if(result == NULL){
@@ -207,7 +212,7 @@ void Arena::update()
 				Environment::EpisodeState s = _envs[i].getEpisodeState();
 				if(s != Environment::RUNNING){
 					_levelResetMeasure.startTime();
-					_envs[i].reset();
+					_envs[i].reset(false);
 					_levelResetMeasure.endTime();
 				}
 			}
@@ -221,18 +226,20 @@ void Arena::update()
 		{
 			// write header first?
 			const bool write_header = (_csvWriter.getNumLines() == 0);
-			std::vector<const char*> names(3);
+			std::vector<const char*> names(4);
 			// default metrics
 			if(write_header)
 			{
 				names[0] = "Episodes";
 				names[1] = "Success";
 				names[2] = "Mean Reward";
+				names[3] = "Mean Collision";
 			}
-			std::vector<float> values(3);
+			std::vector<float> values(4);
 			values[0] = (float)_episodeCount;
 			values[1] = _meanSuccess.getMean();
 			values[2] = _meanReward.getMean();
+			values[3] = _meanCollision.getMean();
 			// call get_stats python function
 			if(_agentFuncs[PYAGENT_FUNC_GET_STATS] != NULL){
 				const char * func_name = PYAGENT_FUNC_NAMES[PYAGENT_FUNC_GET_STATS];

@@ -123,7 +123,7 @@ void Level::randomGoalSpawnUntilValid(RectSpawn * goal_spawn)
 	do{
 		spawn->getRandomPoint(spawn_position);
 		count++;
-	}while(!checkValidGoalSpawn(robot_position, spawn_position) && count < 10);
+	}while(!checkValidGoalSpawn_Walls(robot_position,spawn_position) && count < 100);
 	spawnGoal(spawn_position);
 }
 
@@ -165,6 +165,8 @@ b2Body* Level::addRandomShape(const b2Vec2 & position, float min_radius, float m
 	shape.Set(verts, vert_count);
 	return addShape(&shape);
 }
+
+
 
 void Level::renderGoalSpawn()
 {

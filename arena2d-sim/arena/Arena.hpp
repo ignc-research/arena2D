@@ -117,7 +117,7 @@ private:
 
 	/* reset current level in all environments
 	 */
-	void reset();
+	void reset(bool robot_position_reset);
 
 	/* pack observation of given environment into new PyObject
 	 * @param env_index index of environment to get observations from
@@ -264,11 +264,15 @@ private:
 					REALTIME,
 					MEAN_REWARD,
 					MEAN_SUCCESS,
+					
 					AGENT_TIME,
 					LEVEL_RESET_TIME,
 					NUM_EPISODES,
 					TIME_ELAPSED,
-					NUM_METRICS
+					MEAN_COLLISION,
+					NUM_METRICS,
+					
+					
 	};
 
 	/* array holding metric handles to update values, enum Metrics used as indicies */
@@ -300,6 +304,9 @@ private:
 
 	/* buffer keeping track success rate */
 	MeanBuffer _meanSuccess;
+
+	/* buffer keeping track collision rate */
+	MeanBuffer _meanCollision;
 
 	/* total number of episodes since training start */
 	int _episodeCount;

@@ -11,7 +11,8 @@ Robot::Robot(b2World * world): _lidarBuffer(0){
 	fix.filter.categoryBits = COLLIDE_CATEGORY_PLAYER;
 
 	// main body
-	b.position = b2Vec2(0, 0);
+	//b.position = b2Vec2(0, 0);
+	b.position = b2Vec2(-0.5, -0.5);
 	_base = world->CreateBody(&b);
 	b2PolygonShape shape;
 	b2Vec2 verts[8];

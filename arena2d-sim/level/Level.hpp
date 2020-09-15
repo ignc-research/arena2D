@@ -54,9 +54,9 @@ public:
 	virtual void spawnGoal(const b2Vec2 & pos);
 
 	/* reset level, always called before the start of a new episode
-	 * @param hard_reset if set to false, robot_position is expected to not change for the new level configuration (if possible)
+	 * @param robot_position_reset if set to false, robot_position is expected to not change for the new level configuration (if possible)
 	 */
-	virtual void reset(){ randomGoalSpawnUntilValid();}
+	virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();}
 
 	/* called for every frame to be drawn on the screen
 	 * use this function for additional visualizations
@@ -109,6 +109,26 @@ protected:
 	 */
 	void randomGoalSpawnUntilValid(RectSpawn * goal_spawn = NULL);
 
+	/* add two functions from the old gitlab environment
+   	 */
+
+    	void addCheeseRectToSpawnArea(const zRect & main_rect, const std::vector<zRect> & holes){
+		_goalSpawnArea.addCheeseRect(main_rect, holes);
+	}
+	void calculateSpawnArea(){_goalSpawnArea.calculateArea();}
+
+	/* add a new function to avoid the goal spawns in the areas where the walls could be generated
+   	 */
+
+	bool checkValidGoalSpawn_Walls(const b2Vec2 & robot_pos,const b2Vec2 & spawn_pos){
+	      float distance_min = +_SETTINGS->stage.goal_size/2.f+_levelDef.robot->getRadius()*2.f;
+	      bool r_g=(robot_pos-spawn_pos).Length() > (_SETTINGS->stage.goal_size/2.f+_levelDef.robot->getRadius());
+	      bool X_area = (fabs(spawn_pos.x) > 1.025 + distance_min) || (((fabs(spawn_pos.x) > 0.025 + distance_min)||(fabs(spawn_pos.y) > 1.025 + _SETTINGS->stage.goal_size)) && (fabs(spawn_pos.x) < 0.975 - distance_min));
+	      bool Y_area = (fabs(spawn_pos.y) > 1.025 + distance_min) || (((fabs(spawn_pos.y) > 0.025 + distance_min)||(fabs(spawn_pos.x) > 1.025 + _SETTINGS->stage.goal_size)) && (fabs(spawn_pos.y) < 0.975 - distance_min));
+	      return ((X_area && Y_area) && r_g);
+	}
+
+
 	/* create rectangular border around level origin (0,0) with given dimensions and add to body list
 	 * @param half_width half the width (along x-axis) of border rect
 	 * @param half_height half the height (along y-axis) of border rect
@@ -151,6 +171,11 @@ protected:
 	 * @return static body 
 	 */
 	b2Body* addShape(const std::vector<b2Shape*> shapes);
+
+	/* reset robot position to (0,0) with random orientation
+	 */
+	//void resetRobotToCenter(){_levelDef.robot->reset(b2Vec2_zero, f_frandomRange(0, 2*M_PI));}
+	void resetRobotToCenter(){_levelDef.robot->reset(b2Vec2(-0.5,-0.5), f_frandomRange(0, 2*M_PI));}              //reset new robot position(-1.5, -1.5)
 
 	/* destroy all bodies in _bodyList and clear list, clears goal spawn area
 	 */

@@ -4,6 +4,7 @@
 /* include level header */
 #include "level/LevelEmpty.hpp"
 #include "level/LevelSVG.hpp"
+//#include "level/LevelMaze.hpp"
 
 
 LevelFactory::LevelFactory()
@@ -24,4 +25,9 @@ LevelFactory::LevelFactory()
 	// svg
 	REGISTER_LEVEL(LevelSVG, "svg", "", "Levels loaded from svg-files");
 
+	// Maze level
+	//REGISTER_LEVEL(LevelMaze, "maze","","My new custom level with a maze");
+
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelMaze, "maze", "[--dynamic]",
+								"maze static Level and optional dynamic obstacles (flag --dynamic)");
 }
