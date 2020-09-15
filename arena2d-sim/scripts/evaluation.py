@@ -37,6 +37,8 @@ time_out_counter = np.count_nonzero(ending == 'time')
 goal_counter = np.count_nonzero(ending == 'goal')
 num_episodes = human_counter + wall_counter + time_out_counter + goal_counter
 
+#check if there were humans in level
+human_exist = human_robot_distance.size != 0
 
 #read safty distance and time-out time from settings.st
 with open("settings.st", "r") as f:
@@ -95,7 +97,7 @@ for current_episode in range(num_episodes):
 			frac_direct_traveled_dist.append(dist/goal_distance[current_episode-1]) 
 			if dist/goal_distance[current_episode-1]<1:
 				temp = temp+1
-print(temp)
+
 
 #remove all nan 
 robot_position = robot_position[~np.isnan(robot_position).any(axis=1)]
@@ -112,7 +114,10 @@ time_to_goal = np.array(time_to_goal)
 text_file = open(path + "evaluation_stats.txt", "w")
 text_file.write('For the evaluation the robot did ' + str(num_episodes) + ' episodes \n')
 text_file.write('The robot reached ' + str(goal_counter) + ' the goal \n')
-text_file.write('The robot hit ' + str(human_counter) + ' times a human \n')
+if human_exist:
+	text_file.write('The robot hit ' + str(human_counter) + ' times a human \n')
+else:
+	text_file.write('no human in level \n')
 text_file.write('The robot hit ' + str(wall_counter) + ' times a wall \n')
 text_file.write('The robot didn\'t reach the goal in time for ' + str(time_out_counter) + ' times \n')
 text_file.write('---------------------------------------------------------------- \n')
@@ -125,19 +130,20 @@ text_file.close()
 
 
 #hist plot of distances robot-human
-mu = np.mean(human_robot_distance)
-std=np.std(human_robot_distance)
+if human_exist:
+	mu = np.mean(human_robot_distance)
+	std=np.std(human_robot_distance)
 
-plt.figure(1)
-plt.hist(human_robot_distance.flatten(),bins=50,align = 'right',edgecolor='black', linewidth=0.8)
-plt.axvline(safety_distance_human, color='r', linestyle='dashed', linewidth=1.5)
-plt.annotate('safety distance = %.2f'%(safety_distance_human), xy=(0, 0.85), xycoords='axes fraction',color = 'red')
-plt.annotate('$\mu = %.2f$'%(mu) + ' \n$\sigma^2 = %.2f$'%(std), xy=(0.85, 0.85), xycoords='axes fraction',bbox=dict(boxstyle="round", fc="w"))
-plt.title('Hist of human distances')
-plt.xlabel('distance')
-plt.ylabel('counts')
-plt.savefig(path+ 'human_distance_hist')
-plt.clf()
+	plt.figure(1)
+	plt.hist(human_robot_distance.flatten(),bins=50,align = 'right',edgecolor='black', linewidth=0.8)
+	plt.axvline(safety_distance_human, color='r', linestyle='dashed', linewidth=1.5)
+	plt.annotate('safety distance = %.2f'%(safety_distance_human), xy=(0, 0.85), xycoords='axes fraction',color = 'red')
+	plt.annotate('$\mu = %.2f$'%(mu) + ' \n$\sigma^2 = %.2f$'%(std), xy=(0.85, 0.85), xycoords='axes fraction',bbox=dict(boxstyle="round", fc="w"))
+	plt.title('Hist of human distances')
+	plt.xlabel('distance')
+	plt.ylabel('counts')
+	plt.savefig(path+ 'human_distance_hist')
+	plt.clf()
 
 #box plot auf time to reach goal 
 plt.figure(2)
