@@ -12,7 +12,7 @@ import time
 from gym import spaces
 import os
 # namespace of arena settings
-NS_SETTING = "/arena/settings/"
+NS_SETTING = "/arena_sim/settings/"
 
 
 def get_arena_envs(use_monitor = True,log_dir = None):
