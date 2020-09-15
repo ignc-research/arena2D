@@ -59,22 +59,29 @@ class Arena2dEnvWrapper(gym.Env):
         self._pubRosAgentReq(action, env_reset=False)
         # get the observations from the arena simulater
         with self.response_con:
-            self.response_con.wait(20)
-            if not self.resp_received:
-                rospy.logerr("Environement wrapper didn't get the feedback from arena simulator")
+            while not self.resp_received:
+                self.response_con.wait(0.5)
+                if not self.resp_received:
+                    rospy.logerr(f"Environement wrapper [{self._idx_env}] didn't get the feedback within 0.5s from arena simulator after sending action")
+                    break
             self.resp_received = False
         return self.obs, self.reward, self.done, self.info
 
     def reset(self):
         self._pubRosAgentReq(env_reset=True)
 
+        error_showed = False
         with self.response_con:
-            self.response_con.wait(20)
-            if not self.resp_received:
-                rospy.ERROR("Environment wrapper didn't get the feedback from arena simulator")
+            while not self.resp_received:
+                self.response_con.wait(0.5)
+                if not self.resp_received:
+                    rospy.logerr(f"Environement wrapper [{self._idx_env}] didn't get the feedback within 0.5s from arena simulator after sending reset command")
+                    break
+            self.resp_received = False
         return self.obs
 
     def close(self):
+        rospy.loginfo(f"env[{self._idx_env}] closed")
         self._pubRosAgentReq(env_close=True)
 
     def _setSubPub(self):
