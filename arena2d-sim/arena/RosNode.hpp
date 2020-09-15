@@ -21,6 +21,7 @@ private:
     void _setRosAgentsReqSub();
     void _setArena2dResPub();
 
+
     std::vector<std::unique_ptr<Twist>> m_actions_buffer;
     std::vector<ros::Subscriber> m_ros_agent_subs;
     std::vector<ros::Publisher> m_arena2d_pubs;
@@ -31,8 +32,10 @@ private:
     bool m_any_env_reset;
     int m_env_close; // number of envs request to close
     Environment* m_envs;
+   
 
 public:
+    bool m_env_connected;
     enum class Status
     {
         NOT_ALL_AGENT_MSG_RECEIVED,
@@ -46,9 +49,10 @@ public:
     ~RosNode();
     void publishStates(const bool *dones, float mean_reward = 0, float mean_sucess = 0);
 
-    /*  Synchronize the actions in the buffer with the buffer in the class Arena, 
-     *  if return false, Synchronization is failed. it means not all the messages are received 
+    /*  Synchronize the actions in temporary buffer with the buffer in the class Arena, 
+     *  if return false, Synchronization is not done. it means not all the messages are received 
      *  
      */
     Status getActions(Twist *robot_Twist, bool* ros_envs_reset, float waitTime);
+    void waitConnection();
 };

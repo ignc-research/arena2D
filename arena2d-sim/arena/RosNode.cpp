@@ -3,6 +3,7 @@
 RosNode::RosNode(Environment* envs, int num_envs, int argc, char **argv) : m_num_envs(num_envs), m_envs(envs)
 {
     ROS_INFO("Ros service activated, waiting for connections from agents");
+    m_env_connected = false;
     m_num_ros_agent_req_msgs_received = 0;
     m_env_close = 0;
     m_any_env_reset = false;
@@ -20,25 +21,6 @@ RosNode::RosNode(Environment* envs, int num_envs, int argc, char **argv) : m_num
     _publishParams();
     _setRosAgentsReqSub();
     _setArena2dResPub();
-    while(1){
-        int n_connected=0;
-        for(auto& sub: m_ros_agent_subs){
-            if(sub.getNumPublishers()!=0){
-                n_connected++;
-            }
-        }
-        for(auto& pub: m_arena2d_pubs){
-            if(pub.getNumSubscribers()!=0){
-                n_connected++;
-            }
-        }
-        if(n_connected != m_arena2d_pubs.size()+m_ros_agent_subs.size()){
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-        }else{
-            break;
-        }
-    }
-    ROS_INFO("All agents successfully connected!");
 }
 RosNode::~RosNode(){};
 
@@ -174,4 +156,27 @@ RosNode::Status RosNode::getActions(Twist *robot_Twist, bool* ros_envs_reset,flo
     }else{
         return RosNode::Status::NOT_ALL_AGENT_MSG_RECEIVED;
     }
+}
+
+void RosNode::waitConnection(){
+    while(1){
+        int n_connected=0;
+        for(auto& sub: m_ros_agent_subs){
+            if(sub.getNumPublishers()!=0){
+                n_connected++;
+            }
+        }
+        for(auto& pub: m_arena2d_pubs){
+            if(pub.getNumSubscribers()!=0){
+                n_connected++;
+            }
+        }
+        if(n_connected != m_arena2d_pubs.size()+m_ros_agent_subs.size()){
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+        }else{
+            break;
+        }
+    }
+    m_env_connected = true;
+    ROS_INFO("All agents successfully connected!");
 }

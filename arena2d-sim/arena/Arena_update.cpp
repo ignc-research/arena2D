@@ -359,6 +359,11 @@ void Arena::update()
 #ifdef SUPPORT_ROS_AGENT
 void Arena::rosUpdate(float wait_time = 0.0f)
 {
+	// we put the wait connection here so that window will not be in blank screen.
+	if(!_ros_node_ptr->m_env_connected){
+		_ros_node_ptr->waitConnection();
+	}
+	
 	RosNode::Status s;
 	if (_ros_node_ptr == nullptr)
 		return; // should throw Exception
