@@ -1,0 +1,88 @@
+Episode:       3279
+Start episode: 0
+Frames:        286013
+Mean reward:   98.693985
+Mean success:  0.980000
+Mean collision:  0.020000
+Epsilon:       0.020000
+Duration:      22h 10min 30sec
+TransformerDqn(
+  (embedder): CartPoleEmbedder(
+    (layer1): Sequential(
+      (0): Linear(in_features=364, out_features=384, bias=True)
+      (1): ReLU()
+      (2): Dropout(p=0.1, inplace=False)
+    )
+    (layer2): Sequential(
+      (0): Linear(in_features=384, out_features=384, bias=True)
+      (1): ReLU()
+      (2): Dropout(p=0.1, inplace=False)
+    )
+    (layer3): Linear(in_features=384, out_features=384, bias=True)
+    (layer4): Linear(in_features=364, out_features=384, bias=True)
+  )
+  (pos_encoder): PositionalEncoding(
+    (dropout): Dropout(p=0.1, inplace=False)
+  )
+  (encoder_layer): StableTransformerLayer(
+    (gate_mha): GRUGate(
+      (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+      (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+      (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+      (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+      (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+      (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+    )
+    (gate_mlp): GRUGate(
+      (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+      (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+      (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+      (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+      (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+      (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+    )
+    (self_attn): MultiheadAttention(
+      (out_proj): Linear(in_features=384, out_features=384, bias=True)
+    )
+    (linear1): Linear(in_features=384, out_features=256, bias=True)
+    (dropout): Dropout(p=0.1, inplace=False)
+    (linear2): Linear(in_features=256, out_features=384, bias=True)
+    (norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+    (norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+    (dropout1): Dropout(p=0.1, inplace=False)
+    (dropout2): Dropout(p=0.1, inplace=False)
+  )
+  (encoder): TransformerEncoder(
+    (layers): ModuleList(
+      (0): StableTransformerLayer(
+        (gate_mha): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (gate_mlp): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (self_attn): MultiheadAttention(
+          (out_proj): Linear(in_features=384, out_features=384, bias=True)
+        )
+        (linear1): Linear(in_features=384, out_features=256, bias=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+        (linear2): Linear(in_features=256, out_features=384, bias=True)
+        (norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (dropout1): Dropout(p=0.1, inplace=False)
+        (dropout2): Dropout(p=0.1, inplace=False)
+      )
+    )
+  )
+  (output_layer): Linear(in_features=384, out_features=5, bias=True)
+)
