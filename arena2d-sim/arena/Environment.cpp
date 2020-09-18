@@ -141,7 +141,7 @@ void Environment::step()
 	if(	_episodeTime > _trainingSettings.max_time &&
 		_trainingSettings.max_time > 0.f && _level != NULL){
 		_reward += _SETTINGS->training.reward_time_out;
-		_episodeState = NEGATIVE_END;
+		_episodeState = NEGATIVE_END_TIME_UP;
 	}
 }
 
@@ -196,7 +196,7 @@ void Environment::reset(bool robot_position_reset)
 {
 	// reset level
 	if(_level != NULL)
-		_level->reset(_episodeState == NEGATIVE_END || robot_position_reset);
+		_level->reset(_episodeState == NEGATIVE_END_WALL_HIT || _episodeState == NEGATIVE_END_TIME_UP || robot_position_reset);
 	
 	// reset trail
 	if(_SETTINGS->video.enabled)
@@ -231,10 +231,10 @@ void Environment::BeginContact(b2Contact * contact){
 				_reward += _SETTINGS->training.reward_goal;
 				_episodeState = POSITIVE_END;
 			}
-			else if(_robot->beginContact()){// wall hit
+			else if(_robot->beginContact()){// wall hit 
 				_reward += _SETTINGS->training.reward_hit;
 				if(_SETTINGS->training.episode_over_on_hit)
-					_episodeState = NEGATIVE_END;
+					_episodeState = NEGATIVE_END_WALL_HIT;
 			}
 		}
 	}
@@ -276,6 +276,7 @@ void Environment::render(const Camera & c, const zRect & global_aabb)
 
 	// update burger trail
 	_robot->updateTrail();
+	
 
 	_PHYSICS->calculateVisibleFixturesWorld(_world, aabb);
 

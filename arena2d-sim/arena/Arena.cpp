@@ -354,6 +354,7 @@ void Arena::initStats()
 	_metricHandles[NUM_EPISODES] = _statsDisplay->addMetric("Episodes");
 	_metricHandles[TIME_ELAPSED] = _statsDisplay->addMetric("Time Elapsed");
 	_metricHandles[MEAN_COLLISION] = _statsDisplay->addMetric("Mean Collision");
+	_metricHandles[MEAN_SHARPCORNER] = _statsDisplay->addMetric("Mean Sharp Corner");
 }
 
 void Arena::exitApplication()
@@ -483,6 +484,7 @@ void Arena::initializeTraining()
 	_meanSuccess.reset();
 	_meanCollision.reset();
 	_meanReward.reset();
+	_meanSharpCorner.reset();
 	_trainingStartTime = SDL_GetTicks();
 	_episodeCount = 0;
 	if(_SETTINGS->video.enabled)
@@ -666,7 +668,9 @@ void Arena::printEpisodeResults(float total_reward)
 			"  Level Reset Time: %.1fms\n"
 			"  Time elapsed:     %s\n"
 			"  Success Rate:     %.0f%%\n"
-			"  Collision Rate    %.0f%%",
+			"  Collision Rate    %.0f%%\n"
+			"  Sharp Corner      %.0f\n",
+			
 		_episodeCount,
 		total_reward,
 		_meanReward.getMean(),
@@ -676,7 +680,8 @@ void Arena::printEpisodeResults(float total_reward)
 		_simulationMeasure.getMean(),
 		_levelResetMeasure.getMean(),
 		time_buffer, _meanSuccess.getMean()*100,
-		_meanCollision.getMean()*100);
+		_meanCollision.getMean()*100,
+		_meanSharpCorner.getMean());
 }
 
 
@@ -728,6 +733,10 @@ void Arena::refreshRewardCounter(){
 	char buffer2[32];
 	sprintf(buffer2, "%d%%", (int)(100*_meanCollision.getMean()));
 	_metricHandles[MEAN_COLLISION]->setStringValue(buffer2);
+	
+	char buffer3[32];
+	sprintf(buffer3, "%d", (int)(_meanSharpCorner.getMean()));
+	_metricHandles[MEAN_SHARPCORNER]->setStringValue(buffer3);
 
 	
 }

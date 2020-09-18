@@ -1,7 +1,7 @@
 import time
 import sys
 print(sys.path)
-from dqn_models import Gtrxl
+from dqn_models import Gtr
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -51,8 +51,8 @@ class Agent:
 
 
 		# creating net and target net
-		self.net = Gtrxl.TransformerDqn(NUM_ACTIONS,num_observations+additional_state)
-		self.tgt_net = Gtrxl.TransformerDqn(NUM_ACTIONS,num_observations+additional_state)
+		self.net = Gtr.TransformerDqn(NUM_ACTIONS,num_observations+additional_state)
+		self.tgt_net = Gtr.TransformerDqn(NUM_ACTIONS,num_observations+additional_state)
 
 		# copy to device
 		self.net.to(self.device)

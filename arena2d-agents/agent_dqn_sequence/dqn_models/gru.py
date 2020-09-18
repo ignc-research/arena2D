@@ -2,10 +2,11 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import PackedSequence
 
-hidden_dim = 384
-HIDDEN_SHAPE = 32              # number of nodes in hidden layer of the fc network
-layer_dim = 3                  # number of gru layers
-
+###parameters of gru##########
+embedding_size=128             #number of nodes in embedding layer of the fc network
+hidden_dim = 64             #number of nodes in GRU  
+layer_dim = 3                  #number of gru layers 1 3 5 7
+##############################
 
 class GRUModel(nn.Module):
     def __init__(self, input_dim,n_actions, bias=True):
@@ -14,13 +15,16 @@ class GRUModel(nn.Module):
         self.hidden_dim = hidden_dim
         # Number of hidden layers
         self.layer_dim = layer_dim
-        self.gru = nn.GRU(input_dim, hidden_dim, layer_dim) #GRUCell(input_dim, hidden_dim, layer_dim) , dropout=0.1
+        self.embedding = nn.Linear(input_dim,embedding_size)
+        self.gru = nn.GRU(embedding_size, hidden_dim, layer_dim) #GRUCell(input_dim, hidden_dim, layer_dim) , dropout=0.1
         self.fc = nn.Sequential(
                         nn.Linear(hidden_dim, n_actions))    #nn.Linear(hidden_dim, HIDDEN_SHAPE), nn.ReLU(),
 	    
     def forward(self, x:PackedSequence, h):
-        out, h = self.gru(x, h)
-        out = self.fc(h[-1,:,:])        
+        embedding=self.embedding(x.data)
+        embedding = PackedSequence(embedding, x.batch_sizes, x.sorted_indices, x.unsorted_indices)
+        out, h = self.gru(embedding,h)
+        out = self.fc(h[-1,:,:])	
         return out,h.data
 
     def init_hidden(self, batch_size):

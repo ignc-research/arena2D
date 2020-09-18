@@ -11,6 +11,10 @@
 #include "ConsoleParameters.hpp"
 #include <level/LevelFactory.hpp>
 
+#include <iostream> 
+  
+using namespace std; 
+
 /* forward declaration */
 class Environment;
 
@@ -71,7 +75,8 @@ public:
 	/* episode state */
 	enum EpisodeState{	RUNNING,		// episode is still running
 						POSITIVE_END,	// episode is over, goal reached
-						NEGATIVE_END	// episode is over, timeout or obstacle hit
+						NEGATIVE_END_TIME_UP,	// episode is over, timeout 
+                                                NEGATIVE_END_WALL_HIT  // episode is over, obstacle hit
 	};
 
 	/* constructor */
@@ -152,6 +157,9 @@ public:
 	 * @return current level
 	 */
 	 Level* getLevel(){return _level;}
+	
+	int getSharpCorner(){return _robot->getSharpCorner();}
+
 
 private:
 	/* prepare simulation step
@@ -179,9 +187,6 @@ private:
 	/* level currently loaded in environment */
 	Level * _level;
 
-	/* robot controlled by agent/user */
-	Robot * _robot;
-
 	/* action to be performed on next step */
 	Twist _action;
 
@@ -205,6 +210,9 @@ private:
 
  	/* number of complete episodes from this environment since training start */
 	int _episodeCount;
+
+	/* robot controlled by agent/user */
+	Robot * _robot;
 
 	/* state of episode */
 	EpisodeState _episodeState;

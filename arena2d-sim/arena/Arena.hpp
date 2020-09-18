@@ -263,13 +263,13 @@ private:
 					SIMULATION_TIME,
 					REALTIME,
 					MEAN_REWARD,
-					MEAN_SUCCESS,
-					
+					MEAN_SUCCESS,					
 					AGENT_TIME,
 					LEVEL_RESET_TIME,
 					NUM_EPISODES,
 					TIME_ELAPSED,
 					MEAN_COLLISION,
+					MEAN_SHARPCORNER,
 					NUM_METRICS,
 					
 					
@@ -307,6 +307,9 @@ private:
 
 	/* buffer keeping track collision rate */
 	MeanBuffer _meanCollision;
+
+	/* buffer keeping sharp corner */
+	MeanBuffer _meanSharpCorner;
 
 	/* total number of episodes since training start */
 	int _episodeCount;

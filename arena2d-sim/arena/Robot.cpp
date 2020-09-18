@@ -1,5 +1,6 @@
 /* Author: Cornelius Marx */
 #include "Robot.hpp"
+#include <math.h>
 
 
 Robot::Robot(b2World * world): _lidarBuffer(0){
@@ -133,7 +134,9 @@ void Robot::reset(const b2Vec2 & position, float angle)
 void Robot::resetTrail()
 {
 	_trailVertexCount = 1;
-	_lastTrailPosition = _base->GetTransform().p;
+	_numberSharpCorner= 0;
+	_lastTrailPosition = _base->GetTransform().p;    //first vertex of the corner
+	_secondTrailPosition=_lastTrailPosition;        //seocnd vertex of the corner		
 	glBindBuffer(GL_ARRAY_BUFFER, _trailBuffer);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*2, &_lastTrailPosition);
 }
@@ -148,9 +151,28 @@ void Robot::updateTrail()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, _trailBuffer);
 		glBufferSubData(GL_ARRAY_BUFFER, _trailVertexCount*sizeof(float)*2, sizeof(float)*2, &pos);
-		_lastTrailPosition = pos;
+		_thirdTrailPosition=_secondTrailPosition;  // third vertex of the corner 
+		_secondTrailPosition=_lastTrailPosition;
+		_lastTrailPosition = pos;	//first vertex of the corner	
 		_trailVertexCount++;
+		calSharpCorner();             // count the sharp corner smaller than 60 degree
+		
 	}
+}
+
+void Robot::calSharpCorner()
+{       if(_trailVertexCount >= 3){
+                 // calculate the length of the three sides a, b and c
+                 float L_a=(_secondTrailPosition-_lastTrailPosition).Length();
+                 float L_b=(_thirdTrailPosition-_secondTrailPosition).Length();
+                 float L_c=(_thirdTrailPosition-_lastTrailPosition).Length();
+                 // calulate the corner angle
+                 float cos_alpha=(pow(L_a,2)+pow(L_b,2)-pow(L_c,2))/(2*L_a*L_b);
+                 if(cos_alpha >= 0.f){
+                          _numberSharpCorner++;    // count the sharp corner smaller than 60 degree
+                	  _sharpCornerBuffer = _numberSharpCorner;
+                 }
+        }
 }
 
 void Robot::getActionTwist(Action a, Twist & t)
