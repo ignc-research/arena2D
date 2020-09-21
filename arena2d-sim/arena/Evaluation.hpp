@@ -17,6 +17,7 @@ public:
 
     void init(const char * model);
 
+    void reset();
     void countHuman();
     void countWall();
     void countGoal();

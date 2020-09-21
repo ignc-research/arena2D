@@ -50,6 +50,12 @@ void Evaluation::init(const char * model){
     initialized = true;
 }
 
+void Evaluation::reset(){
+    if(initialized){
+        myfile << ",reset" << std::endl;
+    } 
+}
+
 void Evaluation::countHuman(){
     if(initialized){
         myfile << ++episode_counter << ",human" << std::endl;
