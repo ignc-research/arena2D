@@ -17,7 +17,7 @@ public:
     ~Evaluation();
 
     /* open csv-file inside the training folder, where the model weights are saved
-	 * @param path to model weights
+	 * @param model path to trained agent weights
 	 */
     void init(const char * model);
 
@@ -47,12 +47,13 @@ public:
     void saveDistance(std::list<float> & distances);
 
     /* write robot position and angle after each action in csv-file
-	 * @param robot position and angle
+	 * @param robot_transform robot position and angle
 	 */
     void countAction(const b2Transform & robot_transform);
 
     /* write goal distance and angle in csv-file, after episode is reset
-	 * @param distance and angle from robot to goal
+	 * @param goal_distance distance from robot to goal
+     * @param goal_angle goal angle viewed from robot 
 	 */
     void saveGoalDistance(float goal_distance, float goal_angle);
 
