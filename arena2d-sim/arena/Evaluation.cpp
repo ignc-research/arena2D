@@ -2,6 +2,7 @@
 
 Evaluation::Evaluation(){
     episode_counter = 0;
+    initialized = false;
 }
 
 Evaluation::~Evaluation(){
@@ -9,45 +10,37 @@ Evaluation::~Evaluation(){
 }
 
 void Evaluation::init(const char * model){
-    char path[200];
+    episode_counter = 0;
+    initialized = false;
+
+    // get the path to the trainings folder
+    std::string str(model);
+    std::string path;
     if(model != NULL){
-        char * path1;
-        char * path2;
-        char * model_path = strdup(model);
-        path1 = strtok (model_path,"/");
-        int i = 0;
-        while (path1 != NULL)
-        {
-            path2 = strtok (NULL, "/");
-            if(path2 != NULL){
-                if(i == 0) strcpy (path,path1);
-                else{
-                    strcat (path,"/");
-                    strcat (path,path1);
-                }
-            }   
-            path1 = path2;
-            i++;
-        }
-        strcat (path,"/evaluation.csv");
+        std::size_t found = str.find_last_of("/\\");
+        path = str.substr(0,found) + "/evaluation.csv";
     }else{
-        strcpy(path, "evaluation.csv");
+        //path to current default location
+        path = "evaluation.csv";
     }
     
-    printf ("Path to evaluation.csv: %s\n",path);
+    std::cout << "Path to evaluation.csv: " << path << std::endl;
 
-    episode_counter = 0;
+    myfile.open(path);
 
-    myfile.open (path);
+    if(myfile.is_open()){
+        // write head of csv file
+        myfile << "Episode,Ending,Goal_Distance,Goal_Angle,Robot_Position_x,Robot_Position_y,Robot_Direction_x,Robot_Direction_y,";
+        for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
+            myfile << "Human" << i+1;
+            if(i < _SETTINGS->stage.num_dynamic_obstacles - 1) myfile << ",";
+        }
+        myfile << std::endl;
 
-    myfile << "Episode,Ending,Goal_Distance,Goal_Angle,Robot_Position_x,Robot_Position_y,Robot_Direction_x,Robot_Direction_y,";
-    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
-        myfile << "Human" << i+1;
-        if(i < _SETTINGS->stage.num_dynamic_obstacles - 1) myfile << ",";
+        initialized = true;
+    }else{
+        std::cout << "ERROR: Failed to open csv-file !" << std::endl;
     }
-    myfile << std::endl;
-
-    initialized = true;
 }
 
 void Evaluation::reset(){
