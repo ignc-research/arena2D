@@ -71,8 +71,6 @@ for line in settings:
 
 		
 max_step_time_out = max_time/time_step
-#correct direkt goal distance
-goal_distance = goal_distance - base_size
 
 #get time_to_goal and traveled distanse per episode
 time_to_goal = []
@@ -103,6 +101,9 @@ for current_episode in range(num_episodes):
 			frac_direct_traveled_dist.append(dist/goal_distance[current_episode-1])
 			if dist/goal_distance[current_episode-1]<1:
 				print("dist < goal_distance")
+			if goal_distance[current_episode-1] <= 0:
+				print("goal_distance <= 0 ")
+
 
 
 #remove all nan 

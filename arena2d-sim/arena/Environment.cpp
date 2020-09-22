@@ -218,6 +218,7 @@ void Environment::reset(bool robot_position_reset)
 	float goal_distance = 0.f;
 	float goal_angle = 0.f;
 	getGoalDistance(goal_distance, goal_angle);
+	goal_distance -= (_robot->getRadius() + _SETTINGS->stage.goal_size/2.); //correct goal distance
 	_evaluation.saveGoalDistance(goal_distance, goal_angle);
 	_evaluation.countAction(_robot->getBody()->GetTransform());
 }
