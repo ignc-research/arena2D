@@ -12,7 +12,7 @@ endif()
 
 option(SUPPORT_ROS_AGENT  "if set to true, arena simualtor will compiled with ros \n 
 					   and agent can communicate with the simulator with ros messages and \n
-					   services otherwise we will only use py_AGENT " ON)
+					   services otherwise we will only use py_AGENT " OFF)
 
 
 

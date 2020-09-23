@@ -91,7 +91,7 @@ int Arena::init(int argc, char **argv)
 			ros_argv.push_back(argv[arg_i]);
 			ros_argc++;
 #else
-			printf("Unknown commandline option hah '%s'\n", argv[arg_i]);
+			printf("Unknown commandline option '%s'\n", argv[arg_i]);
 			exit(1);
 #endif
 		}
