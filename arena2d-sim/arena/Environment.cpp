@@ -139,6 +139,7 @@ void Environment::step()
 
 	// count number of actions for evaluation and calculate travelled distance
 	_evaluation.countAction(_robot->getBody()->GetTransform());
+	if(_episodeState != RUNNING)return;// episode over after step (hit goal/human/wall)
 
 	_episodeTime += _physicsSettings.time_step;
 	// time's up
@@ -197,7 +198,8 @@ void Environment::getGoalDistance(float & l2, float & angle)
 }
 
 void Environment::reset(bool robot_position_reset)
-{
+{	
+	_evaluation.reset();
 	// reset level
 	if(_level != NULL)
 		_level->reset(_episodeState == NEGATIVE_END || robot_position_reset);
@@ -216,7 +218,9 @@ void Environment::reset(bool robot_position_reset)
 	float goal_distance = 0.f;
 	float goal_angle = 0.f;
 	getGoalDistance(goal_distance, goal_angle);
+	goal_distance -= (_robot->getRadius() + _SETTINGS->stage.goal_size/2.); //correct goal distance
 	_evaluation.saveGoalDistance(goal_distance, goal_angle);
+	_evaluation.countAction(_robot->getBody()->GetTransform());
 }
 
 void Environment::BeginContact(b2Contact * contact){
@@ -242,16 +246,16 @@ void Environment::BeginContact(b2Contact * contact){
 				_episodeState = POSITIVE_END;
 				_evaluation.countGoal();
 			}
-			else if(_level->checkHumanContact(other_fix)){
+			else if(_level->checkHumanContact(other_fix)){//human hit
 				_reward += _SETTINGS->training.reward_human;
 				_episodeState = NEGATIVE_END;
 				_evaluation.countHuman();
 			}
 			else if(_robot->beginContact()){// wall hit
 				_reward += _SETTINGS->training.reward_hit;
-				_evaluation.countWall();
 				if(_SETTINGS->training.episode_over_on_hit)
 					_episodeState = NEGATIVE_END;
+					_evaluation.countWall();
 			}
 		}
 	}

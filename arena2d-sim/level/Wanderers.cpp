@@ -19,10 +19,14 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn){
                                                 0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
     }
     //reset all lists
+    _old_infos_of_wanderers.clear();
     _old_observed_wanderers.clear();
-    _observed_wanderers.clear();
     _infos_of_wanderers.clear();
+    _observed_wanderers.clear();
     _distance_evaluation.clear();
+
+    calculateDistanceAngle();
+    getClosestWanderers();
 }
 
 void Wanderers::update(){
