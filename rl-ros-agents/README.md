@@ -3,7 +3,7 @@
 rl-ros-agents is a package for training a local planner with the [stable-baseline](https://github.com/hill-a/stable-baselines) reinforcement learning approaches. It basically does the following two things:
     1. Defined the a environment wrapper which use ros messages to communicate with our arena simultor 
     2. Providing some handy scripts for training
-![Working manner](/../img/Working_manner_rl_ros_agent.png)
+![Working manner](/img/Working_manner_rl_ros_agent.png)
 When the training get started, seveal instances of the environment wrapper will be created and each runs on a single process. The number of the environment and other parameters are loaded from the ROS parameter server, which are register by the arena simulator. For each environment a pair of request message and response message will be created. For example if we create four environment, they may look like this:
 ```
 /arena2d/env_0/request
