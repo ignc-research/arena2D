@@ -58,17 +58,6 @@ for line in settings:
 		end = line.find("#")
 		time_step = float(line[start+1:end])
 
-	if 'goal_size = ' in line:
-		start = line.find("=")
-		end = line.find("#")
-		goal_size = float(line[start+1:end])
-	if base:
-		start = line.find("=")
-		base_size = float(line[start+1:])
-		base = False
-	if 'base_size' in line:
-		base = True
-
 		
 max_step_time_out = max_time/time_step
 
@@ -99,10 +88,6 @@ for current_episode in range(num_episodes):
 		#first episode goal info missing
 		if current_episode != 0:
 			frac_direct_traveled_dist.append(dist/goal_distance[current_episode-1])
-			if dist/goal_distance[current_episode-1]<1:
-				print("dist < goal_distance")
-			if goal_distance[current_episode-1] <= 0:
-				print("goal_distance <= 0 ")
 
 
 
@@ -203,5 +188,6 @@ plt.plot(goal_counter_bin,label='goal')
 plt.legend()
 plt.savefig(path + 'endings')
 plt.clf()
-print('evaluation done')
 
+
+print('evaluation done')
