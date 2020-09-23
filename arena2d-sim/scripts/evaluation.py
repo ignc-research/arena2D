@@ -87,7 +87,7 @@ for current_episode in range(num_episodes):
 		traveled_distance.append(dist)
 		#first episode goal info missing
 		if current_episode != 0:
-			frac_direct_traveled_dist.append(dist/goal_distance[current_episode-1])
+			frac_direct_traveled_dist.append(dist - goal_distance[current_episode-1])
 
 
 
@@ -133,7 +133,7 @@ plt.title('distance to reach goal')
 plt.ylabel('distance')
 plt.boxplot(traveled_distance)
 plt.subplot(1,2,2)
-plt.title(r'$\frac {real\_distance}{direct\_distance}$')
+plt.title(r'$real\_distance - direct\_distance$')
 plt.ylabel('relative distance')
 plt.boxplot(frac_direct_traveled_dist)
 plt.savefig(path + 'goal_distance_box')
