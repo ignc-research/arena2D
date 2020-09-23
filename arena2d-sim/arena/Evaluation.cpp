@@ -39,7 +39,7 @@ void Evaluation::init(const char * model){
 
         initialized = true;
     }else{
-        std::cout << "ERROR: Failed to open csv-file !" << std::endl;
+        std::cout << "ERROR: Failed to open file evaluation.csv !" << std::endl;
     }
 }
 
