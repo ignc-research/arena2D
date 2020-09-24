@@ -182,13 +182,13 @@ void Arena::update()
 		if(_trainingMode && _pyAgentUsed){
 			_agentPostMeasure.startTime();
 			if(_agentFuncs[PYAGENT_FUNC_POST_STEP] != NULL){
-				PyObject * args = PyTuple_New(6);
+				PyObject * args = PyTuple_New(5);
 				PyTuple_SetItem(args, 0, packAllPyObservation());						//observation
 				PyTuple_SetItem(args, 1, packAllPyRewards());							//reward
 				PyTuple_SetItem(args, 2, packAllPyDones());								//done
 				PyTuple_SetItem(args, 3, PyFloat_FromDouble(_meanReward.getMean()));	//mean reward
 				PyTuple_SetItem(args, 4, PyFloat_FromDouble(_meanSuccess.getMean()));	//mean success
-				PyTuple_SetItem(args, 5, PyFloat_FromDouble(_meanCollision.getMean()));	//mean collision
+				//PyTuple_SetItem(args, 5, PyFloat_FromDouble(_meanCollision.getMean()));	//mean collision
 				//PyTuple_SetItem(args, 6, PyFloat_FromDouble(_meanSharpCorner.getMean()));	//mean SharpCorner
 				PyObject * result = PyObject_CallObject(_agentFuncs[PYAGENT_FUNC_POST_STEP], args);
 				Py_DECREF(args);
