@@ -9,7 +9,7 @@
 #include "Level.hpp"
 #include "LevelRandom.hpp"
 #include "LevelCustom.hpp"
-
+#include "LevelMaze.hpp"
 // singleton-get macro
 #define LEVEL_FACTORY LevelFactory::get()
 
@@ -82,6 +82,12 @@ public:
 		return new LevelCustom(d, level_dynamic);
 	}
 
+	/* maze level */
+	Level* createLevelMaze(const LevelDef & d, const ConsoleParameters & params)
+	{
+		bool level_dynamic = params.getFlag("--dynamic");
+		return new LevelMaze(d, level_dynamic);
+	}
 private:
 
 	/* command register matching level-name -> create-function */
