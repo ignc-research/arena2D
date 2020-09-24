@@ -79,12 +79,9 @@ for current_episode in range(num_episodes):
 		position_for_episode = position_for_episode[~np.isnan(position_for_episode).any(axis=1)]
 
 		time_to_goal.append(position_for_episode.shape[0] - 1)
-		dist = 0
-		for row_idx in range(position_for_episode.shape[0]-1):
-			v1 = position_for_episode[row_idx]
-			v2 = position_for_episode[row_idx+1]
-			dist = dist + np.linalg.norm(v2-v1)
-		traveled_distance.append(dist)
+		vector_array = position_for_episode[:-1] - position_for_episode[1:]
+		distance = np.sum(np.sum(np.abs(vector_array)**2,axis=-1)**(1./2))
+		traveled_distance.append(distance)
 		#first episode goal info missing
 		if current_episode != 0:
 			frac_direct_traveled_dist.append(dist - goal_distance[current_episode-1])
