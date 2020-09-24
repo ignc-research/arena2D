@@ -12,8 +12,8 @@ import collections
 
 ### hyper parameters ###
 MEAN_REWARD_BOUND = 120.0	# training is considered to be done if the mean reward reaches this value
-NUM_ACTIONS = 7				# total number of discrete actions the robot can perform
-DISCOUNT_FACTOR = 0.99		# discount factor for reward estimation (often denoted by gamma)
+NUM_ACTIONS = 6				# total number of discrete actions the robot can perform
+DISCOUNT_FACTOR = 0.9		# discount factor for reward estimation (often denoted by gamma)
 SYNC_TARGET_STEPS = 2000	# target net is synchronized with net every X steps
 LEARNING_RATE = 0.00025 	# learning rate for optimizer
 EPSILON_START = 1			# start value of epsilon
@@ -138,7 +138,7 @@ class Agent:
 
 		return action
 	
-	def post_step(self, new_observation, reward, is_done, mean_reward, mean_success, mean_collision):
+	def post_step(self, new_observation, reward, is_done, mean_reward, mean_success):
 		self.start_gpu_measure()
 		idx = self.frame_idx%MEMORY_SIZE
 		if is_done: # save next state if done, because next pre_step will have different state
@@ -162,7 +162,6 @@ class Agent:
 		self.mean_reward = mean_reward
 		self.total_reward += reward
 		self.mean_success = mean_success
-		self.mean_collision = mean_collision
 		if len(self.mean_value_buffer) > 0:
 			self.mean_value = numpy.mean(list(self.mean_value_buffer))
 		if len(self.mean_loss_buffer) > 0:
@@ -280,7 +279,6 @@ class Agent:
 			f.write("Frames:        %d\n"%(self.frame_idx))
 			f.write("Mean reward:   %f\n"%(self.mean_reward))
 			f.write("Mean success:  %f\n"%(self.mean_success))
-			f.write("Mean collision:  %f\n"%(self.mean_collision))
 			f.write("Epsilon:       %f\n"%(self.epsilon))
 			delta_time = int(time.time()-self.start_time);
 			f.write("Duration:      %dh %dmin %dsec\n"%(delta_time/3600, (delta_time/60)%60, (delta_time%60)))
