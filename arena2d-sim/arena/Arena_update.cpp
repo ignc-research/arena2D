@@ -146,15 +146,6 @@ void Arena::update()
 				_meanSuccess.push((s == Environment::POSITIVE_END) ? 1 : 0);
 				_meanSuccess.calculateMean();
 
-				// adding Collision Ratio to Collision buffer
-				_meanCollision.push((s == Environment::NEGATIVE_END_WALL_HIT) ? 1 : 0);
-				_meanCollision.calculateMean();
-				
-				//add sharp corner 
-				
-				_meanSharpCorner.push(_envs[i].getSharpCorner());
-				_meanSharpCorner.calculateMean();				
-	
 				// adding reward to total reward buffer
 				_meanReward.push(_envs[i].getTotalReward());
 				_meanReward.calculateMean();
@@ -188,8 +179,6 @@ void Arena::update()
 				PyTuple_SetItem(args, 2, packAllPyDones());								//done
 				PyTuple_SetItem(args, 3, PyFloat_FromDouble(_meanReward.getMean()));	//mean reward
 				PyTuple_SetItem(args, 4, PyFloat_FromDouble(_meanSuccess.getMean()));	//mean success
-				//PyTuple_SetItem(args, 5, PyFloat_FromDouble(_meanCollision.getMean()));	//mean collision
-				//PyTuple_SetItem(args, 6, PyFloat_FromDouble(_meanSharpCorner.getMean()));	//mean SharpCorner
 				PyObject * result = PyObject_CallObject(_agentFuncs[PYAGENT_FUNC_POST_STEP], args);
 				Py_DECREF(args);
 				if(result == NULL){
@@ -232,22 +221,18 @@ void Arena::update()
 		{
 			// write header first?
 			const bool write_header = (_csvWriter.getNumLines() == 0);
-			std::vector<const char*> names(5);
+			std::vector<const char*> names(3);
 			// default metrics
 			if(write_header)
 			{
 				names[0] = "Episodes";
 				names[1] = "Success";
 				names[2] = "Mean Reward";
-				names[3] = "Mean Collision";
-				names[4] = "Mean Sharp Corner";
 			}
-			std::vector<float> values(5);
+			std::vector<float> values(3);
 			values[0] = (float)_episodeCount;
 			values[1] = _meanSuccess.getMean();
 			values[2] = _meanReward.getMean();
-			values[3] = _meanCollision.getMean();
-			values[4] = _meanSharpCorner.getMean();
 			// call get_stats python function
 			if(_agentFuncs[PYAGENT_FUNC_GET_STATS] != NULL){
 				const char * func_name = PYAGENT_FUNC_NAMES[PYAGENT_FUNC_GET_STATS];

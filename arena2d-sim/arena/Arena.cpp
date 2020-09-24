@@ -353,8 +353,6 @@ void Arena::initStats()
 	_metricHandles[LEVEL_RESET_TIME] = _statsDisplay->addMetric("Level Reset Time (ms)");
 	_metricHandles[NUM_EPISODES] = _statsDisplay->addMetric("Episodes");
 	_metricHandles[TIME_ELAPSED] = _statsDisplay->addMetric("Time Elapsed");
-	_metricHandles[MEAN_COLLISION] = _statsDisplay->addMetric("Mean Collision");
-	_metricHandles[MEAN_SHARPCORNER] = _statsDisplay->addMetric("Mean Sharp Corner");
 }
 
 void Arena::exitApplication()
@@ -482,9 +480,7 @@ void Arena::reset(bool robot_position_reset){
 void Arena::initializeTraining()
 {
 	_meanSuccess.reset();
-	_meanCollision.reset();
 	_meanReward.reset();
-	_meanSharpCorner.reset();
 	_trainingStartTime = SDL_GetTicks();
 	_episodeCount = 0;
 	if(_SETTINGS->video.enabled)
@@ -667,10 +663,7 @@ void Arena::printEpisodeResults(float total_reward)
 			"  Simulation Time:  %.1fms\n"
 			"  Level Reset Time: %.1fms\n"
 			"  Time elapsed:     %s\n"
-			"  Success Rate:     %.0f%%\n"
-			"  Collision Rate    %.0f%%\n"
-			"  Sharp Corner      %.0f\n",
-			
+			"  Success Rate:     %.0f%%",
 		_episodeCount,
 		total_reward,
 		_meanReward.getMean(),
@@ -679,9 +672,7 @@ void Arena::printEpisodeResults(float total_reward)
 		_agentMeasure.getMean(), _agentPostMeasure.getMean(),
 		_simulationMeasure.getMean(),
 		_levelResetMeasure.getMean(),
-		time_buffer, _meanSuccess.getMean()*100,
-		_meanCollision.getMean()*100,
-		_meanSharpCorner.getMean());
+		time_buffer, _meanSuccess.getMean()*100);
 }
 
 
@@ -725,20 +716,9 @@ void Arena::refreshEpisodeCounter(){
 
 void Arena::refreshRewardCounter(){
 	_metricHandles[MEAN_REWARD]->setFloatValue(_meanReward.getMean(), 2);
-
 	char buffer[32];
 	sprintf(buffer, "%d%%", (int)(100*_meanSuccess.getMean()));
 	_metricHandles[MEAN_SUCCESS]->setStringValue(buffer);
-
-	char buffer2[32];
-	sprintf(buffer2, "%d%%", (int)(100*_meanCollision.getMean()));
-	_metricHandles[MEAN_COLLISION]->setStringValue(buffer2);
-	
-	char buffer3[32];
-	sprintf(buffer3, "%d", (int)(_meanSharpCorner.getMean()));
-	_metricHandles[MEAN_SHARPCORNER]->setStringValue(buffer3);
-
-	
 }
 
 void Arena::refreshLevelResetTime()
