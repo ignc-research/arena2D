@@ -675,15 +675,18 @@ void Arena::run()
 			if (_use_ros_agent)
 			{
 				rosUpdate(0.0f);
+				
+				_updateTimer.update(!_videoDisabled);
 			}
 			else
 			{
 				update();
+				_updateTimer.update(!((_trainingMode || _playSimulation) && _videoDisabled)); // no fps limit if in training mode and video disabled
 			}
 #else
 			update();
-#endif
 			_updateTimer.update(!((_trainingMode || _playSimulation) && _videoDisabled)); // no fps limit if in training mode and video disabled
+#endif
 			iteration++;
 		}
 	}
@@ -697,15 +700,19 @@ void Arena::run()
 			if (_use_ros_agent)
 			{
 				rosUpdate(0.1f); // main thread will try to invoke the callbacks and wait for maximum .1f second
+				_updateTimer.update(false); // no fps limit ALWAYS!!!! no meaning for limiting the fps if video is 
 			}
 			else
 			{
 				update();
+				_updateTimer.update(_trainingMode); // no fps limit in training mode
 			}
 #else
 			update();
+			_updateTimer.update(_trainingMode); // no fps limit in training mode
 #endif
-			_updateTimer.update(!_trainingMode); // no fps limit when in training mode
+			iteration++;
+			
 		}
 	}
 }
