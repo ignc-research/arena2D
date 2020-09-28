@@ -25,6 +25,10 @@ LevelFactory::LevelFactory()
 	REGISTER_LEVEL_FUNC(LevelFactory::createLevelHuman, "human", "[--dynamic]",
 								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
 
+	// static
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelMaze, "maze", "[--dynamic]",
+								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
+
 	// svg
 	REGISTER_LEVEL(LevelSVG, "svg", "", "Levels loaded from svg-files");
 

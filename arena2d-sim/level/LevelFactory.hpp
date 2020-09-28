@@ -10,6 +10,7 @@
 #include "LevelRandom.hpp"
 #include "LevelCustom.hpp"
 #include "LevelHuman.hpp"
+#include "LevelMaze.hpp"
 
 // singleton-get macro
 #define LEVEL_FACTORY LevelFactory::get()
@@ -88,6 +89,13 @@ public:
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
 		return new LevelHuman(d, level_dynamic);
+	}
+
+	/*maze level */
+	Level* createLevelMaze(const LevelDef & d, const ConsoleParameters & params)
+	{
+		bool level_dynamic = params.getFlag("--dynamic");
+		return new LevelMaze(d, level_dynamic);
 	}
 
 

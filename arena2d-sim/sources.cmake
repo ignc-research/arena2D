@@ -59,6 +59,8 @@ set(ARENA_SOURCES
 	level/Wanderers.cpp
 	level/LevelHuman.cpp
 	level/LevelHuman.hpp
+	level/LevelMaze.cpp
+	level/LevelMaze.hpp
 
 # engine
 	engine/shader/Color2DShader.cpp
