@@ -1,4 +1,4 @@
-# arena2D - branch with GRU unit, additional eval scripts
+# arena2D
 A plattform to ease DRL research.
 
 Arena2D is a research framework for fast development and training of reinforcement learning algorithms for autonomous navigation. 
