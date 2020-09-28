@@ -119,8 +119,10 @@ void Environment::initializeTraining()
 {
 	_totalReward = 0;
 	_episodeCount = 0;
-	_robot->reset(b2Vec2(-.5,-.5));
+
+	_robot->reset(b2Vec2(-.5,-.5)); // 0,0
 	reset();
+
 }
 
 void Environment::pre_step(const Twist & t)
@@ -192,11 +194,11 @@ void Environment::getGoalDistance(float & l2, float & angle)
 	}
 }
 
-void Environment::reset()
+void Environment::reset(bool robot_position_reset)
 {
 	// reset level
 	if(_level != NULL)
-		_level->reset();
+		_level->reset(_episodeState == NEGATIVE_END || robot_position_reset);
 	
 	// reset trail
 	if(_SETTINGS->video.enabled)

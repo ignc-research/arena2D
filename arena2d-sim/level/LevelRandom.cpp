@@ -1,6 +1,6 @@
 #include "LevelRandom.hpp"
 
-void LevelRandom::reset()
+void LevelRandom::reset(bool robot_position_reset)
 {
 	// clear old bodies and spawn area
 	clear();
@@ -22,6 +22,10 @@ void LevelRandom::reset()
 
 	// create border around level
 	createBorder(half_width, half_height);
+
+	if(robot_position_reset){
+		resetRobotToCenter();
+	}
 
 	// calculate spawn area for static obstacles
 	RectSpawn static_spawn;
@@ -49,7 +53,8 @@ void LevelRandom::reset()
 		for(int i = 0; i < num_dynamic_obstacles; i++){
 			b2Vec2 p;
 			_dynamicSpawn.getRandomPoint(p);
-			Wanderer * w = new Wanderer(_levelDef.world, dynamic_radius, p, dynamic_speed, 0.1, 0.0, 0);
+			Wanderer * w = new Wanderer(_levelDef.world,  p, dynamic_speed, 0.1, 0.05);
+			w->addCircle(dynamic_radius);
 			_wanderers.push_back(w);
 		}
 	}
