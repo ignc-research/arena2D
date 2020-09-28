@@ -65,6 +65,7 @@ LevelSVG::LevelSVG(const LevelDef & def) : Level(def), _spawnAreas(NULL)
 		_spawnAreas[i].addQuadTree(r, _levelDef.world, COLLIDE_CATEGORY_STAGE, block_size, margin);
 		_spawnAreas[i].calculateArea();
 	}
+
 }
 
 LevelSVG::~LevelSVG()
@@ -75,17 +76,7 @@ LevelSVG::~LevelSVG()
 	delete[] _spawnAreas;
 }
 
-void LevelSVG::resetRobot()
-{
-	b2Vec2 pos(0,0);
-	if(_currentFileIndex >= 0){
-		_spawnAreas[_currentFileIndex].getRandomPoint(pos);
-	}
-	_levelDef.robot->reset(pos, f_frandomRange(0, 2*M_PI));
-
-}
-
-void LevelSVG::reset(bool robot_position_reset)
+void LevelSVG::reset()
 {
 	// no files loaded -> nothing to be done
 	if(_currentFileIndex < 0){
@@ -99,15 +90,12 @@ void LevelSVG::reset(bool robot_position_reset)
 	if(new_stage != _currentFileIndex){
 		_currentFileIndex = new_stage;
 		loadFile(_currentFileIndex);
-		robot_position_reset = true;
-	}
 
-	// reset robot position to random position
-	if(robot_position_reset)
-	{
-		resetRobot();
+		// reset robot position to random position
+		b2Vec2 robot_pos;
+		_spawnAreas[_currentFileIndex].getRandomPoint(robot_pos);
+		_levelDef.robot->reset(robot_pos, f_frandomRange(0, 2*M_PI));
 	}
-
 
 	// spawn goal
 	randomGoalSpawnUntilValid(&_spawnAreas[_currentFileIndex]);

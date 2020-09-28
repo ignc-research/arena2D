@@ -207,7 +207,7 @@ void Arena::update()
 				Environment::EpisodeState s = _envs[i].getEpisodeState();
 				if(s != Environment::RUNNING){
 					_levelResetMeasure.startTime();
-					_envs[i].reset(false);
+					_envs[i].reset();
 					_levelResetMeasure.endTime();
 				}
 			}

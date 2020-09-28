@@ -20,7 +20,7 @@ public:
 
 	/* reset
 	 */
-	void reset(bool robot_position_reset) override;
+	void reset() override;
 
 	/* update
 	 */

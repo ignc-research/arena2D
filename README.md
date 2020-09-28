@@ -1,4 +1,4 @@
-# arena2D
+# arena2D - branch with GRU unit, additional eval scripts
 A plattform to ease DRL research.
 
 Arena2D is a research framework for fast development and training of reinforcement learning algorithms for autonomous navigation. 
@@ -49,7 +49,6 @@ If you use the arena2d platform in your research, please cite the following [pap
 ````
 
 ## Updates
-* 15/09/2020:** full support for stable DRL baselines: https://github.com/hill-a/stable-baselines(s. branch arena-ros)
 * 15/08/2020:** including a new class to simulate 2d humans
 * 29/07/2020:** including integration into ROS melodic see branch arena-ros
 * 01/07/2020:** including A3C agent, based on [Lapan et al. (2018)][lapan]

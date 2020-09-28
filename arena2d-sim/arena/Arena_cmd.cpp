@@ -236,7 +236,7 @@ CommandStatus Arena::cmdReset(const ConsoleParameters & params)
 		showTrainingModeWarning();
 		return CommandStatus::EXEC_FAIL;
 	}else{
-		reset(true);
+		reset();
 		return CommandStatus::SUCCESS;	
 	}
 }

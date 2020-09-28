@@ -1,13 +1,13 @@
 #include "Wanderer.hpp"
 
-Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
-					float velocity, float change_rate, float stop_rate, float max_angle_velo, unsigned int type)
+Wanderer::Wanderer(b2World * w, float radius, const b2Vec2 & position,
+					float velocity, float change_rate, float stop_rate, unsigned int type)
 {
 	_velocity = velocity;
 	_changeRate = change_rate;
 	_stopRate = stop_rate;
 	_type = type;
-	_maxAngleVel = max_angle_velo;
+	_radius = radius;
 
 	// creating body
 	b2BodyDef body_def;
@@ -15,19 +15,13 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
 	body_def.allowSleep = false;
 	body_def.position = position;
 	body_def.linearDamping = 0;
-	body_def.angularDamping = 0.1;
+	body_def.angularDamping = 0;
 	body_def.userData = (void*)this;
 	_body = w->CreateBody(&body_def);
 
-	// initial velocity update
-	updateVelocity();
-}
-
-void Wanderer::addCircle(float radius, const b2Vec2 & pos)
-{
 	b2CircleShape circle;
 	circle.m_radius = radius;
-	circle.m_p = pos;
+	circle.m_p.Set(0,0);
 	b2FixtureDef d;
 	d.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
 	d.friction = 1;
@@ -35,6 +29,7 @@ void Wanderer::addCircle(float radius, const b2Vec2 & pos)
 	d.density = 1;
 	d.shape = &circle;
 	_body->CreateFixture(&d);
+	updateVelocity();
 }
 
 void Wanderer::reset(const b2Vec2 & position)
@@ -53,28 +48,29 @@ Wanderer::~Wanderer()
 
 void Wanderer::update()
 {
-	if(f_random() <= _changeRate)
+	if(f_random() < _changeRate)
 		updateVelocity();
 }
 
 void Wanderer::updateVelocity()
 {
-	float max_angle = f_rad(_maxAngleVel);
+	float max_angle = f_rad(30);
 	float max_velocity = _velocity;
 	b2Vec2 v = _body->GetLinearVelocity();
-	float angle = _body->GetAngle();
-	float angle_velocity = 0;
-	if(f_random() < _stopRate){// stop wanderer
+	float angle;
+	zVector2D v_rot;
+	if(f_random() < _stopRate){
 		v.Set(0,0);
 	}
 	else{
-		float sign = 1;
-		if(fabs(v.x) < 0.001 && fabs(v.y) < 0.001 && rand()%2 == 0)
-			sign = -1;
-		zVector2D _v = zVector2D(0, sign*max_velocity).getRotated(angle);
-		v.Set(_v.x, _v.y);
-		angle_velocity += f_frandomRange(-max_angle, max_angle);
+		if(v == b2Vec2_zero){
+			angle = 2*M_PI*f_random();
+			v_rot = zVector2D(max_velocity, 0).getRotated(angle);
+		}
+		else{
+			angle = (max_angle*2*f_random())-max_angle;
+			v_rot = max_velocity * zVector2D(v.x, v.y).getNormalized().getRotated(angle);
+		}
 	}
-	_body->SetAngularVelocity(angle_velocity);
-	_body->SetLinearVelocity(v);
+	_body->SetLinearVelocity(b2Vec2(v_rot.x, v_rot.y));
 }

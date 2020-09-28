@@ -10,7 +10,9 @@ class LevelEmpty : public Level
 public:
 	LevelEmpty(const LevelDef & d, bool create_borders = true);
 
-	void reset(bool robot_position_reset) override;
+	void reset() override{
+		randomGoalSpawnUntilValid();
+	}
 
 private:
 

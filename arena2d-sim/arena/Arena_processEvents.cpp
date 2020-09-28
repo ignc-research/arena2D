@@ -150,7 +150,7 @@ void Arena::processEvents(zEventList & evtList)
 						showTrainingModeWarning();
 					}
 					else{
-						reset(true);
+						reset();
 					}
 				}
 			}
