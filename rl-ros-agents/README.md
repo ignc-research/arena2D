@@ -26,8 +26,8 @@ The definitions of the request and response message can be found [here](../arena
 ## Building
 1. Create a catkin workspace:
     ```bash
-    $ mkdir -p ~/catkin_ws_foo/src
-    $ cd ~/catkin_ws_foo/
+    $ mkdir -p ~/ARENA2d_ws/src
+    $ cd ~/ARENA2d_ws/
     $ rosws update
     ```
 2. Clone this repository in the src-folder of your catkin workspace and checkout the branch `arena-ros`. Compile tehe code and add the workspace to the ROS environment with:
@@ -39,6 +39,27 @@ The definitions of the request and response message can be found [here](../arena
     ```bash
     $ export PYTHONPATH=${path_to_this_package}/rl_ros_agents:${PYTHONPATH}
     ```
+## Additional work
+Offically ros packages are only built for python2. In some cases mixing useage of python3 with python2 may cause problems. Therefore we recommended building two more packages specifically.
+1. Create a python3 workspace:
+    ```bash
+    $ mkdir -p ~/python3_ws/src
+    $ cd ~/python3_ws/src
+    $ git clone --depth=1 git@github.com:ros/geometry.git
+    $ git clone --depth=1 git@github.com:ros/geometry2.git
+    ``` 
+2. When this README document is created, there is a duplicate name error. If you have the same issue, please solve it 
+refer to the methods introduced [here](https://github.com/ros/geometry/issues/213#issuecomment-643552794)
+3. Activate your virtual environment. e.g
+    ```bash
+    $ conda activate arena2d
+    ```
+4. complile the workspace and source it:
+    ```bash
+    $ catkin_make -DPYTHON_EXECUTABLE:FILEPATH=$(which python)
+    $ source devel/setup.bash
+    ```
+
 ## Useage
 ---
 #### Training
