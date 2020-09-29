@@ -82,3 +82,7 @@ refer to the methods introduced [here](https://github.com/ros/geometry/issues/21
     ```bash
     $ python scripts/rviz_visualize_helper.py
     ```
+4. open the rviz and start it with a config file
+    ```bash
+    $ rviz -d launch/rviz_arena_config.rviz
+    ```
