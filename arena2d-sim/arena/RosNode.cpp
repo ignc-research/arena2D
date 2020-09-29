@@ -79,6 +79,14 @@ void RosNode::publishStates(const bool* dones , float mean_reward , float mean_s
         m_envs[idx_env].getGoalDistance(distance, angle);
         resp.goal_pos[0] = static_cast<double>(distance);
         resp.goal_pos[1] = static_cast<double>(angle);
+        // robot theta is in radian
+        float robot_x, robot_y, robot_theta;
+        m_envs[idx_env].getRobotPos(robot_x, robot_y, robot_theta);
+        resp.robot_pos.x = static_cast<double>(robot_x);
+        resp.robot_pos.y = static_cast<double>(robot_y);
+        resp.robot_pos.theta = static_cast<double>(robot_theta);
+
+
         //TODO Whats is additional data? add it and change the msg type if needed
 
         resp.reward = m_envs[idx_env].getReward();
