@@ -40,10 +40,10 @@ class Arena2dEnvWrapper(gym.Env):
             "strong_left": [0, 1.5],
             "strong_right": [0, -1.5],
             "backward": [-0.1, 0],
-            "stop":[0,0]
+            "stop": [0, 0]
         }
 
-        rospy.init_node("arena_ros_agent_env_{:02d}".format(idx_env), anonymous=True)
+        rospy.init_node("arena_ros_agent_env_{:02d}".format(idx_env), anonymous=True, log_level=rospy.INFO)
         self._setSubPub()
         # we use this to let main thread know the response is received which is done by another thread
         self.response_con = threading.Condition()
@@ -65,13 +65,14 @@ class Arena2dEnvWrapper(gym.Env):
         obervation_space_upper_limit = rospy.get_param(NS_SETTING + "observation_space_upper_limit")
         if not self._is_action_space_discrete:
             self.action_space = spaces.Box(low=np.array(action_space_lower_limit),
-                                        high=np.array(action_space_upper_limit) * 3, dtype=np.float)
+                                           high=np.array(action_space_upper_limit) * 3, dtype=np.float)
         else:
             self.action_space = spaces.Discrete(len(self._action_discrete_list))
         self.observation_space = spaces.Box(low=0, high=obervation_space_upper_limit,
                                             shape=(1, num_beam+2), dtype=np.float)
 
     def step(self, action):
+        rospy.logdebug("step in")
         self._pubRosAgentReq(action, env_reset=False)
         # get the observations from the arena simulater
         with self.response_con:
@@ -82,6 +83,7 @@ class Arena2dEnvWrapper(gym.Env):
                         f"Environement wrapper [{self._idx_env}] didn't get the feedback within 0.5s from arena simulator after sending action")
                     break
             self.resp_received = False
+        rospy.logdebug("step out")
         return self.obs, self.reward, self.done, self.info
 
     def reset(self):
@@ -134,7 +136,7 @@ class Arena2dEnvWrapper(gym.Env):
             if not self._is_action_space_discrete:
                 assert isinstance(action, (list, tuple, np.ndarray)) and len(
                     action) == 2, "Type of action must be one of (list, tuple, numpy.ndarray) and length is equal to 2, current type of action is '{:4d}' ".format(type(action))
-                
+
                 req_msg.action.linear = action[0]
                 req_msg.action.angular = action[1]
             else:
@@ -142,8 +144,10 @@ class Arena2dEnvWrapper(gym.Env):
                 req_msg.action.linear = self._action_discrete_map[action_name][0]
                 req_msg.action.angular = self._action_discrete_map[action_name][1]
         self._ros_agent_pub.publish(req_msg)
+        rospy.logdebug("send action")
 
     def _arena2dRespCallback(self, resp: Arena2dResp):
+        rospy.logdebug("received response")
         with self.response_con:
             obs = resp.observation.ranges
             goal_distance_angle = resp.goal_pos
