@@ -56,12 +56,13 @@ def main(log_dir=None, name_results_root_folder="results"):
     reward_bound = REWARD_BOUND
     # get arena environments and custom callback
     env = Monitor(Arena2dEnvWrapper(0, True), os.path.join(logdir, "arena_env0"))
+    # env = Arena2dEnvWrapper(0, True)
     call_back = SaveOnBestTrainingRewardCallback(500, logdir, 1, reward_bound)
     # set temporary model path, if training was interrupted by the keyboard, the current model parameters will be saved.
     path_temp_model = os.path.join(logdir, "DQN_TEMP")
     if not args.restart_training:
         model = DQN(MlpPolicy, env, gamma=GAMMA, learning_rate=LEARNING_RATE,
-                    buffer_size=BUFFER_SIZE, target_network_update_freq=SYNC_TARGET_STEPS,tensorboard_log=log_dir)
+                    buffer_size=BUFFER_SIZE, target_network_update_freq=SYNC_TARGET_STEPS,tensorboard_log=logdir,verbose=1)
         reset_num_timesteps = True
     else:
         if os.path.exists(path_temp_model+".zip"):
@@ -72,15 +73,15 @@ def main(log_dir=None, name_results_root_folder="results"):
             print("Can't load the model with the path: {}, please check again!".format(path_temp_model))
             env.close()
             exit(-1)
-    try:
-        model.learn(time_steps, log_interval=200, callback=call_back, reset_num_timesteps=reset_num_timesteps)
-        model.save(os.path.join(logdir, "A2C_final"))
-    except KeyboardInterrupt:
-        model.save(path_temp_model)
-        print("KeyboardInterrupt: saved the current model to {}".format(path_temp_model))
-    finally:
-        env.close()
-        exit(0)
+    # try:
+    model.learn(time_steps, log_interval=200, callback=call_back, reset_num_timesteps=reset_num_timesteps)
+    model.save(os.path.join(logdir, "DQN_final"))
+    # except KeyboardInterrupt:
+    #     model.save(path_temp_model)
+    #     print("KeyboardInterrupt: saved the current model to {}".format(path_temp_model))
+    # finally:
+    #     env.close()
+    #     exit(0)
 
 
 def parseArgs():

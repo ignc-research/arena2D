@@ -5,6 +5,9 @@ from stable_baselines.results_plotter import load_results, ts2xy
 from typing import Union
 
 
+import rospy
+
+
 class SaveOnBestTrainingRewardCallback(BaseCallback):
     """
     Callback for saving a model (the check is done every ``check_freq`` steps)
@@ -32,6 +35,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
             os.makedirs(self.save_path, exist_ok=True)
 
     def _on_step(self) -> bool:
+        rospy.logdebug("on_step callback")
         if self.n_calls % self.check_freq == 0:
             # Retrieve training reward
             x, y = ts2xy(load_results(self.log_dir), 'timesteps')
@@ -52,6 +56,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
                     self.model.save(self.save_path)
                 # early stop the training
                 if self.reward_bound is not None and mean_reward > self.reward_bound:
+                    print("early stop!")
                     return False
 
         return True
