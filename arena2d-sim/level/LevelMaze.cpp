@@ -1,16 +1,16 @@
-/* Author: Deyu Wang( modified by Junhui Li)
+/* Author: Deyu Wang
  * 1. This code is generated from the old version from gitlab.
  * 2. There will be 5 walls randomly generated in the maze.
  * 3. Because the longest wall will be generated at center of the stage, the robot will spawn in the bottom left,
  * which means the "resetRobotToCenter()" function in "Level.hpp" is changed.
- * The new spawn point now is (-0.5, -0.5)
+ * The new spawn point now is (-1.5, -1.5)
  * 4. The radius of the statistic obstacles are also decreased, otherwise the way could be blocked.
  */
 
 
 #include "LevelMaze.hpp"
 
-void LevelMaze::reset()
+void LevelMaze::reset(bool robot_position_reset)
 {
 	// clear old bodies and spawn area
 	clear();
@@ -34,6 +34,10 @@ void LevelMaze::reset()
 
 	// create border around level
 	createBorder(half_width, half_height);
+
+	if(robot_position_reset){
+		resetRobotToCenter();
+	}
 
         // calculate spawn area for static obstacles
 	RectSpawn static_spawn;
@@ -75,7 +79,8 @@ void LevelMaze::reset()
 		for(int i = 0; i < num_dynamic_obstacles; i++){
 			b2Vec2 p;
 			_dynamicSpawn.getRandomPoint(p);
-			Wanderer * w = new Wanderer(_levelDef.world, dynamic_radius, p, dynamic_speed, 0.1, 0.0, 0);			
+			Wanderer * w = new Wanderer(_levelDef.world,  p, dynamic_speed, 0.1, 0.05);
+			w->addCircle(dynamic_radius);
 			_wanderers.push_back(w);
 		}
 	}
@@ -108,6 +113,161 @@ void LevelMaze::renderGoalSpawn()
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+	// from here try to use the code from old version
+	std::vector<zRect> robot_hole(1);
+	std::vector<zRect> holes(13);                   // 13 holes = 8 (static obstacles) + 4 (short walls) + 1 (a long walls)
+
+	//***************************************************** step1. add the 8 static normal obstacles ************************************************************************
+	for(int i = 0; i < num_obstacles; i ++){
+			RectSpawn spawn;
+			b2Body * b = generateRandomBody(0.25, 0.1, &holes[i]);  //max radius and min radius are replaced with constant
+			robot_hole[0].set(robot_position.x, robot_position.y,
+								Burger_safe_Radius+holes[i].w,
+								Burger_safe_Radius+holes[i].h);
+			// avoid obstacles spawning directly on robot
+			spawn.addCheeseRect(zRect(0, 0, half_width-holes[i].w, half_height-holes[i].h), robot_hole);
+			spawn.calculateArea();
+			b2Vec2 p;
+			spawn.getRandomPoint(p);
+			holes[i].x += p.x;
+			holes[i].y += p.y;
+			holes[i].w += half_goal_size;
+			holes[i].h += half_goal_size;
+			b->SetTransform(b2Vec2(p.x, p.y), 0);
+			_bodyList.push_back(b);
+		}
+
+	//***************************************************** step2. add the 4 normal walls in 4 specific areas ******************************************************************
+	for(int i=8; i<12; i++){
+		    RectSpawn spawn;
+		    b2Body * b = generateRandomWalls11(i, &holes[i]);
+		    robot_hole[0].set(robot_position.x, robot_position.y,
+								Burger_safe_Radius+holes[i].w,
+								Burger_safe_Radius+holes[i].h);
+		    spawn.addCheeseRect(zRect(0, 0, half_width-holes[i].w, half_height-holes[i].h), robot_hole);
+			spawn.calculateArea();
+		    _bodyList.push_back(b);
+		}
+
+    //***************************************************** step3. add a long wall in the mid area *************************************************************************
+    int Random_Index = f_irandomRange(0, 1);  //generate a random index
+    b2Body * b = generateRandomWalls22(Random_Index, 12, &holes[12]);
+    RectSpawn spawn;
+    robot_hole[0].set(robot_position.x, robot_position.y,
+                        Burger_safe_Radius+holes[12].w,
+                        Burger_safe_Radius+holes[12].h);
+    spawn.addCheeseRect(zRect(0, 0, half_width-holes[12].w, half_height-holes[12].h), robot_hole);
+    spawn.calculateArea();
+    _bodyList.push_back(b);
+
+    // adding spawn area
+    zRect main_rect_1(0,0, half_width-half_goal_size, half_height-half_goal_size);
+    addCheeseRectToSpawnArea(main_rect_1, holes);
+    calculateSpawnArea();
+    randomGoalSpawnUntilValid();
+}
+
+
+
+
+
+void LevelMaze::renderGoalSpawn()
+{
+	Level::renderGoalSpawn();
+	Z_SHADER->setColor(zColor(0.1, 0.9, 0.0, 0.5));
+	
+}
+*/
+/*
+// functions from the old environment
+b2Body* LevelMaze::generateRandomBody(float min_radius, float max_radius, zRect * aabb)
+{
+		b2BodyDef def;
+		def.type = b2_staticBody;
+		def.allowSleep = false;
+		def.linearDamping = 0;
+		def.angularDamping = 0;
+		int vert_count = f_irandomRange(3, 6);
+		b2PolygonShape shape;
+		shape.m_count = vert_count;
+		zVector2D verts[8];
+		float radius_x = f_frandomRange(min_radius, max_radius);
+		float radius_y = f_frandomRange(min_radius, max_radius);
+		b2Vec2 max_v(-10000, -10000);
+		b2Vec2 min_v(10000, 10000);
+		float rotation = f_frandomRange(0, 2*M_PI);
+		for(int i = 0; i < vert_count; i++){
+			float angle = M_PI*2*(i/static_cast<float>(vert_count));
+			verts[i].set(cos(angle)*radius_x, sin(angle)*radius_y);
+			verts[i].rotate(rotation);
+			if(verts[i].x > max_v.x){
+				max_v.x = verts[i].x;
+			}
+			if(verts[i].y > max_v.y){
+				max_v.y = verts[i].y;
+			}
+			if(verts[i].x < min_v.x){
+				min_v.x = verts[i].x;
+			}
+			if(verts[i].y < min_v.y){
+				min_v.y = verts[i].y;
+			}
+		}
+		if(aabb != NULL){
+			aabb->x = (max_v.x+min_v.x)/2.0f;
+			aabb->y = (max_v.y+min_v.y)/2.0f;
+			aabb->w = (max_v.x-min_v.x)/2.0f;
+			aabb->h = (max_v.y-min_v.y)/2.0f;
+		}
+		shape.Set((b2Vec2*)verts, vert_count);
+		b2FixtureDef fix;
+		fix.shape = &shape;
+		fix.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
+		fix.friction = LEVEL_STATIC_FRICTION;
+		fix.restitution = LEVEL_STATIC_RESTITUTION;
+		fix.filter.categoryBits = COLLIDE_CATEGORY_STAGE;
+		fix.density = 1;
+		b2Body * b = _levelDef.world->CreateBody(&def);
+		b->CreateFixture(&fix);
+		return b;
+}
+*/
 // functions to generate four short walls in four specific areas
 b2Body* LevelMaze::generateRandomWalls11(int index, zRect * aabb){
 	b2BodyDef def;

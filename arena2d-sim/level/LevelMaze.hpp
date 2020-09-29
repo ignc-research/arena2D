@@ -21,7 +21,7 @@ public:
 	// copy the functions from levelRandom.hpp to have a try at first
 	/* reset
 	 */
-	void reset() override;
+	void reset(bool robot_position_reset) override;
 
 	/* update
 	 */

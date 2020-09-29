@@ -56,6 +56,10 @@ public:
 	/* update visual trail
 	 */
 	void updateTrail();
+	
+	/* calculate sharp corners
+	*/
+	void calSharpCorner();
 
 	/* reset visual trail buffer
 	 */
@@ -142,6 +146,13 @@ public:
 	 */
 	float getRadius(){return _safeRadius;}
 
+	/* number of sharp corners */
+	int _sharpCornerBuffer;
+	int _numberSharpCorner;
+
+	int getSharpCorner(){return _numberSharpCorner;}
+
+
 private:
 	/* robot rigid body */
 	b2Body * _base;
@@ -169,6 +180,12 @@ private:
 
 	/* last position a trail vertex was put in buffer */
 	b2Vec2 _lastTrailPosition;
+
+	/* last last position a trail vertex was put in buffer that is used for calculating corner angle*/
+	b2Vec2 _secondTrailPosition;
+	
+	/* last third position a trail vertex was put in buffer that is used for calculating corner angle*/
+	b2Vec2 _thirdTrailPosition;
 
 	/* number of trail vertices used in buffer */
 	int _trailVertexCount;

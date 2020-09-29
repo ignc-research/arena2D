@@ -56,8 +56,7 @@ public:
 	/* reset level, always called before the start of a new episode
 	 * @param robot_position_reset if set to false, robot_position is expected to not change for the new level configuration (if possible)
 	 */
-	//virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();}
-	virtual void reset(){ randomGoalSpawnUntilValid();}
+	virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();}
 
 	/* called for every frame to be drawn on the screen
 	 * use this function for additional visualizations
