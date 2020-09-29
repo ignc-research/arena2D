@@ -4,7 +4,7 @@ rl-ros-agents is a package for training a local planner with the [stable-baselin
     1. Defined the a environment wrapper which use ros messages to communicate with our arena simultor 
     2. Providing some handy scripts for training
 ![Working manner](/img/Working_manner_rl_ros_agent.png)
-When the training get started, seveal instances of the environment wrapper will be created and each runs on a single process. The number of the environment and other parameters are loaded from the ROS parameter server, which are register by the arena simulator. For each environment a pair of request message and response message will be created. For example if we create four environment, they may look like this:
+When the training get started, seveal instances of the environment wrapper will be created and each runs on a single process. The number of the environment and other parameters are loaded from the ROS parameter server, which are register by the arena simulator. Which means if number of the environments you want to use need to be changed, you need to modify the param **num_envs** in the file `settings.st` in the package *arena2d-sim*  .For each environment a pair of request message and response message will be created. For example if we create four environment, they may look like this:
 ```
 /arena2d/env_0/request
 /arena2d/env_0/response
@@ -54,10 +54,13 @@ refer to the methods introduced [here](https://github.com/ros/geometry/issues/21
     ```bash
     $ conda activate arena2d
     ```
-4. complile the workspace and source it:
+4. complile the workspace:
     ```bash
     $ catkin_make -DPYTHON_EXECUTABLE:FILEPATH=$(which python)
-    $ source devel/setup.bash
+    ```
+5. append following command to the `.bashrc`file under your HOME folder.
+    ```bash
+    $ source ~/python3_ws/devel/setup.bash
     ```
 
 ## Useage
