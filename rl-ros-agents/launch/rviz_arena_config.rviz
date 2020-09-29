@@ -8,7 +8,6 @@ Panels:
         - /TF1
         - /TF1/Frames1
         - /TF1/Tree1
-        - /TF1/Tree1/world1
         - /LaserScan1
         - /LaserScan1/Status1
       Splitter Ratio: 0.5
@@ -112,7 +111,7 @@ Visualization Manager:
     Background Color: 48; 48; 48
     Default Light: true
     Fixed Frame: world
-    Frame Rate: 60
+    Frame Rate: 445
   Name: root
   Tools:
     - Class: rviz/Interact

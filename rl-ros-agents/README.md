@@ -78,3 +78,7 @@ refer to the methods introduced [here](https://github.com/ros/geometry/issues/21
     $ conda activate arena2d
     $ python scripts/train_a3c.py
     ```
+3. To visualize robot position and laserscan run the the script in an another terminal
+    ```bash
+    $ python scripts/rviz_visualize_helper.py
+    ```
