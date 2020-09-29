@@ -56,7 +56,13 @@ public:
 	/* reset level, always called before the start of a new episode
 	 * @param robot_position_reset if set to false, robot_position is expected to not change for the new level configuration (if possible)
 	 */
+<<<<<<< HEAD
 	virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();}
+=======
+
+	//virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();} //master
+	virtual void reset(){ randomGoalSpawnUntilValid();} //arena-gru branch
+>>>>>>> 0ab6092a528e18b65a1d834b540e6875b5889418
 
 	/* called for every frame to be drawn on the screen
 	 * use this function for additional visualizations
@@ -175,6 +181,7 @@ protected:
 
 	/* reset robot position to (0,0) with random orientation
 	 */
+
 	//void resetRobotToCenter(){_levelDef.robot->reset(b2Vec2_zero, f_frandomRange(0, 2*M_PI));}
 	void resetRobotToCenter(){_levelDef.robot->reset(b2Vec2(-0.5,-0.5), f_frandomRange(0, 2*M_PI));}              //reset new robot position(-1.5, -1.5)
 
