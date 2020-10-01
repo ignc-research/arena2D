@@ -20,7 +20,7 @@ void LevelCustom::reset(bool robot_position_reset) {
     const zRect main_rect(0, 0, half_width, half_height);
     const zRect big_main_rect(0, 0, half_width + max_obstacle_radius, half_height + max_obstacle_radius);
 
-    int num_obstacles = 8;
+    int num_obstacles = _SETTINGS->stage.num_obstacles;
 
     if(robot_position_reset){
         resetRobotToCenter();
@@ -89,7 +89,7 @@ void LevelCustom::reset(bool robot_position_reset) {
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
 
-                //  corresponding second vertical box is created to build a corridor with the firts one
+                //  corresponding second vertical box is created to build a corridor with the first one
 
                 p.x = p.x - random_width;//- 0.45;
                 p.y = p.y;
