@@ -130,8 +130,10 @@ void Environment::initializeTraining()
 {
 	_totalReward = 0;
 	_episodeCount = 0;
-	_robot->reset(b2Vec2(0, 0));
-	reset(true);
+
+	_robot->reset(b2Vec2(-.5,-.5)); // 0,0
+	reset();
+
 }
 
 void Environment::pre_step(const Twist &t)

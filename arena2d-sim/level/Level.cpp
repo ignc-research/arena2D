@@ -108,6 +108,25 @@ b2Body* Level::addShape(const std::vector<b2Shape*> shapes)
 	return body;
 }
 
+void Level::randomGoalSpawnUntilValidForMaze(RectSpawn * goal_spawn)
+{
+	RectSpawn * spawn = &_goalSpawnArea;
+	if(goal_spawn != NULL)// use custom goal spawn
+	{
+		spawn = goal_spawn;
+	}
+
+	b2Vec2 robot_position = _levelDef.robot->getPosition();
+	// spawn goal at random position
+	b2Vec2 spawn_position(0,0);
+	int count = 0;
+	do{
+		spawn->getRandomPoint(spawn_position);
+		count++;
+	}while(!checkValidGoalSpawn_Walls(robot_position,spawn_position) && count < 100);
+	spawnGoal(spawn_position);
+}
+
 void Level::randomGoalSpawnUntilValid(RectSpawn * goal_spawn)
 {
 	RectSpawn * spawn = &_goalSpawnArea;
@@ -165,6 +184,8 @@ b2Body* Level::addRandomShape(const b2Vec2 & position, float min_radius, float m
 	shape.Set(verts, vert_count);
 	return addShape(&shape);
 }
+
+
 
 void Level::renderGoalSpawn()
 {
