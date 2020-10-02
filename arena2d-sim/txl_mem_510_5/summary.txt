@@ -1,0 +1,8 @@
+### Training Summary ###
+Script:   arena2d-agents/agent_dqn_sequence/agent_train_txl_mem.py
+Started:  Wed Sep 30 03:26:19 2020
+Episodes: 7636
+Time:     1d 5h 5m 5s
+
+# Agent Info #
+-

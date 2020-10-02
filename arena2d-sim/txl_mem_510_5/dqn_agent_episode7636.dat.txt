@@ -1,0 +1,135 @@
+Episode:       7636
+Start episode: 0
+Frames:        628247
+Mean reward:   82.819992
+Mean success:  0.890000
+Mean collision:  0.090000
+Epsilon:       0.020000
+Duration:      29h 5min 4sec
+TransformerDqn(
+  (embedding): Linear(in_features=364, out_features=384, bias=True)
+  (transformer): MemTransformerLM(
+    (drop): Dropout(p=0.1, inplace=False)
+    (layers): ModuleList(
+      (0): RelPartialLearnableDecoderLayer(
+        (gate_mha): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (gate_mlp): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (dec_attn): RelPartialLearnableMultiHeadAttn(
+          (qkv_net): Linear(in_features=384, out_features=1152, bias=False)
+          (drop): Dropout(p=0.1, inplace=False)
+          (dropatt): Dropout(p=0.1, inplace=False)
+          (o_net): Linear(in_features=384, out_features=384, bias=False)
+          (layer_norm): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+          (r_net): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (pos_ff): PositionwiseFF(
+          (CoreNet): Sequential(
+            (0): Linear(in_features=384, out_features=256, bias=True)
+            (1): ReLU(inplace=True)
+            (2): Dropout(p=0.1, inplace=False)
+            (3): Linear(in_features=256, out_features=384, bias=True)
+            (4): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (layer_norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (layer_norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+      )
+      (1): RelPartialLearnableDecoderLayer(
+        (gate_mha): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (gate_mlp): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (dec_attn): RelPartialLearnableMultiHeadAttn(
+          (qkv_net): Linear(in_features=384, out_features=1152, bias=False)
+          (drop): Dropout(p=0.1, inplace=False)
+          (dropatt): Dropout(p=0.1, inplace=False)
+          (o_net): Linear(in_features=384, out_features=384, bias=False)
+          (layer_norm): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+          (r_net): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (pos_ff): PositionwiseFF(
+          (CoreNet): Sequential(
+            (0): Linear(in_features=384, out_features=256, bias=True)
+            (1): ReLU(inplace=True)
+            (2): Dropout(p=0.1, inplace=False)
+            (3): Linear(in_features=256, out_features=384, bias=True)
+            (4): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (layer_norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (layer_norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+      )
+      (2): RelPartialLearnableDecoderLayer(
+        (gate_mha): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (gate_mlp): GRUGate(
+          (linear_w_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_r): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_z): Linear(in_features=384, out_features=384, bias=True)
+          (linear_u_z): Linear(in_features=384, out_features=384, bias=False)
+          (linear_w_g): Linear(in_features=384, out_features=384, bias=False)
+          (linear_u_g): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (dec_attn): RelPartialLearnableMultiHeadAttn(
+          (qkv_net): Linear(in_features=384, out_features=1152, bias=False)
+          (drop): Dropout(p=0.1, inplace=False)
+          (dropatt): Dropout(p=0.1, inplace=False)
+          (o_net): Linear(in_features=384, out_features=384, bias=False)
+          (layer_norm): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+          (r_net): Linear(in_features=384, out_features=384, bias=False)
+        )
+        (pos_ff): PositionwiseFF(
+          (CoreNet): Sequential(
+            (0): Linear(in_features=384, out_features=256, bias=True)
+            (1): ReLU(inplace=True)
+            (2): Dropout(p=0.1, inplace=False)
+            (3): Linear(in_features=256, out_features=384, bias=True)
+            (4): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (layer_norm1): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+        (layer_norm2): LayerNorm((384,), eps=1e-05, elementwise_affine=True)
+      )
+    )
+    (pos_emb): PositionalEmbedding()
+  )
+  (linear): Linear(in_features=384, out_features=5, bias=True)
+)
