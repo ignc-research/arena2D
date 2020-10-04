@@ -21,12 +21,12 @@ EPSILON_START = 1			# start value of epsilon
 EPSILON_MAX_STEPS = 10**5	# how many steps until epsilon reaches minimum influence training
 EPSILON_END = 0.02			# min epsilon value
 BATCH_SIZE = 32				# batch size for training after every step
-TRAINING_START = 10		# start training only after the first X episodes
-MEMORY_SIZE = 5*10**4		# last X states will be stored in a buffer (memory), from which the batches are sampled
+TRAINING_START = 36		# start training only after the first X episodes
+MEMORY_SIZE = 10**6		# last X states will be stored in a buffer (memory), from which the batches are sampled
 N_STEPS = 2
 N_LAYERS=3                      # number of encoder layers in transformer
 DOUBLE = True
-SEQ_LENGTH=100                     #64 10 # 32 20
+SEQ_LENGTH=120                     #64 10 # 32 20
 additional_state=2              #reward and action of the last step
 seed=1111111
 #######################
@@ -331,45 +331,35 @@ class Agent:
 	def sample(self, batch_size):
 		# sample random elements
 		random_indicies = None
-		if self.frame_idx <= MEMORY_SIZE: # buffer not filled completely yet
-			random_indicies = torch.randint(self.frame_idx-N_STEPS, (batch_size,)).to(self.device)
-			mem_random_indicies= torch.randint(self.frame_idx-N_STEPS, (batch_size,)).to(self.device)
-		else:
-			forbidden_lower_i = (MEMORY_SIZE + self.frame_idx-N_STEPS)%MEMORY_SIZE
-			forbidden_upper_i = (MEMORY_SIZE + self.frame_idx-1)%MEMORY_SIZE
-			random_indicies = torch.empty(batch_size, dtype=torch.long).to(self.device)
-			mem_random_indicies= torch.empty(batch_size, dtype=torch.long).to(self.device)
-			if forbidden_lower_i > forbidden_upper_i: # wrap around
-				for i in range(0, batch_size): 
-					x = torch.randint(MEMORY_SIZE-N_STEPS,(1,)) + forbidden_upper_i +1
-					y = torch.randint(MEMORY_SIZE-N_STEPS,(1,)) + forbidden_upper_i +1					
-					random_indicies[i] = x
-					mem_random_indicies[i]=y
-			else:
-				for i in range(0, batch_size): 
-					x = torch.randint(MEMORY_SIZE-N_STEPS,(1,))
-					y = torch.randint(MEMORY_SIZE-N_STEPS,(1,))
-					if x >= forbidden_lower_i:
-						x += N_STEPS
-					random_indicies[i] = x
-					if y >= forbidden_lower_i:
-						y += N_STEPS
-					mem_random_indicies[i] = y		
+		zero_tag_idx = torch.nonzero(self.tensor_step_buffer==0,as_tuple=False)[2:].squeeze(1)#find the beginning frame_idxs of all of the episode get rid of the first and the second episode
+		end_tag_idx = (zero_tag_idx-1).cpu() #the end frame_idxs of all of the episode		
+		random_end_indicies = numpy.random.choice(end_tag_idx-N_STEPS, batch_size, replace=False) # random episodes not repeating	
+		random_end_indicies_v = torch.tensor(random_end_indicies, dtype=torch.long).to(self.device)
+		seq_lens_minus_N=(self.tensor_step_buffer[random_end_indicies_v]+1).to(self.device)  # length of all sampling episodes minus N
+		random=[]
+		for l in seq_lens_minus_N:
+		        random+=numpy.random.choice(l.cpu(),1).tolist()
+		random=torch.tensor(random, dtype=torch.long).to(self.device)
+		
+		random_indicies_v=random_end_indicies_v-random
+		seq_lens_random=seq_lens_minus_N-random
+		
+		mem_random_indicies_v=random_indicies_v-seq_lens_random
 		# sample next state indicies of random states		
-		random_indicies_next = (random_indicies+N_STEPS)%MEMORY_SIZE
-		mem_next_random_indicies = (mem_random_indicies+N_STEPS)%MEMORY_SIZE
+		random_indicies_next_v = (random_indicies_v+N_STEPS)%MEMORY_SIZE
+		mem_next_random_indicies_v = random_indicies_next_v-seq_lens_random
 		#print(mem_next_random_indicies_v,random_indicies_next_v)		
 		# get actual tensors from indicies
-		state = self.pack_episodes(random_indicies)
-		new_state = self.pack_episodes(random_indicies_next)
+		state = self.pack_episodes(random_indicies_v)
+		new_state = self.pack_episodes(random_indicies_next_v)
 		memory = []
 		next_memory = []
 		for i in range(N_LAYERS+1):
-		         memory.append(self.tensor_memory_buffer[i][mem_random_indicies].unsqueeze(0))
-		         next_memory.append(self.tensor_memory_buffer[i][mem_next_random_indicies].unsqueeze(0))
-		action = self.tensor_action_buffer[random_indicies]
-		reward = self.tensor_reward_buffer[random_indicies]
-		is_done = self.tensor_done_buffer[random_indicies]
+		         memory.append(self.tensor_memory_buffer[i][mem_random_indicies_v].unsqueeze(0))
+		         next_memory.append(self.tensor_memory_buffer[i][mem_next_random_indicies_v].unsqueeze(0))
+		action = self.tensor_action_buffer[random_indicies_v]
+		reward = self.tensor_reward_buffer[random_indicies_v]
+		is_done = self.tensor_done_buffer[random_indicies_v]
 		return (state,memory,new_state,next_memory, action, reward, is_done)
 		
 	def pack_episodes(self, indicies):

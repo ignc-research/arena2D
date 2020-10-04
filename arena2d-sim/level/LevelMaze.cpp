@@ -85,7 +85,7 @@ void LevelMaze::reset(bool robot_position_reset)
 		}
 	}
 
-	randomGoalSpawnUntilValidForMaze();
+	randomGoalSpawnUntilValid();
 
 }
 

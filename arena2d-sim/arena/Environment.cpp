@@ -119,15 +119,8 @@ void Environment::initializeTraining()
 {
 	_totalReward = 0;
 	_episodeCount = 0;
-<<<<<<< HEAD
 	_robot->reset(b2Vec2(-1.5,-1.5));
 	reset(true);
-=======
-
-	_robot->reset(b2Vec2(-.5,-.5)); // 0,0
-	reset();
-
->>>>>>> 0ab6092a528e18b65a1d834b540e6875b5889418
 }
 
 void Environment::pre_step(const Twist & t)
@@ -203,11 +196,7 @@ void Environment::reset(bool robot_position_reset)
 {
 	// reset level
 	if(_level != NULL)
-<<<<<<< HEAD
 		_level->reset(_episodeState == NEGATIVE_END_WALL_HIT || _episodeState == NEGATIVE_END_TIME_UP || robot_position_reset);
-=======
-		_level->reset(_episodeState == NEGATIVE_END || robot_position_reset);
->>>>>>> 0ab6092a528e18b65a1d834b540e6875b5889418
 	
 	// reset trail
 	if(_SETTINGS->video.enabled)

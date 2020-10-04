@@ -315,34 +315,33 @@ class Agent:
 		# sample random elements
 		random_indicies = None
 		if self.frame_idx <= MEMORY_SIZE: # buffer not filled completely yet
-			random_indicies = numpy.random.choice(self.frame_idx-N_STEPS, batch_size)
+			random_indicies = torch.randint(self.frame_idx-N_STEPS, (batch_size,)).to(self.device)
 		else:
 			forbidden_lower_i = (MEMORY_SIZE + self.frame_idx-N_STEPS)%MEMORY_SIZE
 			forbidden_upper_i = (MEMORY_SIZE + self.frame_idx-1)%MEMORY_SIZE
-			random_indicies = numpy.empty(batch_size, dtype=numpy.long)
+			random_indicies = torch.empty(batch_size, dtype=torch.long).to(self.device)
 			if forbidden_lower_i > forbidden_upper_i: # wrap around
 				for i in range(0, batch_size): 
-					x = numpy.random.choice(MEMORY_SIZE-N_STEPS) + forbidden_upper_i +1
+					x = torch.randint(MEMORY_SIZE-N_STEPS,(1,)) + forbidden_upper_i +1
 					random_indicies[i] = x
 			else:
 				for i in range(0, batch_size): 
-					x = numpy.random.choice(MEMORY_SIZE-N_STEPS)
+					x = torch.randint(MEMORY_SIZE-N_STEPS,(1,))
 					if x >= forbidden_lower_i:
 						x += N_STEPS
 					random_indicies[i] = x
-		random_indicies_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
+		#random_indicies_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
 		# sample next state indicies of random states
-		current_idx = self.frame_idx%MEMORY_SIZE
-		for i in range(0, len(random_indicies)):
-			random_indicies[i] = (random_indicies[i]+N_STEPS)%MEMORY_SIZE
-		random_indicies_next_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
+		#current_idx = self.frame_idx%MEMORY_SIZE
+		random_indicies_next = (random_indicies+N_STEPS)%MEMORY_SIZE
+		#random_indicies_next_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
 
 		# get actual tensors from indicies
-		state = self.pack_episodes(random_indicies_v)
-		new_state = self.pack_episodes(random_indicies_next_v)
-		action = self.tensor_action_buffer[random_indicies_v]
-		reward = self.tensor_reward_buffer[random_indicies_v]
-		is_done = self.tensor_done_buffer[random_indicies_v]
+		state = self.pack_episodes(random_indicies)
+		new_state = self.pack_episodes(random_indicies_next)
+		action = self.tensor_action_buffer[random_indicies]
+		reward = self.tensor_reward_buffer[random_indicies]
+		is_done = self.tensor_done_buffer[random_indicies]
 		return (state, new_state, action, reward, is_done)
 		
 	def pack_episodes(self, indicies):
