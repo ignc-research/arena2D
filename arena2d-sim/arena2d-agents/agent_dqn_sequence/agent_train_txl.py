@@ -61,7 +61,7 @@ class Agent:
 		self.tensor_reward_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.float).to(self.device)# rewards
 		self.tensor_action_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.long).to(self.device)# the action that was chosen
 		self.tensor_done_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.bool).to(self.device)# episode has ended
-		self.tensor_step_buffer = (-torch.ones(MEMORY_SIZE, dtype=torch.int16)).to(self.device)# step index in episode (starting at 0)
+		self.tensor_step_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.int16).to(self.device)# step index in episode (starting at 0)
 		self.tensor_memory_buffer = [torch.zeros(MEMORY_SIZE, Gtrxl.embedding_size, dtype=torch.float).to(self.device)]*(N_LAYERS+1) # transformer memory		
 
 
@@ -425,7 +425,8 @@ class Agent:
 		self.start_gpu_measure()
 		l = nn.MSELoss()(state_action_values, expected_state_action_values)
 		self.stop_gpu_measure(self.loss_calc_times)
-		self.mean_loss_buffer.append(l.item())
+		k=l.item()
+		self.mean_loss_buffer.append(k)		
 		return l
 
 	def stop(self):
