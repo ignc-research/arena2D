@@ -84,7 +84,7 @@ for current_episode in range(num_episodes):
 		traveled_distance.append(distance)
 		#first episode goal info missing
 		if current_episode != 0:
-			frac_direct_traveled_dist.append(dist - goal_distance[current_episode-1])
+			frac_direct_traveled_dist.append(distance - goal_distance[current_episode-1])
 
 
 

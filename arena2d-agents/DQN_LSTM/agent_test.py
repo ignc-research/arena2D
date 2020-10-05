@@ -27,7 +27,7 @@ class Agent:
 		self.net.train(False)# set training mode to false to deactivate dropout layer
 		self.net.to(self.device)
 		if model_name != None:
-			self.net.load_state_dict(torch.load(model_name, map_location=device))
+			self.net.load_state_dict(torch.load(model_name, map_location=self.device))
 		self.reset_hidden()
 
 	def pre_step(self, observation):
