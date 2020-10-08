@@ -7,12 +7,12 @@ import math
 from torch.autograd import Variable
 
 ### hyper parameters ###
-n_head = 6	                # number of heads for multi-head self attention
+n_head = 4	                # number of heads for multi-head self attention
 d_ff = 256	                # number of neurons in feedforward layer of transformer
-embedding_size=384              # number of output neurons of the embedding layer
-dropout = 0.1	                # dropout applied after each transformer submodule
-dropatt= 0.1
-men_len= 36
+embedding_size=256              # number of output neurons of the embedding layer
+dropout = 0.1	                # dropout applied for feedforward layer
+dropatt= 0.1                    # dropout applied for attention layer
+men_len= 2                      # sequence length of memory
 ##################################
 
 class TransformerDqn(nn.Module):
@@ -22,7 +22,7 @@ class TransformerDqn(nn.Module):
 		self.embedding = nn.Linear(input_size,embedding_size)
 
 		# create transformer with N layers											
-		self.transformer = txl.MemTransformerLM(n_layer,n_head,embedding_size,embedding_size//n_head, d_ff,dropout, dropatt)
+		self.transformer = txl.MemTransformerLM(n_layer,n_head,embedding_size,embedding_size//n_head, d_ff,dropout, dropatt,men_len)
 
 		# map output of final layer to Q values of actions
 		self.linear = nn.Linear(embedding_size, output_size)

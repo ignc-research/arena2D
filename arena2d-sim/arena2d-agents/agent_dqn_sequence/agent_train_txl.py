@@ -24,7 +24,7 @@ BATCH_SIZE = 32				# batch size for training after every step
 TRAINING_START = 10		# start training only after the first X episodes
 MEMORY_SIZE = 10**6		# last X states will be stored in a buffer (memory), from which the batches are sampled
 N_STEPS = 2
-N_LAYERS=3                      # number of encoder layers in transformer
+N_LAYERS= 3                      # number of encoder layers in transformer
 DOUBLE = True
 SEQ_LENGTH=100                     #64 10 # 32 20
 additional_state=2              #reward and action of the last step
@@ -62,7 +62,7 @@ class Agent:
 		self.tensor_action_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.long).to(self.device)# the action that was chosen
 		self.tensor_done_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.bool).to(self.device)# episode has ended
 		self.tensor_step_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.int16).to(self.device)# step index in episode (starting at 0)
-		self.tensor_memory_buffer = [torch.zeros(MEMORY_SIZE, Gtrxl.embedding_size, dtype=torch.float).to(self.device)]*(N_LAYERS+1) # transformer memory		
+		self.tensor_memory_buffer = [torch.zeros(MEMORY_SIZE,Gtrxl.men_len,Gtrxl.embedding_size, dtype=torch.float).to(self.device)]*(N_LAYERS+1) # transformer memory		
 
 
 		# creating net and target net
@@ -155,9 +155,10 @@ class Agent:
 			state_v=self.pack_episodes([idx])
 			# forward
 			q_vals_v, new_mem = self.net(state_v, None)
+			#print(new_mem[0].shape)
 			# save new memory in buffer
 			for i in range(N_LAYERS+1):
-				self.tensor_memory_buffer[i][idx] = new_mem[i].squeeze()
+				self.tensor_memory_buffer[i][idx] = new_mem[i].squeeze(1)
 			max_value, act_v = torch.max(q_vals_v, dim=1)
 			self.mean_value_buffer.append(max_value.item())
 			action = int(act_v.item())
@@ -229,6 +230,7 @@ class Agent:
 			self.stop_gpu_measure(self.sampling_times)
 
 			loss_t = self.calc_loss(*batch)
+			self.mean_loss_buffer.append(loss_t.item())
 			
 			self.start_gpu_measure()
 			loss_t.backward()
@@ -367,11 +369,11 @@ class Agent:
 		memory = []
 		next_memory = []
 		for i in range(N_LAYERS+1):
-		         memory.append(self.tensor_memory_buffer[i][mem_random_indicies].unsqueeze(0))
-		         next_memory.append(self.tensor_memory_buffer[i][mem_next_random_indicies].unsqueeze(0))
+		         memory.append(self.tensor_memory_buffer[i][mem_random_indicies].transpose(1,0))
+		         next_memory.append(self.tensor_memory_buffer[i][mem_next_random_indicies].transpose(1,0))
 		action = self.tensor_action_buffer[random_indicies]
 		reward = self.tensor_reward_buffer[random_indicies]
-		is_done = self.tensor_done_buffer[random_indicies]
+		is_done = self.tensor_done_buffer[random_indicies]		
 		return (state,memory,new_state,next_memory, action, reward, is_done)
 		
 	def pack_episodes(self, indicies):
@@ -425,8 +427,8 @@ class Agent:
 		self.start_gpu_measure()
 		l = nn.MSELoss()(state_action_values, expected_state_action_values)
 		self.stop_gpu_measure(self.loss_calc_times)
-		k=l.item()
-		self.mean_loss_buffer.append(k)		
+		#k=l.item()
+		#print(k)		
 		return l
 
 	def stop(self):
