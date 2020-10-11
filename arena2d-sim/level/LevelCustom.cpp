@@ -36,41 +36,54 @@ void LevelCustom::reset(bool robot_position_reset) {
     std::vector <zRect> holes(num_obstacles);
 
     std::list<b2Vec2*> existing_positions;
+    std::list<zRect*> existing_boxes;
     for (int i = 0; i < num_obstacles; i++) {
         //static_spawn.getRandomPoint(p);
         b2Vec2 p;
         zRect aabb;
         //makes sure obstacle spawns on free space
-        obstacleSpawnUntilValid(&static_spawn, existing_positions, p);
+        int randomNumber = (rand() % 6);
+        bool spawn_valid = obstacleSpawnUntilValid(&static_spawn, existing_boxes, p, randomNumber);
         //printf("obstacle point found\n");
         float random_length;
         float random_width;
-        int randomNumber = (rand() % 6);
+        zRect * first_horizontal;
+        zRect * second_horizontal;
+        zRect * horizontal_box;
+        zRect * first_vertical;
+        zRect * second_vertical;
+        zRect * vertical_box;
+
+
         //bool boundary_cond = true;
 
 
         // controls the number of occurences of different shapes: random, vertical blocks and horizontal blocks
         switch (randomNumber) {
-            case 0:
             case 1:
-            case 3:
-            case 5:
             case 6:
+            case 5:
+            case 3:
                 //random obstacle is created
+                if (!spawn_valid) continue;
                 addRandomShape(p, (_SETTINGS->stage.min_obstacle_size / 2),
                                (_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 ;
                 //printf("obstacle point added randomShape\n");
-                existing_positions.push_back(new b2Vec2(p.x, p.y));
+                //existing_positions.push_back(new b2Vec2(p.x, p.y));
+                existing_boxes.push_back(new zRect(aabb));
                 break;
             case 2:
                 //  horizontal box is created
-                random_length =  f_frandomRange(0.5,3);
+                if (!spawn_valid) continue;
+                random_length =  f_frandomRange(0.5,2.5);
                 random_width = f_frandomRange(2*robot_diameter, 3*robot_diameter);
                 generateRandomBodyHorizontal(p, (_SETTINGS->stage.min_obstacle_size / 2),
                                              random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 //printf("obstacle point added horizontal 1\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
+                first_horizontal = new zRect(aabb);
+                //existing_boxes.push_back(new zRect(aabb));
 
                 //  corresponding second horizontal box is created to build a corridor with the firts one
                 p.x = p.x;//1.5 + _SETTINGS->stage.min_obstacle_size / 2;
@@ -78,16 +91,28 @@ void LevelCustom::reset(bool robot_position_reset) {
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
                                              random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
+                second_horizontal = new zRect(aabb);
+                horizontal_box = new zRect(first_horizontal->x, first_horizontal->y + abs(first_horizontal->y - second_horizontal->y)/2.0f,  second_horizontal->w, (abs(first_horizontal->y - second_horizontal->y) + (first_horizontal->h* 2.0f))/2.0f);
+
+                printf("-----------horizontal---------------\n");
+                printf("x: %f \n", horizontal_box->x);
+                printf("y: %f \n", horizontal_box->y);
+                printf("w: %f \n", horizontal_box->w);
+                printf("h: %f \n", horizontal_box->h);
+
+                existing_boxes.push_back(horizontal_box);
 
                 break;
             case 4:
                 //vertical box is created
-                random_length =  f_frandomRange(0.5,3);
+                if (!spawn_valid) continue;
+                random_length =  f_frandomRange(0.5,2.5);
                 random_width = f_frandomRange(2*robot_diameter, 3*robot_diameter);
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
                                            random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
 
+                first_vertical = new zRect(aabb);
 
                 //  corresponding second vertical box is created to build a corridor with the first one
 
@@ -97,6 +122,17 @@ void LevelCustom::reset(bool robot_position_reset) {
                                            random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
                 //printf("obstacle point added vertical 2\n");
                 existing_positions.push_back(new b2Vec2(p.x, p.y));
+
+                second_vertical = new zRect(aabb);
+                vertical_box = new zRect(first_vertical->x - abs(first_vertical->x - second_vertical->x)/2.0f, first_vertical->y, (abs(first_vertical->x - second_vertical->x) + (first_vertical->w * 2.0f))/2.0f, second_vertical->h);
+                printf("-------vertical-----------\n");
+                printf("x: %f \n", vertical_box->x);
+                printf("y: %f \n", vertical_box->y);
+                printf("w: %f \n", vertical_box->w);
+                printf("h: %f \n", vertical_box->h);
+                existing_boxes.push_back(vertical_box);
+
+
                 break;
         }
     }
@@ -168,10 +204,10 @@ LevelCustom::generateRandomBodyHorizontal(const b2Vec2 &p, float min_radius, flo
         }
     }
     if (aabb != NULL) {
-        aabb->x = p.x;
-        aabb->y = p.y;
-        aabb->w = (max_v.x - min_v.x) / 2.0f;
-        aabb->h = (max_v.y - min_v.y) / 2.0f;
+        aabb->x = p.x - max_radius/2.0f;
+        aabb->y = p.y + min_radius/2.0f;
+        aabb->w = max_radius/2.0f;//(max_v.x - min_v.x);// / 2.0f;
+        aabb->h = min_radius/2.0f;//(max_v.y - min_v.y);// / 2.0f;
     }
     shape.Set((b2Vec2 *) verts, vert_count);
     return addShape(&shape);
@@ -224,10 +260,10 @@ LevelCustom::generateRandomBodyVertical(const b2Vec2 &p, float min_radius, float
         }
     }
     if (aabb != NULL) {
-        aabb->x = p.x;
-        aabb->y = p.y;
-        aabb->w = (max_v.x - min_v.x) / 2.0f;
-        aabb->h = (max_v.y - min_v.y) / 2.0f;
+        aabb->x = p.x + min_radius/2.0f;
+        aabb->y = p.y - max_radius/2.0f;
+        aabb->w = min_radius/2.0f;//(max_v.x - min_v.x) / 2.0f;
+        aabb->h = max_radius/2.0f;//(max_v.y - min_v.y) / 2.0f;
     }
     shape.Set(verts, vert_count);
     return addShape(&shape);

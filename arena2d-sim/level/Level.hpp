@@ -123,7 +123,9 @@ protected:
  * @param goal_spawn if this parameter is NULL, the member RectSpawn _goalSpawnArea is used for sampling spawn positions,
                       else the RectSpawn pointed to by this parameter is used for sapling
  */
-    void obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p);
+    bool obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p);
+
+    bool obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRect*>& existing_boxes, b2Vec2 &p, int obstacle_type);
 
 	/* create rectangular border around level origin (0,0) with given dimensions and add to body list
 	 * @param half_width half the width (along x-axis) of border rect
