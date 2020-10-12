@@ -94,14 +94,6 @@ void LevelCustom::reset(bool robot_position_reset) {
                 second_horizontal = new zRect(aabb);
                 horizontal_box = new zRect(first_horizontal->x, first_horizontal->y + abs(first_horizontal->y - second_horizontal->y)/2.0f,  second_horizontal->w, (abs(first_horizontal->y - second_horizontal->y) + (first_horizontal->h* 2.0f))/2.0f);
 
-                /*
-                printf("-----------horizontal---------------\n");
-                printf("x: %f \n", horizontal_box->x);
-                printf("y: %f \n", horizontal_box->y);
-                printf("w: %f \n", horizontal_box->w);
-                printf("h: %f \n", horizontal_box->h);
-                */
-
                 existing_boxes.push_back(horizontal_box);
 
                 break;
@@ -127,13 +119,6 @@ void LevelCustom::reset(bool robot_position_reset) {
 
                 second_vertical = new zRect(aabb);
                 vertical_box = new zRect(first_vertical->x - abs(first_vertical->x - second_vertical->x)/2.0f, first_vertical->y, (abs(first_vertical->x - second_vertical->x) + (first_vertical->w * 2.0f))/2.0f, second_vertical->h);
-                /*
-                printf("-------vertical-----------\n");
-                printf("x: %f \n", vertical_box->x);
-                printf("y: %f \n", vertical_box->y);
-                printf("w: %f \n", vertical_box->w);
-                printf("h: %f \n", vertical_box->h);
-                */
                 existing_boxes.push_back(vertical_box);
 
 
