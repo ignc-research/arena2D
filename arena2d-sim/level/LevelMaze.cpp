@@ -36,7 +36,21 @@ void LevelMaze::reset(bool robot_position_reset)
 	createBorder(half_width, half_height);
 
 	if(robot_position_reset){
-		_levelDef.robot->reset(b2Vec2(-2* Burger_safe_Radius, -2* Burger_safe_Radius), f_frandomRange(0, 2*M_PI));
+		int randomNumber = (rand() % 4);
+		switch (randomNumber) {
+			case 0: 
+				_levelDef.robot->reset(b2Vec2(2* Burger_safe_Radius, 2* Burger_safe_Radius), f_frandomRange(1.5*M_PI, 2*M_PI));
+				break;
+			case 1:
+				_levelDef.robot->reset(b2Vec2(-2* Burger_safe_Radius, 2* Burger_safe_Radius), f_frandomRange(0, 0.5*M_PI));
+				break;
+			case 2:
+				_levelDef.robot->reset(b2Vec2(-2* Burger_safe_Radius, -2* Burger_safe_Radius), f_frandomRange(0.5*M_PI, M_PI));
+				break;
+			case 3:
+				_levelDef.robot->reset(b2Vec2(2* Burger_safe_Radius, -2* Burger_safe_Radius), f_frandomRange(M_PI, 1.5*M_PI));
+				break;
+		}
 		//resetRobotToCenter();
 	}
 
