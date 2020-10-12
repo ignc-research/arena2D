@@ -182,10 +182,6 @@ bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRe
                 static_spawn->getRandomPoint(p);
             }
         }
-        printf("--------------------------\n");
-        printf("x: %f \n", p.x);
-        printf("y: %f \n", p.y);
-
         //if (obstacle_type == 2 || obstacle_type == 4 )  {
             for (auto &existing_box : existing_boxes) {
                 if (obstacle_type == 2) {
