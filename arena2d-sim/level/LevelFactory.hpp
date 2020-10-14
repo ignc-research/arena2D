@@ -9,6 +9,7 @@
 #include "Level.hpp"
 #include "LevelRandom.hpp"
 #include "LevelCustom.hpp"
+#include "LevelStaticMap.hpp"
 
 // singleton-get macro
 #define LEVEL_FACTORY LevelFactory::get()
@@ -80,6 +81,12 @@ public:
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
 		return new LevelCustom(d, level_dynamic);
+	}
+
+	// static map level
+	Level* createLevelStaticMap(const LevelDef & d, const ConsoleParameters & params){
+		bool level_dynamic = params.getFlag("--dynamic");
+		return new LevelStaticMap(d,level_dynamic);
 	}
 
 private:

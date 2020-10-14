@@ -349,21 +349,22 @@ void Arena::update()
 			}
 			if (values.size() != _csvWriter.getNumCols())
 			{
-				ERROR_F("Number of metrics changed to %d (before: %ld)!", values.size(), _csvWriter.getNumCols());
+				ERROR_F("Number of metrics changed to %ld (before: %d)!", values.size(), _csvWriter.getNumCols());
 			}
 			_csvWriter.write(values);
 			_csvWriter.flush();
 		}
 	}
 }
-#ifdef SUPPORT_ROS_AGENT
+#ifdef USE_ROS
 void Arena::rosUpdate(float wait_time = 0.0f)
 {
 	// we put the wait connection here so that window will not be in blank screen.
 	if(!_ros_node_ptr->m_env_connected){
 		_ros_node_ptr->waitConnection();
+		return;
 	}
-	
+
 	RosNode::Status s;
 	if (_ros_node_ptr == nullptr)
 		return; // should throw Exception

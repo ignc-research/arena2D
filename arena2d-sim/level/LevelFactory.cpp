@@ -23,5 +23,9 @@ LevelFactory::LevelFactory()
 
 	// svg
 	REGISTER_LEVEL(LevelSVG, "svg", "", "Levels loaded from svg-files");
-
+	#ifdef USE_ROS
+	// static map
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelStaticMap, "static_map", "[--dynamic]",
+								"Static Map Level and optional dynamic obstacles (flag --dynamic)");
+	#endif
 }
