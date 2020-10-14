@@ -349,7 +349,7 @@ void Arena::update()
 			}
 			if (values.size() != _csvWriter.getNumCols())
 			{
-				ERROR_F("Number of metrics changed to %d (before: %d)!", values.size(), _csvWriter.getNumCols());
+				ERROR_F("Number of metrics changed to %d (before: %ld)!", values.size(), _csvWriter.getNumCols());
 			}
 			_csvWriter.write(values);
 			_csvWriter.flush();
