@@ -97,7 +97,7 @@ void Wanderers::calculateDistanceAngle(){
         float dist = robot_to_wanderer.Length() - _levelDef.robot->getRadius() - _wanderers[i]->getRadius();
         
         //calculate angle of wanderer relativ to the robots facing direction
-        zVector2D robot_facing(1, 0);
+        zVector2D robot_facing(0, 1);
         robot_facing.rotate(robot_transform.q.GetAngle());// robot facing vector
         float angle = f_deg(zVector2D::signedAngle(robot_facing, zVector2D(robot_to_wanderer.x, robot_to_wanderer.y)));// angle between robot facing vector and robot to wanderer
         
