@@ -5,6 +5,7 @@ std::unique_ptr<ros::NodeHandle> StaticMap::m_nh = nullptr;
 
 LevelStaticMap::LevelStaticMap(const LevelDef &d, bool dynamic = false) : Level(d), _dynamic(dynamic), _init_reset(true)
 {
+    _n_non_clear_bodies = 0;
     _occupancygrid_ptr = StaticMap::getMap(_SETTINGS->stage.static_map_ros_service_name);
     ROS_DEBUG("load map start");
     loadStaticMap();
@@ -14,7 +15,7 @@ LevelStaticMap::LevelStaticMap(const LevelDef &d, bool dynamic = false) : Level(
 void LevelStaticMap::reset(bool robot_position_reset)
 {
     ROS_DEBUG("reset start!");
-    // lazyclear();
+    lazyclear();
     if (_dynamic)
         freeWanderers();
     if (robot_position_reset)
@@ -273,6 +274,4 @@ void LevelStaticMap::lazyclear()
             it++;
         }
     }
-    // clear goal spawn
-    _goalSpawnArea.clear();
 }
