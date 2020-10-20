@@ -92,10 +92,10 @@ class Arena2dEnvWrapper(gym.Env):
         error_showed = False
         with self.response_con:
             while not self.resp_received:
-                self.response_con.wait(0.5)
+                self.response_con.wait(1.5)
                 if not self.resp_received:
-                    rospy.logerr(
-                        f"Environement wrapper [{self._idx_env}] didn't get the feedback within 0.5s from arena simulator after sending reset command")
+                    rospy.logwarn(
+                        f"Environement wrapper [{self._idx_env}] didn't get the feedback within 1.5s from arena simulator after sending reset command")
                     break
             self.resp_received = False
         return self.obs

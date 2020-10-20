@@ -3,7 +3,7 @@
 std::shared_ptr<nav_msgs::OccupancyGrid> StaticMap::m_static_map = nullptr;
 std::unique_ptr<ros::NodeHandle> StaticMap::m_nh = nullptr;
 
-LevelStaticMap::LevelStaticMap(const LevelDef &d, bool dynamic = false) : Level(d), _dynamic(dynamic)
+LevelStaticMap::LevelStaticMap(const LevelDef &d, bool dynamic = false) : Level(d), _dynamic(dynamic), _init_reset(true)
 {
     _occupancygrid_ptr = StaticMap::getMap(_SETTINGS->stage.static_map_ros_service_name);
     ROS_DEBUG("load map start");
@@ -14,7 +14,7 @@ LevelStaticMap::LevelStaticMap(const LevelDef &d, bool dynamic = false) : Level(
 void LevelStaticMap::reset(bool robot_position_reset)
 {
     ROS_DEBUG("reset start!");
-    lazyclear();
+    // lazyclear();
     if (_dynamic)
         freeWanderers();
     if (robot_position_reset)
@@ -33,31 +33,30 @@ void LevelStaticMap::reset(bool robot_position_reset)
     const float half_width = info.resolution * info.width / 2;
     const zRect main_rect(0, 0, half_width, half_height);
     const zRect big_main_rect(0, 0, half_width + max_obstacle_radius, half_height + max_obstacle_radius);
-    // calculate spawn area for static obstacles
-    RectSpawn static_spawn;
-    static_spawn.addCheeseRect(big_main_rect, _levelDef.world, COLLIDE_CATEGORY_PLAYER, max_obstacle_radius);
-    static_spawn.calculateArea();
 
-    // create static obstacles
-    for (int i = 0; i < num_obstacles; i++)
+    if (_init_reset)
     {
-        b2Vec2 p;
-        static_spawn.getRandomPoint(p);
-        zRect aabb;
-        addRandomShape(p, min_obstacle_radius, max_obstacle_radius, &aabb);
+        // calculating goal spawn area
+        _goalSpawnArea.addQuadTree(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE,
+                                   LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE, half_goal_size);
+        _goalSpawnArea.calculateArea();
     }
-    ROS_DEBUG("created static obstacles!");
-    // calculating goal spawn area
-    _goalSpawnArea.addQuadTree(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE,
-                               LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE, half_goal_size);
-    _goalSpawnArea.calculateArea();
-    ROS_DEBUG("goal spawn area calculated!");
+
     // dynamic obstacles
     if (_dynamic)
     {
-        _dynamicSpawn.clear();
-        _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
-        _dynamicSpawn.calculateArea();
+        //
+        if (_init_reset)
+        {
+            ROS_INFO("calculating the respawn area for dynamic obstacles, it may take a while and the GUI is in black "
+                     "screen...");
+            _dynamicSpawn.clear();
+            _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
+                                        dynamic_radius);
+            _dynamicSpawn.calculateArea();
+            ROS_INFO("calculation the respawn area for dynamic obstacles is done");
+            _init_reset = false;
+        }
         for (int i = 0; i < num_dynamic_obstacles; i++)
         {
             b2Vec2 p;
@@ -68,10 +67,8 @@ void LevelStaticMap::reset(bool robot_position_reset)
         }
     }
     ROS_DEBUG("dynamic obstacles created!");
-
     randomGoalSpawnUntilValid();
     ROS_DEBUG("goal spawned");
-    ROS_DEBUG("reset done!");
 }
 
 void LevelStaticMap::freeWanderers()
@@ -100,7 +97,6 @@ void LevelStaticMap::renderGoalSpawn()
 
 void LevelStaticMap::loadStaticMap(bool enable_line_approximation)
 {
-
     b2Assert(_occupancygrid_ptr);
     const auto &info = _occupancygrid_ptr->info;
     const auto &data = _occupancygrid_ptr->data;
@@ -108,13 +104,13 @@ void LevelStaticMap::loadStaticMap(bool enable_line_approximation)
     uint32 rows = info.height;
     float resolution = info.resolution;
     // get the position of the left-upper cell, we assume the origin of the coordinate system is the center of the map
-    b2Vec2 lower_left_pos(-((cols >> 1) - ((cols & 1) ^ 1) / 2.f) * resolution, -((rows >> 1) - ((rows & 1) ^ 1) / 2.f) * resolution);
+    b2Vec2 lower_left_pos(-((cols >> 1) - ((cols & 1) ^ 1) / 2.f) * resolution,
+                          -((rows >> 1) - ((rows & 1) ^ 1) / 2.f) * resolution);
     // b2Vec2 lower_left_pos(info.origin.position.x, info.origin.position.y);
     // if we dont approxiamte the occupancy grid cells with line segment, each cell will be represented with
     // a singe box, which is not efficiency.
     if (!enable_line_approximation)
     {
-
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -170,10 +166,10 @@ void LevelStaticMap::loadStaticMap(bool enable_line_approximation)
         //                                     operator in Canny()
         // do_merge            false         - If true, incremental merging of segments
         //                                     will be perfomred
-        // int length_threshold = 2;
+        // int length_threshold = 1;
         // float distance_threshold = 1.41421356f;
-        // double canny_th1 = 10.0;
-        // double canny_th2 = 10.0;
+        // double canny_th1 = 0.1;
+        // double canny_th2 = 0.2;
         // int canny_aperture_size = 3;
         // bool do_merge = false;
         // auto fld = cv::ximgproc::createFastLineDetector(length_threshold,
@@ -218,7 +214,7 @@ void LevelStaticMap::loadStaticMap(bool enable_line_approximation)
                 else if (started && !edge_exists)
                 {
                     add_edge(start, i, j, i);
-                    add_edge(start, i + 1, j, i + 1);
+                    // add_edge(start, i + 1, j, i + 1);
                     started = false;
                 }
             }
@@ -251,13 +247,14 @@ void LevelStaticMap::loadStaticMap(bool enable_line_approximation)
                 else if (started && !edge_exists)
                 {
                     add_edge(i, start, i, j);
-                    add_edge(i + 1, start, i + 1, j);
+                    // add_edge(i + 1, start, i + 1, j);
 
                     started = false;
                 }
             }
         }
         _n_non_clear_bodies++;
+        _bodyList.push_back(body);
     }
 }
 void LevelStaticMap::lazyclear()

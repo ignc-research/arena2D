@@ -58,7 +58,7 @@ public:
 	void renderGoalSpawn() override;
 
 private:
-	void loadStaticMap(bool enable_line_approximation = false);
+	void loadStaticMap(bool enable_line_approximation = true);
 
 	/* free wanderers and clear list
 	 */
@@ -77,8 +77,11 @@ private:
 
 	/* spawn area for dynamic obstacles */
 	RectSpawn _dynamicSpawn;
+	// it takes too long to calculate the spawn area for dynamic obstaticles,to save the time, it will only be done once.
+	bool _init_reset;
 	/* number of bodies that shoun't be removed when lazyclear is called */
 	uint32 _n_non_clear_bodies;
+
 };
 
 #endif
