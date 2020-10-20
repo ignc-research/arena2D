@@ -32,7 +32,7 @@ Afterwards run:
 arena2d --disable-video --run "level "random" --dynamic; run_agent ../../arena2d-agents/A3C_LSTM/agent_train.py --device cuda"
 ```
 to train an A3C with LSTM agent on the random, dynamic environment with GPU. For more options see the agent descriptions below. 
-Currently, we provide the levels "empty", "random", and "svg". More information is provided below.
+Currently, we provide the levels "empty", "random", "static map",and "svg". More information is provided below.
 
 ### Change training settings
 Changing the training settings outside the settings.st file is only possible when using GUI in build command tool. If you are running this terminal-only, you have to change the settings inside the settings.st. Recompilation is not neccessary. 
@@ -108,6 +108,10 @@ The simulator comes with a few built-in levels which are listed below:
 * ```empty```: An empty level with just a border surrounding the level area.
 * ```random```: Randomly generated obstacles. Add flag ```--dynamic``` to add moving obstacles.
 * ```svg```: Custom SVG-levels that are loaded from the folder ```svg_levels/```. The path to the folder can be specified in the settings file with the option ```stage.svg_path```.
+* ```static_map```: A level that receives the map info from the ros map server. To use this level make sure the code is compiled with `catkin_make -DUSE_ROS=ON` to compile the whole code and use `rosrun map_server map_server <your-map-file>.yaml` to provide a map service. A handy command to arena2d-sim in this mode is
+```bash
+	roslaunch arena2d arena_sim.launch video_mode:=--enable-video level_name:=static_map level_mode:=--dynamic
+```
 
 A level can be loaded with the command ```level <level_name>``` or by setting the option ```stage.initial_level``` in the settings file. Further parameters for built-in levels can be configured in the ```stage``` section of the settings file. For example, the parameter ```stage.level_size``` specifies the size of the square-shaped *empty* and *random* levels.
 
