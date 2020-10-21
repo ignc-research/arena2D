@@ -1,4 +1,9 @@
-/* Author: Kyra Kerz */
+/* Author: Kyra Kerz
+ * 1. Spawning static obsticales: Random shapes  and vertical/horizontal corrdiors
+ * 2. Defining bounding boxes for obstacles spawn points, that the obstacles dont overlap
+ * 3. Corridors height and weight set randomly in predefined range
+ * */
+
 
 #include "LevelCustom.hpp"
 #include "math.h"

@@ -12,7 +12,7 @@ class LevelHuman : public Level
 public:
 	/* constructor
 	 */
-	LevelHuman(const LevelDef & levelDef, bool dynamic = false) : Level(levelDef), _dynamic(dynamic), wanderers(levelDef){}
+	LevelHuman(const LevelDef & levelDef, bool human = false) : Level(levelDef),  _human(human), wanderers(levelDef){}
 
 	/* destructor
 	 */

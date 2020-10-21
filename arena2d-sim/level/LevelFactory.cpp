@@ -22,7 +22,7 @@ LevelFactory::LevelFactory()
 								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
 
 	// static
-	REGISTER_LEVEL_FUNC(LevelFactory::createLevelHuman, "human", "[--dynamic]""[--human]",
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelHuman, "human", "[--human]",
 								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
 
 	// static
