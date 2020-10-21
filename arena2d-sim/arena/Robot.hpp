@@ -4,6 +4,7 @@
 
 #include "PhysicsWorld.hpp"
 #include "LidarCast.hpp"
+//#include "Environment.hpp"
 #include <engine/zColor.hpp>
 #include <engine/GlobalSettings.hpp>
 
@@ -146,6 +147,8 @@ private:
 	/* robot rigid body */
 	b2Body * _base;
 
+//	Environment * _env;
+
 	/* indicating wheel in _wheelPosition */
 	enum WheelIndicator{LEFT, RIGHT};
 
@@ -181,6 +184,8 @@ private:
 
 	/* keeping track of the number of contacts for reward function */
 	int _contactCount;
+
+    b2World * _world;
 };
 
 #endif

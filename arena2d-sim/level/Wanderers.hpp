@@ -45,20 +45,28 @@ public:
     Wanderers(const LevelDef & levelDef):_levelDef(levelDef){}
 
     /* destructor, delete all wanderers */
-    ~Wanderers(){freeWanderers();}
+    ~Wanderers(){
+        freeWanderers();
+        freeRobotWanderers();
+    }
 
     /* free space, delete all wanderers */
     void freeWanderers();
+    void freeRobotWanderers();
 
     /* reset wanderers to new random positions 
 	 * @param _dynamicSpawn RectSpawn to get random spawn positions for wanderers
 	 */
-    void reset(RectSpawn & _dynamicSpawn);
+    void reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human);
 
     /* update position and velocity of wanderers, while checking if they are chatting or outside the border.
 	 * execute calculateDistanceAngle() and getClosestWanderers()
 	 */
     void update();
+
+    void updateHuman();
+
+    void updateRobot();
 
     /* get the old distances of all wanderers, which were inside the camera_view of the robot before the last action was executed
 	 * @param old_distance push old observed distances of wanderers into this vector
@@ -108,6 +116,7 @@ private:
 
 	/* list that stores all wanderers for dynamic level */
     std::vector<WandererBipedal*> _wanderers;
+    std::vector<Wanderer*> _robot_wanderers;
 
     /* save current wanderer information, used for sorting according to distance */
     std::list<WandererInfo> _infos_of_wanderers;

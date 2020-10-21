@@ -8,15 +8,39 @@ void Wanderers::freeWanderers(){
     _wanderers.clear();
 }
 
-void Wanderers::reset(RectSpawn & _dynamicSpawn){
-    if(_wanderers.size() > 0) freeWanderers();
+void Wanderers::freeRobotWanderers(){
+    // free all wanderers
+    for(int i = 0; i < _robot_wanderers.size(); i++){
+        delete(_robot_wanderers[i]);
+    }
+    _robot_wanderers.clear();
+}
+
+void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
+    if (_wanderers.size() > 0) freeWanderers();
+    if (_robot_wanderers.size() > 0) freeRobotWanderers();
     // adding a human wanderers
-    for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
-        b2Vec2 p;
-		_dynamicSpawn.getRandomPoint(p);
-        _wanderers.push_back(new WandererBipedal(_levelDef.world, p, 
-                                                _SETTINGS->stage.obstacle_speed,
-                                                0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
+
+    if (_dynamic) {
+        for (int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++) {
+            b2Vec2 p;
+            _dynamicSpawn.getRandomPoint(p);
+            Wanderer *w = new Wanderer(_levelDef.world, p,
+                                       _SETTINGS->stage.obstacle_speed,
+                                       0.1, 0.05, 60.0f, WANDERER_ID_ROBOT);
+            w->addCircle(_SETTINGS->stage.dynamic_obstacle_size / 2.f);
+            _robot_wanderers.push_back(w);
+
+        }
+    }
+    if(_human){
+        for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++) {
+            b2Vec2 p;
+            _dynamicSpawn.getRandomPoint(p);
+            _wanderers.push_back(new WandererBipedal(_levelDef.world, p,
+                                                     _SETTINGS->stage.obstacle_speed,
+                                                     0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
+        }
     }
     //reset all lists
     _old_infos_of_wanderers.clear();
@@ -30,6 +54,13 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn){
 }
 
 void Wanderers::update(){
+    updateHuman();
+    updateRobot();
+
+
+}
+
+void Wanderers::updateHuman(){
     b2Vec2 position;
     for(int i = 0; i < _wanderers.size(); i++){
         //check if wanderers are near each other -> stop both wanderers as they start chatting
@@ -40,7 +71,7 @@ void Wanderers::update(){
                 continue;
             }
             float distance = (_wanderers[i]->getPosition() - _wanderers[j]->getPosition()).Length();
-            //printf("Radius %f \n", (*it)->getRadius());
+            //printf("Radius");
 
             if ( distance < radius_check) {
                 chat_flag = true;
@@ -76,7 +107,15 @@ void Wanderers::update(){
 
     calculateDistanceAngle();
     getClosestWanderers();
+
 }
+
+void Wanderers::updateRobot(){
+    for(int i = 0; i < _robot_wanderers.size(); i++){
+        _robot_wanderers[i]->update(false);
+    }
+}
+
 
 void Wanderers::calculateDistanceAngle(){
     //clear and update all observation vectors of wanderers

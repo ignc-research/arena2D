@@ -24,6 +24,7 @@ public:
 
     /* updates velocity accoriding to change/stop rate
      */
+
     void update(bool chat_flag) override;
 
 protected:

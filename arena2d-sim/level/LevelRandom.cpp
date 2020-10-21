@@ -53,7 +53,7 @@ void LevelRandom::reset(bool robot_position_reset)
 		for(int i = 0; i < num_dynamic_obstacles; i++){
 			b2Vec2 p;
 			_dynamicSpawn.getRandomPoint(p);
-			Wanderer * w = new Wanderer(_levelDef.world,  p, dynamic_speed, 0.1, 0.05);
+			Wanderer * w = new Wanderer(_levelDef.world,  p, dynamic_speed, 0.1, 0.05, 60.0f, 1);
 			w->addCircle(dynamic_radius);
 			_wanderers.push_back(w);
 		}

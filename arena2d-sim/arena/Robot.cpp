@@ -4,9 +4,11 @@
 
 Robot::Robot(b2World * world): _lidarBuffer(0){
 	b2BodyDef b;
+
 	b.allowSleep = false;
 	b.fixedRotation = false;
 	b.type = b2_dynamicBody;
+	_world = world;
 	b2FixtureDef fix;
 	fix.filter.categoryBits = COLLIDE_CATEGORY_PLAYER;
 
@@ -208,8 +210,25 @@ void Robot::performAction(Action a)
 void Robot::scan()
 {
 	b2Transform t = _base->GetTransform();
-	b2Vec2 center = _base->GetWorldPoint(b2Vec2(_SETTINGS->robot.laser_offset.x, _SETTINGS->robot.laser_offset.y)); 
-	_lidar->scan(_base->GetWorld(), center, t.q.GetAngle());
+	b2Vec2 center = b2Vec2(_base->GetWorldPoint(b2Vec2(_SETTINGS->robot.laser_offset.x, _SETTINGS->robot.laser_offset.y)));
+    bool iskox = isnan(center.x);
+    bool iskoy = isnan(center.y);
+    if(iskox == 1 ){
+	    center.x = 0.1;
+	}
+	if(iskoy == 1){
+        center.y = 0.1;
+    }
+    float newangle = t.q.GetAngle();
+	bool anglenan = isnan(newangle);
+	if(anglenan == 1){
+	    newangle = 0.2;
+	}
+	if (iskox == 1 || iskoy == 1 || anglenan == 1) {
+        _world->RequestReset();
+	} else {
+        _lidar->scan(_base->GetWorld(), center, newangle);
+    }
 }
 
 void Robot::renderScan(bool area)

@@ -51,7 +51,7 @@ void LevelHuman::reset(bool robot_position_reset)
 		_dynamicSpawn.clear();
 		_dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
 		_dynamicSpawn.calculateArea();
-		wanderers.reset(_dynamicSpawn);
+		wanderers.reset(_dynamicSpawn, _dynamic, _human);
 	}
 
 	randomGoalSpawnUntilValid();

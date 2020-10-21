@@ -81,7 +81,8 @@ public:
 	Level* createLevelCustom(const LevelDef & d, const ConsoleParameters & params)
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelCustom(d, level_dynamic);
+		bool level_human = params.getFlag("--human");
+		return new LevelCustom(d, level_dynamic, level_human);
 	}
 
 	/*human level */
@@ -94,8 +95,9 @@ public:
 	/*maze level */
 	Level* createLevelMaze(const LevelDef & d, const ConsoleParameters & params)
 	{
+        bool level_human = params.getFlag("--human");
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelMaze(d, level_dynamic);
+		return new LevelMaze(d, level_dynamic, level_human);
 	}
 
 

@@ -29,7 +29,7 @@ void LidarCast::scan(const b2World * world, const b2Vec2 & start_point, float ze
 	_points[0] = start_point;
 	for(int i = 0; i < _numSamples; i++) {
 		float angle = zero_angle + getAngleFromIndex(i);
-		b2Vec2 end_point = start_point + (_maxDistance+0.001)*b2Vec2(cos(angle), sin(angle));
+		b2Vec2 end_point = start_point + (_maxDistance+0.001F)*b2Vec2(cos(angle), sin(angle));
 		_lastPoint = end_point;
 		world->RayCast((b2RayCastCallback*)this, start_point, end_point);
 		_distances[i] = (_lastPoint-start_point).Length();

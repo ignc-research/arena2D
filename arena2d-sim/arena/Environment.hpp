@@ -99,6 +99,7 @@ public:
 	 */
 	void BeginContact(b2Contact * contact) override;
 	void EndContact(b2Contact * contact) override;
+	void RequestReset() override;
 
 	/* reset environment
 	 * @param robot_position_reset passed to level reset function

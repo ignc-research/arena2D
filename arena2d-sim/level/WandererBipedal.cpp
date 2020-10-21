@@ -1,3 +1,6 @@
+/* Author: Kyra Kerz
+ */
+
 #include "WandererBipedal.hpp"
 #include "math.h"
 
