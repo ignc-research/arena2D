@@ -8,7 +8,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/GetMap.h>
 #include <memory>
-#include "opencv2/ximgproc.hpp"
+// #include "opencv2/ximgproc.hpp"
 #define LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
 
 struct StaticMap
@@ -81,7 +81,6 @@ private:
 	bool _init_reset;
 	/* number of bodies that shoun't be removed when lazyclear is called */
 	uint32 _n_non_clear_bodies;
-
 };
 
 #endif
