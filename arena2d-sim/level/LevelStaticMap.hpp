@@ -8,7 +8,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/GetMap.h>
 #include <memory>
-// #include "opencv2/ximgproc.hpp"
+#include <opencv2/opencv.hpp>
 #define LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
 
 struct StaticMap
