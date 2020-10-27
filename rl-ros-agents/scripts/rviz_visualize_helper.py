@@ -7,6 +7,8 @@ import time
 import tf
 import tf.transformations as tft
 import numpy as np
+from collections import deque
+import threading
 
 
 class IntermediateRosNode:
@@ -16,17 +18,34 @@ class IntermediateRosNode:
         easier.
     """
 
-    def __init__(self, idx_env):
+    def __init__(self, idx_env=0, laser_scan_publish_rate: int = 0):
         """
-            idx_env: the environment index we want to visualze by rviz.
+        Args:
+            idx_env: the environment index we want to visualze by rviz. Defaults to 0
+            laser_scan_publish_rate (int, optional): [the pushlish rate to the laser scan, if the it is set to 0
+            then the publishment of the laser scan will synchronized with receiving message]. Defaults to 0.
         """
         self._robot_frame_id = "arena_robot_{:02d}".format(idx_env)
         self._header_seq_id = 0
         rospy.init_node("arena_env{:02d}_redirecter".format(idx_env), anonymous=True)
         self._idx_env = idx_env
+        if laser_scan_publish_rate == 0:
+            # a flag to show where the laser scan is publised in a asynchronized way
+            self._is_laser_scan_publish_asyn = False
+        else:
+            self._is_laser_scan_publish_asyn = True
+            # set a cache and lock for accessing it in multi-threading env
+            # we set the maxlen to three, since we want to
+            # give more info about current status
+            self._laser_scan_cache = deque(maxlen=3)
+            self._laser_scan_cache_lock = threading.Lock()
+            self._laser_scan_pub_rate = laser_scan_publish_rate
+            self._laser_scan_pub_rater = rospy.Rate(hz=laser_scan_publish_rate)
+            self._new_laser_scan_received = False
+            self.start_time = rospy.Time.now()
         self._setSubPub()
 
-    def _setSubPub(self):
+    def _setSubPub(self, laser_scan_publish_rate: int = 0):
         namespace_sub = "arena2d/env_{:d}/".format(self._idx_env)
         namespace_pub = "arena2d_intermediate/"
 
@@ -51,7 +70,7 @@ class IntermediateRosNode:
         rospy.loginfo("Successfully connected with arena-2d simulator, took {:3.1f}s.".format(.1 * times))
 
     def _arena2dRespCallback(self, resp: Arena2dResp):
-        curr_time = rospy.Time()
+        curr_time = rospy.Time.now()
         robot_pos = resp.robot_pos
         self._tf_rospos.sendTransform((robot_pos.x, robot_pos.y, 0),
                                       tft.quaternion_from_euler(0, 0, robot_pos.theta),
@@ -72,16 +91,47 @@ class IntermediateRosNode:
         laser_scan.header.stamp = curr_time
 
         self._header_seq_id += 1
-        self._pub_laser_scan.publish(laser_scan)
+
+        if not self._is_laser_scan_publish_asyn:
+            self._pub_laser_scan.publish(laser_scan)
+        else:
+            with self._laser_scan_cache_lock:
+                self._laser_scan_cache.append(laser_scan)
 
     def run(self):
-        rospy.spin()
+        while not rospy.is_shutdown():
+            if self._is_laser_scan_publish_asyn:
+                with self._laser_scan_cache_lock:
+                    len_cache = len(self._laser_scan_cache)
+                    # if no cache, do nothing
+                    # if cache size == 2 , laser scan pubish rate too slow compared to coming data
+                    if len_cache == 0:
+                        continue
+                    else:
+                        latest_laser_scan = self._laser_scan_cache[-1]
+                        self._pub_laser_scan.publish(latest_laser_scan)
+                        # it means the the interact rate is too high, some of the data will be discarded
+                        if len_cache == 3 and rospy.Time.now().to_sec()-self.start_time.to_sec() > 10:
+                            interact_rate = 2*1 / \
+                                (self._laser_scan_cache[-1].header.stamp.to_sec() -
+                                 self._laser_scan_cache[0].header.stamp.to_sec())
+                            rospy.logwarn_once("The rate [{:3.1f} FPS] of republishment of the laser scan is lower compared to the \
+                            receivings [approximately {:3.1f} FPS], therefore some the them are discareded".format(self._laser_scan_pub_rate, interact_rate))
+                        # chane the cache size to 1
+                        while len(self._laser_scan_cache) != 1:
+                            self._laser_scan_cache.popleft()
+                self._laser_scan_pub_rater.sleep()
+            else:
+                rospy.spin()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=int, default=0,
                         help="the index of the environment whose response message need to be redicted!")
+    parser.add_argument("--laser_scan_pub_rate", type=int, default=5,
+                        help="set up the publishing rate of the laser scan, if it is set to 0, then the rate is synchronized with\
+                        the receiving rate")
     args = parser.parse_args()
-    helper_node = IntermediateRosNode(args.env)
+    helper_node = IntermediateRosNode(args.env, args.laser_scan_pub_rate)
     helper_node.run()
