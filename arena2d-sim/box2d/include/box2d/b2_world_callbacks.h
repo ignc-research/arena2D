@@ -87,6 +87,8 @@ class b2ContactListener
 public:
 	virtual ~b2ContactListener() {}
 
+	virtual void RequestReset() {}
+
 	/// Called when two fixtures begin to touch.
 	virtual void BeginContact(b2Contact* contact) { B2_NOT_USED(contact); }
 
@@ -120,6 +122,8 @@ public:
 		B2_NOT_USED(contact);
 		B2_NOT_USED(impulse);
 	}
+
+
 };
 
 /// Callback class for AABB queries.

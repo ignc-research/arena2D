@@ -1,3 +1,10 @@
+/* Author: Kyra Kerz
+ * 1. Human Wanderer with two shapes on one body
+ * 2. Functionality for interaction between two or more human wanderer
+ * 3. Simulating movement while destroying and rebuilding body with changing step width between the two shapes
+ * 4. Velocity and Angle set randomly after stopping in a predefined range
+ */
+
 #include "WandererBipedal.hpp"
 #include "math.h"
 

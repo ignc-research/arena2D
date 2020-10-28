@@ -11,7 +11,7 @@ class LevelCustom : public Level {
 public:
     /* constructor
 	 */
-	LevelCustom(const LevelDef & levelDef, bool dynamic = false) : Level(levelDef), _dynamic(dynamic), wanderers(levelDef){}
+	LevelCustom(const LevelDef & levelDef, bool dynamic = false, bool human = false) : Level(levelDef), _dynamic(dynamic), _human(human), wanderers(levelDef){}
 
 	/* destructor
 	 */
@@ -54,6 +54,7 @@ public:
 
 private:
    /* if set to true, create dynamic obstacles (wanderers) in addition to static */
+	bool _human;
 	bool _dynamic;
 	
 	std::vector<float> _closestDistance; //current distances from robot to closest wanderers

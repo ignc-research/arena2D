@@ -1,12 +1,20 @@
+/* Author: Kyra Kerz
+ * 1. Spawning static obsticales: Random shapes  and vertical/horizontal corrdiors
+ * 2. Defining bounding boxes for obstacles spawn points, that the obstacles dont overlap
+ * 3. Corridors height and weight set randomly in predefined range
+ * */
+
+
 #include "LevelCustom.hpp"
 #include "math.h"
 
 void LevelCustom::reset(bool robot_position_reset) {
     // clear old bodies and spawn area
     clear();
-    if(_dynamic){
+    if(_human)
         wanderers.freeWanderers();
-    }
+    if(_dynamic)
+        wanderers.freeRobotWanderers();
 
     float half_width = _SETTINGS->stage.level_size / 2.f;
     float half_height = _SETTINGS->stage.level_size / 2.f;
@@ -130,14 +138,14 @@ void LevelCustom::reset(bool robot_position_reset) {
                                LEVEL_CUSTOM_GOAL_SPAWN_AREA_BLOCK_SIZE, half_goal_size);
     _goalSpawnArea.calculateArea();
 
-    if (_dynamic) {
+    if (_dynamic || _human) {
         _dynamicSpawn.clear();
         //printf("addCheeseRect\n");
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
         //printf("calculateArea\n");
         _dynamicSpawn.calculateArea();
-		wanderers.reset(_dynamicSpawn);
+		wanderers.reset(_dynamicSpawn, _dynamic, _human );
     }
 
     randomGoalSpawnUntilValid();
