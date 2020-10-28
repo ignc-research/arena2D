@@ -74,7 +74,8 @@ public:
 	Level* createLevelRandom(const LevelDef & d, const ConsoleParameters & params)
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelRandom(d, level_dynamic);
+        bool level_human = params.getFlag("--human");
+		return new LevelRandom(d, level_dynamic, level_human);
 	}
 
 	/*custom level */
@@ -88,8 +89,9 @@ public:
 	/*human level */
 	Level* createLevelHuman(const LevelDef & d, const ConsoleParameters & params)
 	{
+        bool level_dynamic = params.getFlag("--dynamic");
 		bool level_human = params.getFlag("--human");
-		return new LevelHuman(d, level_human);
+		return new LevelHuman(d, level_dynamic,level_human);
 	}
 
 	/*maze level */
