@@ -27,6 +27,9 @@
 #include "RosNode.hpp"
 #endif
 
+#include "Evaluation.hpp"
+extern Evaluation _evaluation;
+
 // python callback functions
 enum PyAgentFunction
 {
@@ -414,6 +417,9 @@ private:
 
 	/* if set to true no training data is recorded*/
 	bool _noTrainingRecord;
+
+	/* if set to true, additional data for the Evaluation of the agent is recorded*/
+	bool _doEvaluation;
 #ifdef USE_ROS
 	std::unique_ptr<RosNode> _ros_node_ptr;
 	bool _use_ros_agent = false;

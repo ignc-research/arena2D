@@ -1,25 +1,28 @@
-#ifndef LEVELCUSTOM_H
-#define LEVELCUSTOM_H
+#ifndef LEVELMAZE_H
+#define LEVELMAZE_H
 
 #include "Level.hpp"
 #include "Wanderers.hpp"
 
-#define LEVEL_CUSTOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
+#define LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
 
-/* randomly generated level with static obstacles and optional dynamic obstacles */
-class LevelCustom : public Level {
+class LevelMaze : public Level
+{
 public:
-    /* constructor
+
+	/* constructor
 	 */
-	LevelCustom(const LevelDef & levelDef, bool dynamic = false, bool human = false) : Level(levelDef), _dynamic(dynamic), _human(human), wanderers(levelDef){}
+	LevelMaze(const LevelDef & d, bool dynamic = false, bool human = false) :
+	Level(d), _dynamic(dynamic), _human(human), wanderers(d){}
 
 	/* destructor
 	 */
-	~LevelCustom(){}
+	~LevelMaze(){}
 
-    /* reset
-     */
-    void reset(bool robot_position_reset) override;
+	// copy the functions from levelRandom.hpp to have a try at first
+	/* reset
+	 */
+	void reset(bool robot_position_reset) override;
 
 	/* update
 	 */
@@ -52,11 +55,18 @@ public:
 		return wanderers.checkHumanContact(other_fixture);
 	}
 
+
+	// from here all the functions are from old version
+	//b2Body* generateRandomBody(float min_radius, float max_radius, zRect * aabb);
+    b2Body* generateRandomWalls11(int index, zRect * aabb);
+   	b2Body* generateRandomWalls22(int index, int numm, zRect * aabb);
+
+
 private:
-   /* if set to true, create dynamic obstacles (wanderers) in addition to static */
-	bool _human;
+	/* if set to true, create dynamic obstacles (wanderers) in addition to static */
 	bool _dynamic;
-	
+    bool _human;
+
 	std::vector<float> _closestDistance; //current distances from robot to closest wanderers
 	std::vector<float> _closestDistance_old; //last closest distances from robot to wanderers
 	
@@ -65,12 +75,6 @@ private:
 
 	/* spawn area for dynamic obstacles */
 	RectSpawn _dynamicSpawn;
-
-    b2Body *
-    generateRandomBodyVertical(const b2Vec2 &position, float min_radius, float max_radius, zRect *aabb);
-
-    b2Body *
-    generateRandomBodyHorizontal(const b2Vec2 &position, float min_radius, float max_radius, zRect *aabb);
 
 };
 

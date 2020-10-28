@@ -323,7 +323,12 @@ CommandStatus Arena::cmdStartTraining(const ConsoleParameters & params)
 			params.getString("--model", model);
 			params.getString("--device", device);
 			_noTrainingRecord = false;
+			_doEvaluation = false;
 			if(params.getFlag("--no_record")){
+				_noTrainingRecord = true;
+			}
+			if(params.getFlag("--evaluate")){
+				_doEvaluation = true;
 				_noTrainingRecord = true;
 			}
 			// set argv (absolute path of script that is beeing executed)
@@ -377,6 +382,9 @@ CommandStatus Arena::cmdStartTraining(const ConsoleParameters & params)
 							if(createTrainingDir(params.argv[0]) == 0){// directory creation success
 								training_path = _trainingDir;
 							}
+						}
+						if(_doEvaluation){
+							_evaluation.init(model);
 						}
 						// setting arguments for constructor
 						PyObject * init_args = PyTuple_New(6);
@@ -483,6 +491,10 @@ CommandStatus Arena::cmdStopTraining(const ConsoleParameters & params)
 			else{
 				ERROR_F("Failed write '%s': %s", results_path.c_str(), strerror(errno));
 			}
+		}
+		//save evaluation data
+		if(_doEvaluation){
+			_evaluation.saveData(); 
 		}
 		if(_pyAgentUsed){
 			// throw away last return value
