@@ -32,7 +32,7 @@ The definitions of the request and response message can be found [here](../arena
     ```
 2. Clone this repository in the src-folder of your catkin workspace and checkout the branch `arena-ros`. Compile tehe code and add the workspace to the ROS environment with:
     ```bash
-    $ catkin_make -DSUPPORT_ROS_AGENT=ON
+    $ catkin_make -DUSE_ROS=ON
     $ source devel/setup.bash
     ```
 3. Make sure `rl_ros_agents`is included in the PYTHONPATH. Append following command to your `.bashrc`:
