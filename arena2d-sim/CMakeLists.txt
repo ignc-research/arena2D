@@ -27,7 +27,7 @@ if(USE_ROS)
 	add_compile_options("-DUSE_ROS")
 	message(STATUS "USE_ROS is enabled")
 	find_package(Boost)
-	find_package(OpenCV 4 REQUIRED )
+	find_package(OpenCV REQUIRED )
 	find_package(catkin REQUIRED COMPONENTS
 	roscpp
 	roslib
