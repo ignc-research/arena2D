@@ -171,7 +171,7 @@ void Wanderer::updateVelocityPathMode(){
 
 	bool reached=distanceToNext<NEAR_REGION_DISTANCE;
 
-	//std::cout<<"Distance:"<<distanceToNext<<std::endl;
+	std::cout<<"Distance:"<<distanceToNext<<std::endl;
 
 	if(reached)
 	{// reached
@@ -209,7 +209,7 @@ void Wanderer::updateVelocityPathMode(){
 	else
 	{//not reached yet
 
-		if(_timeOutCounter>300){
+		if(_timeOutCounter>20){
 			// select next waypoint to head to
 			if(_indexWaypoint>=_waypoints.size()-1) // if current index is the last
 			{
@@ -228,9 +228,8 @@ void Wanderer::updateVelocityPathMode(){
 				_indexWaypoint--;
 			}
 			_timeOutCounter=0;
-			//std::cout<<"time out"<<std::endl;
 			
-
+			
 
 		}
 		else
@@ -241,9 +240,16 @@ void Wanderer::updateVelocityPathMode(){
 			zVector2D v_set = zVector2D(_velocity,0 ).getRotated(a);
 			// set velocity
 			v.Set(v_set.x,v_set.y);
-			_timeOutCounter++;
+			if(abs(_distanceToNext_pre-distanceToNext)<0.01){
+				_timeOutCounter++;
+			}
+			
+			
 
 			//std::cout<<"go forward to waypoint"<<_indexWaypoint<<std::endl;
+			//std::cout<<"set v x"<<v.x<<" y "<<v.y<<std::endl;
+			//std::cout<<"time out counter"<<_timeOutCounter<<std::endl;
+			_distanceToNext_pre=distanceToNext;
 		}
 	}
 

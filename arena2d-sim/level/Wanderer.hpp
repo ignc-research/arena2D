@@ -123,6 +123,8 @@ protected:
 	/* [0, 1] how likely velocity is set to 0 on change */
 	float _stopRate;
 
+	float _distanceToNext_pre;
+
 	
 };
 
