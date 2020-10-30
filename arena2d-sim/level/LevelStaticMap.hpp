@@ -83,6 +83,7 @@ public:
 		return wanderers.checkHumanContact(other_fixture);
 	}
 
+	void randomGoalSpawnUntilValid(RectSpawn * goal_spawn = NULL) override;
 
 private:
 	void loadStaticMap();
@@ -112,7 +113,7 @@ private:
 	/* number of bodies that shoun't be removed when lazyclear is called */
 	uint32 _n_non_clear_bodies;
 
-	cv::Mat occupancy_map;
+	cv::Mat _occupancy_map;
 
 
 

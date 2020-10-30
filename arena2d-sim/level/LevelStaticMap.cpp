@@ -24,8 +24,7 @@ void LevelStaticMap::reset(bool robot_position_reset)
         wanderers.freeRobotWanderers();
 
     // get constants
-	const float half_width = _SETTINGS->stage.level_size/2.f;
-	const float half_height = _SETTINGS->stage.level_size/2.f;
+	
 	const float half_goal_size = _SETTINGS->stage.goal_size/2.f;
 	const float dynamic_radius = _SETTINGS->stage.dynamic_obstacle_size/2.f;
 	const float dynamic_speed = _SETTINGS->stage.obstacle_speed;
@@ -33,10 +32,15 @@ void LevelStaticMap::reset(bool robot_position_reset)
 	const int num_dynamic_obstacles = _SETTINGS->stage.num_dynamic_obstacles;
 	const float min_obstacle_radius = _SETTINGS->stage.min_obstacle_size/2;
 	const float max_obstacle_radius = _SETTINGS->stage.max_obstacle_size/2;
+    const auto &info = _occupancygrid_ptr->info;
+    const float half_height = info.resolution * info.height / 2;
+    const float half_width = info.resolution * info.width / 2;
 	const zRect main_rect(0, 0, half_width, half_height);
 	const zRect big_main_rect(0, 0, half_width+max_obstacle_radius, half_height+max_obstacle_radius);
 
-    const auto &info = _occupancygrid_ptr->info;
+    
+
+   
 
     if (robot_position_reset)
     {
@@ -127,7 +131,7 @@ void LevelStaticMap::loadStaticMap()
         }
     }
 
-    occupancy_map=static_map.clone();
+    _occupancy_map=static_map.clone();
 
     /*
     // Create FLD detector
@@ -297,4 +301,51 @@ float LevelStaticMap::getReward()
 		}
 	}
 	return reward;
+}
+
+void LevelStaticMap::randomGoalSpawnUntilValid(RectSpawn * goal_spawn)
+{   
+    const auto &info = _occupancygrid_ptr->info;
+    const auto &data = _occupancygrid_ptr->data;
+    uint32 cols = info.width;
+    uint32 rows = info.height;
+    float resolution = info.resolution;
+    b2Vec2 lower_left_pos(-((cols >> 1) - ((cols & 1) ^ 1) / 2.f) * resolution,
+                          -((rows >> 1) - ((rows & 1) ^ 1) / 2.f) * resolution);
+
+
+    RectSpawn * spawn = &_goalSpawnArea;
+	if(goal_spawn != NULL)// use custom goal spawn
+	{
+		spawn = goal_spawn;
+	}
+
+	b2Vec2 robot_position = _levelDef.robot->getPosition();
+	// spawn goal at random position
+	b2Vec2 spawn_position(0,0);
+	int count = 0;
+    bool occupied;
+    b2Vec2 coord;
+    int i,j;
+	do{
+        occupied=false;
+		spawn->getRandomPoint(spawn_position);
+        
+        coord=(spawn_position-lower_left_pos);
+        
+        i=floor(coord.y/resolution);
+        j=floor(coord.x/resolution);
+        
+        if ((int)(_occupancy_map.at<uint8>(i, j)) == 255){
+            occupied=true;
+            //std::cout<<"occupied"<<i<<"  "<<j<<"  "<<occupied<<"  "<<(int)(_occupancy_map.at<uint8>(i, j))<<std::endl;
+        }
+        
+		count++;
+        
+	}while(!checkValidGoalSpawn(robot_position, spawn_position) || occupied && count < 100);
+
+    std::cout<<"find freespace within count"<<count<<"   Position "<<"x="<<spawn_position.x<<"y="<<spawn_position.y<<std::endl;
+	spawnGoal(spawn_position);
+   
 }

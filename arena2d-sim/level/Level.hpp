@@ -112,7 +112,7 @@ protected:
 	 * @param goal_spawn if this parameter is NULL, the member RectSpawn _goalSpawnArea is used for sampling spawn positions,
 	 					 else the RectSpawn pointed to by this parameter is used for sampling
 	 */
-	void randomGoalSpawnUntilValid(RectSpawn * goal_spawn = NULL);
+	virtual void randomGoalSpawnUntilValid(RectSpawn * goal_spawn = NULL);
 
 
     /* spawns goal at a random position in the current goal spawn area
