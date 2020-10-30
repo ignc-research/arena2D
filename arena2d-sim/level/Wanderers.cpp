@@ -59,19 +59,14 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
                 p3.Set(5,1);
                 p4.Set(5,4);
                 waypoints={p0,p1,p2,p3,p4};
-                //waypoint_list.push_back(waypoints);
+                waypoint_list.push_back(waypoints);
 
                 p0.Set(0,3);
                 p1.Set(2,4);
                 p2.Set(3,4);
                 waypoints={p0,p1,p2};
-                //waypoint_list.push_back(waypoints);
+                waypoint_list.push_back(waypoints);
 
-                p0.Set(-0,3);
-                p1.Set(-0,4);
-                p2.Set(1,6);
-                waypoints={p0,p1,p2};
-                //waypoint_list.push_back(waypoints);
 
                 for(int i=0;i<waypoint_list.size();i++)
                 {
@@ -90,9 +85,6 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
 
         }
 
-
-       
-        //std::cout<<"=============Finish robot wanderes"<<std::endl;
     }
 
     if(_human){
@@ -118,7 +110,7 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
         else if(_mode==MODE_FOLLOW_PATH)
         {          
                 // stop counter threshold (int) >1
-                int stop_counter_threshold=1;
+                int stop_counter_threshold=50;
 
                 // init position & waypoints
                 b2Vec2 p0,p1,p2,p3,p4,p5,p6;
@@ -126,23 +118,41 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
                 std::vector<std::vector<b2Vec2>> waypoint_list;
                 std::vector<b2Vec2> waypoints;
 
-                p0.Set(-0,3);
-                p1.Set(-0,4);
-                p2.Set(1,6);
+                p0.Set(-0,2.5);
+                p1.Set(-0.5,2.5);
+                p2.Set(1,3);
                 waypoints={p0,p1,p2};
                 waypoint_list.push_back(waypoints);
 
-                p0.Set(1,3.5);
-                p1.Set(1,3.2);
-                p2.Set(0,4);
+                p0.Set(-0.5,2.5);
+                p1.Set(0.7,2.5);
+                p2.Set(0,2);
                 waypoints={p0,p1,p2};
-                //waypoint_list.push_back(waypoints);
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(1,4.5);
+                p1.Set(0.8,4.5);
+                p2.Set(1,4);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(0.6,4.6);
+                p1.Set(1.2,4.6);
+                p2.Set(1,5);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
 
                 p0.Set(-1,0);
-                p1.Set(-1,-0.5);
-                p2.Set(-0.5,-0.5);
+                p1.Set(-2,-0.5);
+                p2.Set(-0.5,1);
                 waypoints={p0,p1,p2};
-                //waypoint_list.push_back(waypoints);
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(1,0);
+                p1.Set(2,-0.5);
+                p2.Set(0.5,1);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
 
                 for(int i=0;i<waypoint_list.size();i++)
                 {

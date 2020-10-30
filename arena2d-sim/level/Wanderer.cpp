@@ -171,14 +171,14 @@ void Wanderer::updateVelocityPathMode(){
 
 	bool reached=distanceToNext<NEAR_REGION_DISTANCE;
 
-	std::cout<<"Distance:"<<distanceToNext<<std::endl;
+	//std::cout<<"Distance:"<<distanceToNext<<std::endl;
 
 	if(reached)
 	{// reached
 		if(_stopCounter> _stopCounterThreshold){
 			// arrived and  stay for a while
 			_stopCounter++;
-			std::cout<<"Reach & stop:"<<_stopCounter<<std::endl;
+			//std::cout<<"Reach & stop:"<<_stopCounter<<std::endl;
 		}
 		else
 		{ 	// select next waypoint to head to
