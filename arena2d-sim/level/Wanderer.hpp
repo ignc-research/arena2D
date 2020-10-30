@@ -67,6 +67,10 @@ public:
 	 * @param radius radius of circle
 	 */
 	void addCircle(float radius, const b2Vec2 & pos = b2Vec2_zero);
+
+
+	void addRobotPepper(float length_triangle);
+
 protected:
 
 	/* update velocity
@@ -79,7 +83,7 @@ protected:
 	/* Box2D body */
 	b2Body * _body;
 
-	/* Initial poistion of the wanderer*/
+	/* Initial poistion of the wanderer*/ 
 	b2Vec2 _initPosition;
 
 	/* constant velocity with which to move if not stopping */

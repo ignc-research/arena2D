@@ -54,6 +54,44 @@ void Wanderer::addCircle(float radius, const b2Vec2 & pos)
 	_body->CreateFixture(&d);
 }
 
+void Wanderer::addRobotPepper(float length_triangle)
+{
+	// base
+	b2PolygonShape triangle_shape;
+	b2Vec2 verts_triangle[3];
+	
+	verts_triangle[0].Set(0.0f, length_triangle*sqrt(3)/2); 
+	verts_triangle[1].Set(length_triangle/2, 0); 
+	verts_triangle[2].Set(-length_triangle/2, 0); 
+	triangle_shape.Set(verts_triangle, 3);
+
+	b2FixtureDef fix;
+	fix.filter.categoryBits = COLLIDE_CATEGORY_PLAYER;
+	fix.shape = &triangle_shape;
+	fix.density = 1;
+	fix.friction = 1;
+	fix.restitution = 0;
+
+	_body->CreateFixture(&fix);
+
+	// circle
+	for(int i=0;i<3;i++)
+	{
+		b2CircleShape circle;
+		circle.m_radius = 0.3*length_triangle;
+		circle.m_p = verts_triangle[i];
+
+		b2FixtureDef d;
+		d.filter.categoryBits = COLLIDE_CATEGORY_PLAYER;
+		d.friction = 1;
+		d.restitution = 0;
+		d.density = 1;
+		d.shape = &circle;
+		_body->CreateFixture(&d);
+
+	}
+}
+
 void Wanderer::reset(const b2Vec2 & position)
 {
 	_body->SetTransform(position, 0);
@@ -133,7 +171,7 @@ void Wanderer::updateVelocityPathMode(){
 
 	bool reached=distanceToNext<NEAR_REGION_DISTANCE;
 
-	std::cout<<"Distance:"<<distanceToNext<<std::endl;
+	//std::cout<<"Distance:"<<distanceToNext<<std::endl;
 
 	if(reached)
 	{// reached
@@ -160,7 +198,7 @@ void Wanderer::updateVelocityPathMode(){
 			{
 				_indexWaypoint--;
 			}
-			std::cout<<"Reach & next waypoint:"<<_indexWaypoint<<std::endl;
+			//std::cout<<"Reach & next waypoint:"<<_indexWaypoint<<std::endl;
 
 			_stopCounter=0;
 		}
@@ -190,7 +228,7 @@ void Wanderer::updateVelocityPathMode(){
 				_indexWaypoint--;
 			}
 			_timeOutCounter=0;
-			std::cout<<"time out"<<std::endl;
+			//std::cout<<"time out"<<std::endl;
 			
 
 
@@ -205,7 +243,7 @@ void Wanderer::updateVelocityPathMode(){
 			v.Set(v_set.x,v_set.y);
 			_timeOutCounter++;
 
-			std::cout<<"go forward to waypoint"<<_indexWaypoint<<std::endl;
+			//std::cout<<"go forward to waypoint"<<_indexWaypoint<<std::endl;
 		}
 	}
 
