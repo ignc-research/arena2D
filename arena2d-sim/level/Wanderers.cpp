@@ -38,17 +38,20 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
             std::vector<b2Vec2> waypoints={p,p2,p3};
             //Wanderer(w, position, velocity,type,mode,waypoints,stop_counter_threshold, change_rate, stop_rate, max_angle_velo)
             
-            Wanderer *w =new Wanderer(_levelDef.world, p,_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT,1,
-                    waypoints);
+            Wanderer *w =new Wanderer(_levelDef.world, p,_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT,MODE_FOLLOW_PATH,
+                    waypoints,20,     0.1,0.05,60.0f);
             /*
             Wanderer *w = new Wanderer(_levelDef.world, p,
                                        _SETTINGS->stage.obstacle_speed,
                                        0.1, 0.05, 60.0f, WANDERER_ID_ROBOT);
             */
-            w->addCircle(_SETTINGS->stage.dynamic_obstacle_size / 2.f);
+            //w->addCircle(_SETTINGS->stage.dynamic_obstacle_size / 2.f);
+            w->addRobotPepper(_SETTINGS->stage.dynamic_obstacle_size);
             _robot_wanderers.push_back(w);
         }
+        //std::cout<<"=============Finish robot wanderes"<<std::endl;
     }
+
     if(_human){
         for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++) {
             b2Vec2 p;
@@ -66,8 +69,8 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
 
             std::vector<b2Vec2> waypoints={p,p2,p3};
 
-            WandererBipedal *w=new WandererBipedal(_levelDef.world, p,_SETTINGS->stage.obstacle_speed,WANDERER_ID_HUMAN,1,
-                    waypoints);
+            WandererBipedal *w=new WandererBipedal(_levelDef.world, p,_SETTINGS->stage.obstacle_speed,WANDERER_ID_HUMAN,MODE_FOLLOW_PATH,
+                    waypoints,20,     0.1,0.05,60.0f);
 
             _wanderers.push_back(w);
 
@@ -77,6 +80,7 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
                                                      0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
             */
         }
+        //std::cout<<"=============Finish human wanderes"<<std::endl;
     }
     //reset all lists
     _old_infos_of_wanderers.clear();
@@ -87,6 +91,7 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
 
     calculateDistanceAngle();
     getClosestWanderers();
+    //std::cout<<"=============Finish reset wanderes"<<std::endl;
 }
 
 void Wanderers::update(){

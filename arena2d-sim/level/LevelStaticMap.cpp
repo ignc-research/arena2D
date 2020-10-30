@@ -6,17 +6,19 @@ std::unique_ptr<ros::NodeHandle> StaticMap::m_nh = nullptr;
 LevelStaticMap::LevelStaticMap(const LevelDef &d, bool dynamic, bool human):
 Level(d), _dynamic(dynamic), _human(human), wanderers(d)
 {   
+    _human=human;
+    _dynamic=dynamic;
     _init_reset=true;
     _n_non_clear_bodies = 0;
     _occupancygrid_ptr = StaticMap::getMap(_SETTINGS->stage.static_map_ros_service_name);
-    ROS_DEBUG("load map start");
+    ROS_INFO("load map start");
     loadStaticMap();
-    ROS_DEBUG("loaded map!");
+    ROS_INFO("loaded map!");
 }
 
 void LevelStaticMap::reset(bool robot_position_reset)
 {
-    ROS_DEBUG("reset start!");
+    ROS_INFO("reset start!");
     lazyclear();
     if(_human )
         wanderers.freeWanderers();
@@ -57,6 +59,7 @@ void LevelStaticMap::reset(bool robot_position_reset)
     }
 
     // dynamic obstacles
+    
     if (_dynamic || _human)
     {
         if (_init_reset)
@@ -70,6 +73,7 @@ void LevelStaticMap::reset(bool robot_position_reset)
             ROS_INFO("calculation the respawn area for dynamic obstacles is done");
             _init_reset = false;
         }
+        
         
         wanderers.reset(_dynamicSpawn, _dynamic, _human);
 
@@ -345,7 +349,7 @@ void LevelStaticMap::randomGoalSpawnUntilValid(RectSpawn * goal_spawn)
         
 	}while(!checkValidGoalSpawn(robot_position, spawn_position) || occupied && count < 100);
 
-    std::cout<<"find freespace within count"<<count<<"   Position "<<"x="<<spawn_position.x<<"y="<<spawn_position.y<<std::endl;
+    std::cout<<"find goal in freespace  within count"<<count<<"   Position "<<"x="<<spawn_position.x<<"y="<<spawn_position.y<<std::endl;
 	spawnGoal(spawn_position);
    
 }

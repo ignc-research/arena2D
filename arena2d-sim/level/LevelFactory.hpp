@@ -110,7 +110,8 @@ public:
 	// static map level
 	Level* createLevelStaticMap(const LevelDef & d, const ConsoleParameters & params){
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelStaticMap(d,level_dynamic);
+		bool level_human = params.getFlag("--human");
+		return new LevelStaticMap(d,level_dynamic,level_human);
 	}
 	#endif
 

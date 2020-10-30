@@ -1,4 +1,4 @@
 <launch>
     <env name="ROSCONSOLE_CONFIG_FILE" value="$(find arena2d)/ros_logging_settings.conf" />
-    <node name="arena_sim" pkg="arena2d" type="arena2d" output="screen" args="--use_ros_agent --run &quot;level static_map --dynamic&quot;"/>
+    <node name="arena_sim" pkg="arena2d" type="arena2d" output="screen" args="--use_ros_agent --run &quot;level static_map --dynamic --human&quot;"/>
 </launch>

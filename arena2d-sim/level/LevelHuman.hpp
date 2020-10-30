@@ -13,7 +13,7 @@ public:
 	/* constructor
 	 */
     LevelHuman(const LevelDef & d, bool dynamic = false, bool human = true) :
-            Level(d), _dynamic(dynamic), _human(human), wanderers(d){_human=true;_dynamic=true;}
+            Level(d), _dynamic(dynamic), _human(human), wanderers(d){}
 
 	/* destructor
 	 */
