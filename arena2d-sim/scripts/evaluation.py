@@ -24,12 +24,15 @@ ending = np.array(data['Ending'])
 episode = np.array(data['Episode'])
 robot_position = np.array(data[['Robot_Position_x','Robot_Position_y']])
 robot_direction = np.array(data[['Robot_Direction_x','Robot_Direction_y']])
-human_robot_distance = np.array(data[data.columns[8:]])
+human_robot_distance = np.array(data[data.columns[9:]])
 human_robot_distance = human_robot_distance[~np.isnan(human_robot_distance).any(axis=1)]
 goal_distance = np.array(data['Goal_Distance'])
 goal_distance = goal_distance[~np.isnan(goal_distance)] # remove nan
 goal_angle = np.array(data['Goal_Angle'])
 goal_angle = goal_angle[~np.isnan(goal_angle)] #remove nan
+robot_action = np.array(data['Robot_Action'])
+robot_action = robot_action[~np.isnan(robot_action)] #remove nan
+
 #read out some values
 human_counter = np.count_nonzero(ending == 'human')
 wall_counter = np.count_nonzero(ending == 'wall')
@@ -114,9 +117,24 @@ if human_exist:
 	plt.ylabel('relative counts [%]')
 	plt.savefig(path+ 'human_distance_hist')
 	plt.clf()
+#plot distribution robot action 
+labels = 'forward', 'forward_left',  'forward_right', 'forward_strong_left', 'forward_strong_right', 'backward', 'stop'
+sizes = []
+actino_length = robot_action.shape
+for i in range(7):
+	occurens_of_action = np.sum(i == robot_action)/actino_length
+	sizes.append(float(occurens_of_action * 100))#occurence in percent
+
+plt.figure(2)
+plt.pie(sizes, labels=labels, autopct='%1.1f%%',
+        shadow=False, startangle=90)
+plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+plt.title('distribution of robot actions in %')
+plt.savefig(path + 'action_pie')
+plt.clf()
 
 #box plot auf time to reach goal 
-plt.figure(2)
+plt.figure(3)
 #plt.subplot(2,2,1)
 #plt.title('Time for reaching the goal')
 #plt.ylabel('number of actions to reach the goal')
@@ -128,7 +146,7 @@ plt.boxplot(time_to_goal/max_step_time_out)
 plt.savefig(path + 'goal__time_box')
 plt.clf()
 
-plt.figure(3)
+plt.figure(4)
 plt.subplot(1,2,1)
 plt.title('distance to reach goal')
 plt.ylabel('distance')
@@ -176,9 +194,10 @@ text_file.write('Wall hit rate: ' + str(round(wall_counter/num_episodes*100,1)) 
 text_file.write(', Variance: ' + str(round(np.std(wall_counter_bin),1)) + '%\n')
 text_file.write('Timeout rate: ' + str(round(time_out_counter/num_episodes*100,1)) + '%')
 text_file.write(', Variance: ' + str(round(np.std(time_out_counter_bin),1)) + '%\n')
+text_file.write('Rate of distances smaller than the safety distance: ' + str(round((num_smaller_than_safety_distance/total_number*100),1)) + '%')
 text_file.close()
 #plot
-plt.figure(4)
+plt.figure(5)
 plt.title('episode endings over bins with size ' + str(bin_size))
 plt.ylabel('number of counted endings')
 plt.xlabel('bin')

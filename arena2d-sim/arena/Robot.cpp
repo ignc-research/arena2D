@@ -1,6 +1,9 @@
 /* Author: Cornelius Marx */
 #include "Robot.hpp"
 
+#include "Evaluation.hpp"
+extern Evaluation _evaluation;
+
 
 Robot::Robot(b2World * world): _lidarBuffer(0){
 	b2BodyDef b;
@@ -155,6 +158,7 @@ void Robot::updateTrail()
 void Robot::getActionTwist(Action a, Twist & t)
 {
 	const f_robotSettings & s = _SETTINGS->robot;
+	_evaluation.saveAction(a);
 	switch(a)	
 	{
 	case FORWARD:

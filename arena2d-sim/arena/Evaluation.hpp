@@ -51,6 +51,11 @@ public:
 	 */
     void countAction(const b2Transform & robot_transform);
 
+    /* write robot actions as int in csv-file
+	 * @param a robot action
+	 */
+    void saveAction(Robot::Action a);
+
     /* write goal distance and angle in csv-file, after episode is reset
 	 * @param goal_distance distance from robot to goal
      * @param goal_angle goal angle viewed from robot 
