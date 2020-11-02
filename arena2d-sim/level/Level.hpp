@@ -30,8 +30,7 @@ struct LevelDef{
 };
 
 /* base class for all levels */
-class Level
-{
+class Level{
 public:
 	/* constructor
 	 * @param w Box2D world to create level in

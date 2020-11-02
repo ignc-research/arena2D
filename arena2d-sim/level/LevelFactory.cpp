@@ -14,19 +14,19 @@ LevelFactory::LevelFactory()
 	REGISTER_LEVEL(LevelEmpty,"empty", "", "Empty level with border");
 
 	// static
-	REGISTER_LEVEL_FUNC(LevelFactory::createLevelRandom, "random", "[--dynamic]",
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelRandom, "random", "[--dynamic]""[--human]",
 								"Randomized static Level and optional dynamic obstacles (flag --dynamic)");
 
 	// static
-	REGISTER_LEVEL_FUNC(LevelFactory::createLevelCustom, "custom", "[--dynamic]",
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelCustom, "custom", "[--dynamic]""[--human]",
 								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
 
 	// static
-	REGISTER_LEVEL_FUNC(LevelFactory::createLevelHuman, "human", "[--dynamic]",
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelHuman, "human", "[--dynamic]""[--human]",
 								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
 
 	// static
-	REGISTER_LEVEL_FUNC(LevelFactory::createLevelMaze, "maze", "[--dynamic]",
+	REGISTER_LEVEL_FUNC(LevelFactory::createLevelMaze, "maze", "[--dynamic]""[--human]",
 								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
 
 	// svg

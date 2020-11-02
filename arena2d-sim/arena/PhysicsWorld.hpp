@@ -160,8 +160,10 @@ private:
 
 	/* fixture colors for debug drawing */
 	zColor _dynamicColor;
+	zColor _dynamicColor_human;
 	zColor _sensorColor;
 	zColor _sleepColor;
+	zColor _sleepColor_human;
 	zColor _staticColor;
 	zColor _staticColor2;
 	zColor _collisionsColor;

@@ -14,8 +14,10 @@ void LevelMaze::reset(bool robot_position_reset)
 {
 	// clear old bodies and spawn area
 	clear();
-	if(_dynamic)
+	if(_human )
 		wanderers.freeWanderers();
+	if(_dynamic)
+	    wanderers.freeRobotWanderers();
 
 	// get constants
 	const float half_width = _SETTINGS->stage.level_size/2.f;
@@ -87,11 +89,11 @@ void LevelMaze::reset(bool robot_position_reset)
 
 
 	// dynamic obstacles
-	if(_dynamic){
+	if(_dynamic || _human){
 		_dynamicSpawn.clear();
 		_dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
 		_dynamicSpawn.calculateArea();
-		wanderers.reset(_dynamicSpawn);
+		wanderers.reset(_dynamicSpawn, _dynamic, _human);
 	}
 
 	randomGoalSpawnUntilValid();

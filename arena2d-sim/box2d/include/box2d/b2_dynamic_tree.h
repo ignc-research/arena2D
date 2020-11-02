@@ -25,6 +25,7 @@
 
 #include "b2_collision.h"
 #include "b2_growable_stack.h"
+#include "stdio.h"
 
 #define b2_nullNode (-1)
 
@@ -210,7 +211,11 @@ inline void b2DynamicTree::RayCast(T* callback, const b2RayCastInput& input) con
 	b2Vec2 p1 = input.p1;
 	b2Vec2 p2 = input.p2;
 	b2Vec2 r = p2 - p1;
-	b2Assert(r.LengthSquared() > 0.0f);
+//	if(r.LengthSquared() <= 0.0f){
+//	    return;
+//	}
+    //printf("Square: %f:\n", r.LengthSquared());
+    b2Assert(r.LengthSquared() > 0.0f);
 	r.Normalize();
 
 	// v is perpendicular to the segment.

@@ -12,6 +12,8 @@ PhysicsWorld::PhysicsWorld()
 
 	//setting default colors
 	_fillAlpha = 1.0f;
+	_dynamicColor_human.set(0x000000FF);
+    _sleepColor_human.set(0x000000FF);
 	_dynamicColor.set(0x4ea5ffFF);
 	_dynamicColor.brighten(0.3);
 	_sensorColor.set(0xf3c355FF);
@@ -101,6 +103,15 @@ void PhysicsWorld::debugDrawWorld(b2World * w, unsigned int flags, uint16 catego
 				else
 					color = _sleepColor;
 			}break;
+            case b2_dynamicBody_human:
+            {
+                if((flags & PHYSICS_RENDER_DYNAMIC) == 0)
+                    continue;
+                if(b->IsAwake())
+                    color = _dynamicColor_human;
+                else
+                    color = _sleepColor_human;
+            }break;
 			case b2_staticBody:
 			{
 				if((flags & PHYSICS_RENDER_STATIC) == 0)

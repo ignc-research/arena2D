@@ -223,6 +223,17 @@ void Environment::reset(bool robot_position_reset)
 	_evaluation.countAction(_robot->getBody()->GetTransform());
 }
 
+void Environment::RequestReset() {
+    if(_level != NULL)
+        _level->reset(true);
+    if(_SETTINGS->video.enabled)
+        _robot->resetTrail();
+    _robot->scan();
+    _episodeState = RUNNING;
+    //reset(true);
+}
+
+
 void Environment::BeginContact(b2Contact * contact){
 	if(_episodeState != RUNNING)// already episode over -> goal reached, nothing to check
 		return;

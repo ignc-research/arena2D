@@ -74,28 +74,32 @@ public:
 	Level* createLevelRandom(const LevelDef & d, const ConsoleParameters & params)
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelRandom(d, level_dynamic);
+        bool level_human = params.getFlag("--human");
+		return new LevelRandom(d, level_dynamic, level_human);
 	}
 
 	/*custom level */
 	Level* createLevelCustom(const LevelDef & d, const ConsoleParameters & params)
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelCustom(d, level_dynamic);
+		bool level_human = params.getFlag("--human");
+		return new LevelCustom(d, level_dynamic, level_human);
 	}
 
 	/*human level */
 	Level* createLevelHuman(const LevelDef & d, const ConsoleParameters & params)
 	{
-		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelHuman(d, level_dynamic);
+        bool level_dynamic = params.getFlag("--dynamic");
+		bool level_human = params.getFlag("--human");
+		return new LevelHuman(d, level_dynamic,level_human);
 	}
 
 	/*maze level */
 	Level* createLevelMaze(const LevelDef & d, const ConsoleParameters & params)
 	{
+        bool level_human = params.getFlag("--human");
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelMaze(d, level_dynamic);
+		return new LevelMaze(d, level_dynamic, level_human);
 	}
 
 
