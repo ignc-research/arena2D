@@ -495,6 +495,13 @@ void Arena::rosUpdate(float wait_time = 0.0f)
 				printEpisodeResults(_envs[i].getTotalReward());
 
 				episode_over = true;
+				// if key pressed reset environment immediately
+				if (any_arrow_key_pressed)
+				{
+					_levelResetMeasure.startTime();
+					_envs[i].reset(false);
+					_levelResetMeasure.endTime();
+				}
 			}
 		}
 		if (episode_over)
