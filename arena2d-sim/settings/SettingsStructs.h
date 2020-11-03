@@ -79,7 +79,7 @@ typedef struct{
 	float reward_distance_to_human_decreased; // reward when distance to human decreases
 	float reward_distance_to_human_increased; // reward when distance to human increases
 	int num_obs_humans; // maximum number of humans the agent can observe inside the camera view
-	int reward_function; // choose between different reward functions (1 = distance rewards only for observed humans, 2 = distance rewards for all humans in level)
+	int reward_function; // choose between different reward functions (1 = constant distance rewards only for observed humans; 2 = constant distance rewards for all humans in level; 3 = dynamic distance rewards for all humans in level, dependend on distance change; 4 = dynamic distance rewards only for observed humans, dependend on distance change)
 }f_trainingSettings;
 
 typedef struct{
