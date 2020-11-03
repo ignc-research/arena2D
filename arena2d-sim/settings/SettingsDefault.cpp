@@ -31,7 +31,7 @@ void GlobalSettings::setToDefault()
 
 	// physics
 	_settings.physics.time_step = 0.1f;
-	_settings.physics.step_iterations = 1;
+	_settings.physics.step_iterations = 5;
 	_settings.physics.fps = 60;
 	_settings.physics.position_iterations = 8;
 	_settings.physics.velocity_iterations = 12;
@@ -46,21 +46,21 @@ void GlobalSettings::setToDefault()
 
 	// training
 	_settings.training.max_time = 100.0f;
-	_settings.training.episode_over_on_hit = 0;
+	_settings.training.episode_over_on_hit = 1;
 	_settings.training.reward_goal = 100.0f;
 	_settings.training.reward_towards_goal = 0.1f;
 	_settings.training.reward_away_from_goal = -0.2f;
-	_settings.training.reward_hit = -10.0f;
+	_settings.training.reward_hit = -100.0f;
 	_settings.training.reward_time_out = 0.f;
-	_settings.training.num_envs = 4;
+	_settings.training.num_envs = 1;
 	_settings.training.num_threads = -1;
 	_settings.training.agent_class = "Agent";
 
 	_settings.training.reward_human = -100.0f;
-	_settings.training.safety_distance_human = 0.5f;
-	_settings.training.reward_distance_to_human_decreased = -0.3f;
-	_settings.training.reward_distance_to_human_increased = 0.3f;
-	_settings.training.num_obs_humans = 3;
+	_settings.training.safety_distance_human = 0.8f;
+	_settings.training.reward_distance_to_human_decreased = -2.0f;
+	_settings.training.reward_distance_to_human_increased = 2.0f;
+	_settings.training.num_obs_humans = 0;
 	_settings.training.reward_function = 1;
 
 	// stage
