@@ -11,7 +11,7 @@ import random
 from collections import deque
 
 ### hyper parameters ###
-MEAN_REWARD_BOUND = 120.0	# training is considered to be done if the mean reward reaches this value
+MEAN_REWARD_BOUND = 98.0	# training is considered to be done if the mean reward reaches this value
 NUM_ACTIONS = 6				# total number of discrete actions the robot can perform
 DISCOUNT_FACTOR = 0.99		# discount factor for reward estimation (often denoted by gamma)
 SYNC_TARGET_STEPS = 2000	# target net is synchronized with net every X steps
@@ -26,7 +26,7 @@ N_STEPS = 2					# number of steps when evaluating bellman equation
 DOUBLE = True				# activate double DQN
 #######################
 
-USE_GRU = False	# use GRU instead of LSTM
+USE_GRU = True	# use GRU instead of LSTM
 if USE_GRU:
 	AGENT_NAME="dqn_gru_agent"
 else:
@@ -152,9 +152,9 @@ class Agent:
 			start_index = i-episode_step_index
 			if start_index < 0: # wrap around -> two part sequence
 				# sequence part 1
-				seq1 = torch.narrow(self.tensor_state_buffer, dim=0, start=int(MEMORY_SIZE+start_index), length=-start_index)
+				seq1 = torch.narrow(self.tensor_state_buffer, dim=0, start=int(MEMORY_SIZE+start_index), length=int(-start_index))
 				# sequence part 2
-				seq2 = torch.narrow(self.tensor_state_buffer, dim=0, start=0, length=i+1)
+				seq2 = torch.narrow(self.tensor_state_buffer, dim=0, start=0, length=int(i+1))
 				sequence = torch.cat((seq1, seq2), 0)
 			else:# continuous sequence 
 				sequence = torch.narrow(self.tensor_state_buffer, dim=0, start=int(start_index), length=episode_step_index+1)

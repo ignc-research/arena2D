@@ -1,12 +1,20 @@
-#include "LevelCustom.hpp"
+/* Author: Kyra Kerz
+ * 1. Spawning static obsticales: Random shapes  and vertical/horizontal corrdiors
+ * 2. Defining bounding boxes for obstacles spawn points, that the obstacles dont overlap
+ * 3. Corridors height and weight set randomly in predefined range
+ * */
 
+
+#include "LevelCustom.hpp"
+#include "math.h"
 
 void LevelCustom::reset(bool robot_position_reset) {
     // clear old bodies and spawn area
     clear();
-    _dynamic = true;
-    if (_dynamic)
-        freeWanderers();
+    if(_human)
+        wanderers.freeWanderers();
+    if(_dynamic)
+        wanderers.freeRobotWanderers();
 
     float half_width = _SETTINGS->stage.level_size / 2.f;
     float half_height = _SETTINGS->stage.level_size / 2.f;
@@ -16,10 +24,11 @@ void LevelCustom::reset(bool robot_position_reset) {
     const int num_dynamic_obstacles = _SETTINGS->stage.num_dynamic_obstacles;
     const float min_obstacle_radius = _SETTINGS->stage.min_obstacle_size / 2;
     const float max_obstacle_radius = _SETTINGS->stage.max_obstacle_size / 2;
+    const float robot_diameter = _levelDef.robot->getRadius() * 2;
     const zRect main_rect(0, 0, half_width, half_height);
     const zRect big_main_rect(0, 0, half_width + max_obstacle_radius, half_height + max_obstacle_radius);
 
-    int num_obstacles = 8;
+    int num_obstacles = _SETTINGS->stage.num_obstacles;
 
     if(robot_position_reset){
         resetRobotToCenter();
@@ -34,89 +43,117 @@ void LevelCustom::reset(bool robot_position_reset) {
     std::vector <zRect> robot_hole(1);
     std::vector <zRect> holes(num_obstacles);
 
+    std::list<b2Vec2*> existing_positions;
+    std::list<zRect*> existing_boxes;
     for (int i = 0; i < num_obstacles; i++) {
+        //static_spawn.getRandomPoint(p);
         b2Vec2 p;
-        static_spawn.getRandomPoint(p);
         zRect aabb;
-        //b2Body *b;
-        int randomNumber = (rand() % 5);
+        //makes sure obstacle spawns on free space
+        int randomNumber = (rand() % 6);
+        bool spawn_valid = obstacleSpawnUntilValid(&static_spawn, existing_boxes, p, randomNumber);
+        //printf("obstacle point found\n");
+        float random_length;
+        float random_width;
+        zRect * first_horizontal;
+        zRect * second_horizontal;
+        zRect * horizontal_box;
+        zRect * first_vertical;
+        zRect * second_vertical;
+        zRect * vertical_box;
+
+
+        //bool boundary_cond = true;
+
+
+        // controls the number of occurences of different shapes: random, vertical blocks and horizontal blocks
         switch (randomNumber) {
-            case 0:
-                p.x = -0.5;
-                p.y = -0.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = -0.95;
-                p.y = -0.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                break;
             case 1:
-                p.x = 1.5;
-                p.y = 1.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.95;
-                p.y = 1.5;
-                generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = 1.5;
-                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = 1.95;
-                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+            case 6:
+            case 5:
+            case 3:
+                //random obstacle is created
+                if (!spawn_valid) continue;
+                addRandomShape(p, (_SETTINGS->stage.min_obstacle_size / 2),
+                               (_SETTINGS->stage.max_obstacle_size / 2), &aabb);
+                ;
+                //printf("obstacle point added randomShape\n");
+                //existing_positions.push_back(new b2Vec2(p.x, p.y));
+                existing_boxes.push_back(new zRect(aabb));
                 break;
             case 2:
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = -1.5;
+                //  horizontal box is created
+                if (!spawn_valid) continue;
+                random_length =  f_frandomRange(0.5,2.5);
+                random_width = f_frandomRange(2*robot_diameter, 3*robot_diameter);
+                generateRandomBodyHorizontal(p, (_SETTINGS->stage.min_obstacle_size / 2),
+                                             random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
+                //printf("obstacle point added horizontal 1\n");
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
+                first_horizontal = new zRect(aabb);
+                //existing_boxes.push_back(new zRect(aabb));
+
+                //  corresponding second horizontal box is created to build a corridor with the firts one
+                p.x = p.x;//1.5 + _SETTINGS->stage.min_obstacle_size / 2;
+                p.y = p.y+ random_width;//0.45;//-1.95;
                 generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = 1.5 + _SETTINGS->stage.min_obstacle_size / 2;
-                p.y = -1.95;
-                generateRandomBodyHorizontal(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                              _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                break;
-            case 3:
-                b2Body *b;
-                b = addRandomShape(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-//                b->SetTransform(b2Vec2(p.x, p.y), 0);
+                                             random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
+                second_horizontal = new zRect(aabb);
+                horizontal_box = new zRect(first_horizontal->x, first_horizontal->y + abs(first_horizontal->y - second_horizontal->y)/2.0f,  second_horizontal->w, (abs(first_horizontal->y - second_horizontal->y) + (first_horizontal->h* 2.0f))/2.0f);
+
+                existing_boxes.push_back(horizontal_box);
+
                 break;
             case 4:
-                p.x = -2.0;
-                p.y = 2.0;
+                //vertical box is created
+                if (!spawn_valid) continue;
+                random_length =  f_frandomRange(0.5,2.5);
+                random_width = f_frandomRange(2*robot_diameter, 3*robot_diameter);
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
-                p.x = -1.55;
-                p.y = 2.0;
+                                           random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
+
+                first_vertical = new zRect(aabb);
+
+                //  corresponding second vertical box is created to build a corridor with the first one
+
+                p.x = p.x - random_width;//- 0.45;
+                p.y = p.y;
                 generateRandomBodyVertical(p, _SETTINGS->stage.min_obstacle_size / 2,
-                                                            _SETTINGS->stage.max_obstacle_size / 2, &aabb);
+                                           random_length*(_SETTINGS->stage.max_obstacle_size / 2), &aabb);
+                //printf("obstacle point added vertical 2\n");
+                existing_positions.push_back(new b2Vec2(p.x, p.y));
+
+                second_vertical = new zRect(aabb);
+                vertical_box = new zRect(first_vertical->x - abs(first_vertical->x - second_vertical->x)/2.0f, first_vertical->y, (abs(first_vertical->x - second_vertical->x) + (first_vertical->w * 2.0f))/2.0f, second_vertical->h);
+                existing_boxes.push_back(vertical_box);
+
+
                 break;
         }
     }
-    // spawning dynamic obstacles
+
     _goalSpawnArea.addQuadTree(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE,
                                LEVEL_CUSTOM_GOAL_SPAWN_AREA_BLOCK_SIZE, half_goal_size);
     _goalSpawnArea.calculateArea();
 
-    if (_dynamic) {
+    if (_dynamic || _human) {
         _dynamicSpawn.clear();
+        //printf("addCheeseRect\n");
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
+        //printf("calculateArea\n");
         _dynamicSpawn.calculateArea();
-        for (int i = 0; i < num_dynamic_obstacles; i++) {
-            b2Vec2 p;
-            _dynamicSpawn.getRandomPoint(p);
-            WandererBipedal *w = new WandererBipedal(_levelDef.world, p, dynamic_speed, 0.1, 0.05);
-            _wanderers.push_back(w);
-        }
+		wanderers.reset(_dynamicSpawn, _dynamic, _human );
     }
-    // adding spawn area
+
     randomGoalSpawnUntilValid();
 }
+
+
+
+
 
 b2Body *
 LevelCustom::generateRandomBodyHorizontal(const b2Vec2 &p, float min_radius, float max_radius, zRect *aabb) {
@@ -126,10 +163,11 @@ LevelCustom::generateRandomBodyHorizontal(const b2Vec2 &p, float min_radius, flo
     b2Vec2 verts[vert_count];
     b2Vec2 max_v(-0, -0);
     b2Vec2 min_v(50000, 50000);
+    //set fixed shape
     float y2 = p.y + min_radius;
     float x2 = p.x;
     float y3 = y2;
-    float x3 = x2 - 2 * max_radius;
+    float x3 = x2 - max_radius;
     float y4 = p.y;
     float x4 = x3;
     for (int i = 0; i < vert_count; i++) {
@@ -148,7 +186,7 @@ LevelCustom::generateRandomBodyHorizontal(const b2Vec2 &p, float min_radius, flo
                 break;
         }
 
-
+        //prevents spawning outside
         if (verts[i].x > max_v.x) {
             max_v.x = verts[i].x;
         }
@@ -163,10 +201,10 @@ LevelCustom::generateRandomBodyHorizontal(const b2Vec2 &p, float min_radius, flo
         }
     }
     if (aabb != NULL) {
-        aabb->x = p.x;
-        aabb->y = p.y;
-        aabb->w = (max_v.x - min_v.x) / 2.0f;
-        aabb->h = (max_v.y - min_v.y) / 2.0f;
+        aabb->x = p.x - max_radius/2.0f;
+        aabb->y = p.y + min_radius/2.0f;
+        aabb->w = max_radius/2.0f;//(max_v.x - min_v.x);// / 2.0f;
+        aabb->h = min_radius/2.0f;//(max_v.y - min_v.y);// / 2.0f;
     }
     shape.Set((b2Vec2 *) verts, vert_count);
     return addShape(&shape);
@@ -182,10 +220,11 @@ LevelCustom::generateRandomBodyVertical(const b2Vec2 &p, float min_radius, float
     b2Vec2 min_v(50000, 50000);
     float rotation = f_frandomRange(0, 2 * M_PI);
 
+    //set fixed shape
     float x2 = p.x + min_radius;
     float y2 = p.y;
     float x3 = x2;
-    float y3 = y2 - 2 * max_radius;
+    float y3 = y2 - max_radius;
     float x4 = p.x;
     float y4 = y3;
     for (int i = 0; i < vert_count; i++) {
@@ -203,7 +242,7 @@ LevelCustom::generateRandomBodyVertical(const b2Vec2 &p, float min_radius, float
                 verts[i].Set(x4, y4);
                 break;
         }
-
+        //prevents spawning outside
         if (verts[i].x > max_v.x) {
             max_v.x = verts[i].x;
         }
@@ -218,27 +257,57 @@ LevelCustom::generateRandomBodyVertical(const b2Vec2 &p, float min_radius, float
         }
     }
     if (aabb != NULL) {
-        aabb->x = p.x;
-        aabb->y = p.y;
-        aabb->w = (max_v.x - min_v.x) / 2.0f;
-        aabb->h = (max_v.y - min_v.y) / 2.0f;
+        aabb->x = p.x + min_radius/2.0f;
+        aabb->y = p.y - max_radius/2.0f;
+        aabb->w = min_radius/2.0f;//(max_v.x - min_v.x) / 2.0f;
+        aabb->h = max_radius/2.0f;//(max_v.y - min_v.y) / 2.0f;
     }
     shape.Set(verts, vert_count);
     return addShape(&shape);
 }
 
-void LevelCustom::freeWanderers() {
-    for (std::list<WandererBipedal *>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++) {
-        delete (*it);
-    }
-    _wanderers.clear();
-}
+float LevelCustom::getReward()
+{
+	float reward = 0;
+	_closestDistance_old.clear();
+	_closestDistance.clear();
 
-void LevelCustom::update() {
-    for (std::list<WandererBipedal *>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++) {
-        (*it)->update();
-    }
+	//reward for observed humans inside camera view of robot (number limited by num_obs_humans)
+	if(_SETTINGS->training.reward_function == 1 || _SETTINGS->training.reward_function == 4){
+		wanderers.get_old_observed_distances(_closestDistance_old);
+		wanderers.get_observed_distances(_closestDistance);
+	}
+	//reward for all humans in the level
+	else if(_SETTINGS->training.reward_function == 2 || _SETTINGS->training.reward_function == 3){
+		wanderers.get_old_distances(_closestDistance_old);
+		wanderers.get_distances(_closestDistance);
+	}
+	
 
+	for(int i = 0; i < _closestDistance_old.size(); i++){
+		float distance_after = _closestDistance[i];
+		float distance_before = _closestDistance_old[i];
+		// give reward only if current distance is smaller than the safety distance
+		if(distance_after < _SETTINGS->training.safety_distance_human){
+ 			//give reward for distance to human decreased/increased linearly depending on the distance change 
+			if(_SETTINGS->training.reward_function == 3 || _SETTINGS->training.reward_function == 4){
+				if(distance_after < distance_before){
+					reward += _SETTINGS->training.reward_distance_to_human_decreased * (distance_before - distance_after);
+				}else if(distance_after > distance_before){
+					reward += _SETTINGS->training.reward_distance_to_human_increased * (distance_after - distance_before);
+				}
+			}
+			//give constant reward for distance to human decreased/increased
+			else{
+				if(distance_after < distance_before){
+					reward += _SETTINGS->training.reward_distance_to_human_decreased;
+				}else if(distance_after > distance_before){
+					reward += _SETTINGS->training.reward_distance_to_human_increased;
+				}
+			}
+		}
+	}
+	return reward;
 }
 
 void LevelCustom::renderGoalSpawn() {

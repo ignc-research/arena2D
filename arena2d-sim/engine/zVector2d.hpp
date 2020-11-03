@@ -42,7 +42,16 @@ public:
 	static float dot(const zVector2D & a, const zVector2D & b){return a.x*b.x + a.y*b.y;}
 	static float cross(const zVector2D & a, const zVector2D & b){return a.x * b.y - b.x * a.y;}
 	/* angle(rad) between two vectors */
-	static float angle(const zVector2D & a, const zVector2D & b){return acos(dot(a.getNormalized(), b.getNormalized()));}
+	static float angle(const zVector2D & a, const zVector2D & b){
+		float dot_product = dot(a.getNormalized(), b.getNormalized());
+		//check if dot_product is out of bounds of the acos()
+		if(dot_product > 1.0){
+			dot_product = 1.0;
+		}else if(dot_product < -1.0){
+			dot_product = -1.0;
+		}
+		return acos(dot_product);
+	}
 	static float signedAngle(const zVector2D & a, const zVector2D & b){return cross(a,b) < 0.0f ? -angle(a,b) : angle(a,b);}
 
 	//overloaded operators

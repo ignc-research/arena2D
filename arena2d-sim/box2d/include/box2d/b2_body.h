@@ -23,8 +23,10 @@
 #ifndef B2_BODY_H
 #define B2_BODY_H
 
+
 #include "b2_math.h"
 #include "b2_shape.h"
+#include "stdio.h"
 
 class b2Fixture;
 class b2Joint;
@@ -43,7 +45,8 @@ enum b2BodyType
 {
 	b2_staticBody = 0,
 	b2_kinematicBody,
-	b2_dynamicBody
+	b2_dynamicBody,
+	b2_dynamicBody_human
 
 	// TODO_ERIN
 	//b2_bulletBody,
@@ -569,7 +572,9 @@ inline void b2Body::GetMassData(b2MassData* data) const
 
 inline b2Vec2 b2Body::GetWorldPoint(const b2Vec2& localPoint) const
 {
-	return b2Mul(m_xf, localPoint);
+    //printf("localPoint.x: %f and localPoint.y: %f \n", localPoint.x, localPoint.y);
+	//printf("c: %f and s: %f and x: %f and y: %f \n", m_xf.q.c, m_xf.q.s, m_xf.p.x, m_xf.p.y );
+    return b2Mul(m_xf, localPoint);
 }
 
 inline b2Vec2 b2Body::GetWorldVector(const b2Vec2& localVector) const
@@ -754,7 +759,7 @@ inline void* b2Body::GetUserData() const
 
 inline void b2Body::ApplyForce(const b2Vec2& force, const b2Vec2& point, bool wake)
 {
-	if (m_type != b2_dynamicBody)
+	if (m_type != b2_dynamicBody && m_type != b2_dynamicBody_human)
 	{
 		return;
 	}
@@ -774,7 +779,7 @@ inline void b2Body::ApplyForce(const b2Vec2& force, const b2Vec2& point, bool wa
 
 inline void b2Body::ApplyForceToCenter(const b2Vec2& force, bool wake)
 {
-	if (m_type != b2_dynamicBody)
+	if (m_type != b2_dynamicBody && m_type != b2_dynamicBody_human)
 	{
 		return;
 	}
@@ -793,7 +798,7 @@ inline void b2Body::ApplyForceToCenter(const b2Vec2& force, bool wake)
 
 inline void b2Body::ApplyTorque(float torque, bool wake)
 {
-	if (m_type != b2_dynamicBody)
+	if (m_type != b2_dynamicBody && m_type != b2_dynamicBody_human)
 	{
 		return;
 	}
@@ -812,7 +817,7 @@ inline void b2Body::ApplyTorque(float torque, bool wake)
 
 inline void b2Body::ApplyLinearImpulse(const b2Vec2& impulse, const b2Vec2& point, bool wake)
 {
-	if (m_type != b2_dynamicBody)
+	if (m_type != b2_dynamicBody && m_type != b2_dynamicBody_human)
 	{
 		return;
 	}
@@ -832,7 +837,7 @@ inline void b2Body::ApplyLinearImpulse(const b2Vec2& impulse, const b2Vec2& poin
 
 inline void b2Body::ApplyLinearImpulseToCenter(const b2Vec2& impulse, bool wake)
 {
-	if (m_type != b2_dynamicBody)
+	if (m_type != b2_dynamicBody && m_type != b2_dynamicBody_human)
 	{
 		return;
 	}
@@ -851,7 +856,7 @@ inline void b2Body::ApplyLinearImpulseToCenter(const b2Vec2& impulse, bool wake)
 
 inline void b2Body::ApplyAngularImpulse(float impulse, bool wake)
 {
-	if (m_type != b2_dynamicBody)
+	if (m_type != b2_dynamicBody && m_type != b2_dynamicBody_human)
 	{
 		return;
 	}

@@ -3,9 +3,11 @@
 void LevelRandom::reset(bool robot_position_reset)
 {
 	// clear old bodies and spawn area
-	clear();
-	if(_dynamic)
-		freeWanderers();
+    clear();
+    if(_human )
+        wanderers.freeWanderers();
+    if(_dynamic)
+        wanderers.freeRobotWanderers();
 
 	// get constants
 	const float half_width = _SETTINGS->stage.level_size/2.f;
@@ -46,38 +48,20 @@ void LevelRandom::reset(bool robot_position_reset)
 	_goalSpawnArea.calculateArea();
 
 	// dynamic obstacles
-	if(_dynamic){
-		_dynamicSpawn.clear();
-		_dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
-		_dynamicSpawn.calculateArea();
-		for(int i = 0; i < num_dynamic_obstacles; i++){
-			b2Vec2 p;
-			_dynamicSpawn.getRandomPoint(p);
-			Wanderer * w = new Wanderer(_levelDef.world,  p, dynamic_speed, 0.1, 0.05);
-			w->addCircle(dynamic_radius);
-			_wanderers.push_back(w);
-		}
-	}
+
+    if(_dynamic || _human){
+        _dynamicSpawn.clear();
+        _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
+        _dynamicSpawn.calculateArea();
+        wanderers.reset(_dynamicSpawn, _dynamic, _human);
+    }
 
 	randomGoalSpawnUntilValid();
 }
 
 
-void LevelRandom::freeWanderers()
-{
-	for(std::list<Wanderer*>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++){
-		delete (*it);
-	}
-	_wanderers.clear();
-}
 
-void LevelRandom::update()
-{
-	for(std::list<Wanderer*>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++){
-		(*it)->update();
-	}
 
-}
 
 void LevelRandom::renderGoalSpawn()
 {

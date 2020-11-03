@@ -89,7 +89,7 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 
 	m_type = bd->type;
 
-	if (m_type == b2_dynamicBody)
+	if (m_type == b2_dynamicBody || m_type == b2_dynamicBody_human)
 	{
 		m_mass = 1.0f;
 		m_invMass = 1.0f;
@@ -305,7 +305,7 @@ void b2Body::ResetMassData()
 		return;
 	}
 
-	b2Assert(m_type == b2_dynamicBody);
+	b2Assert(m_type == b2_dynamicBody || m_type == b2_dynamicBody_human);
 
 	// Accumulate mass over all fixtures.
 	b2Vec2 localCenter = b2Vec2_zero;
@@ -367,7 +367,7 @@ void b2Body::SetMassData(const b2MassData* massData)
 		return;
 	}
 
-	if (m_type != b2_dynamicBody)
+	if (m_type != b2_dynamicBody && m_type != b2_dynamicBody_human)
 	{
 		return;
 	}
@@ -403,7 +403,7 @@ void b2Body::SetMassData(const b2MassData* massData)
 bool b2Body::ShouldCollide(const b2Body* other) const
 {
 	// At least one body should be dynamic.
-	if (m_type != b2_dynamicBody && other->m_type != b2_dynamicBody)
+	if ((m_type != b2_dynamicBody && m_type != b2_dynamicBody_human) && (other->m_type != b2_dynamicBody && other->m_type != b2_dynamicBody_human))
 	{
 		return false;
 	}
