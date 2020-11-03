@@ -359,46 +359,95 @@ void Arena::update()
 #ifdef USE_ROS
 void Arena::rosUpdate(float wait_time = 0.0f)
 {
+	bool any_arrow_key_pressed = false;
+	// if (_playSimulation)
+	// {
+	// 	action = Robot::STOP;
+	// }
+	if (_keysPressed[UP] || _keysPressed[DOWN] || _keysPressed[LEFT] || _keysPressed[RIGHT])
+	{
+		any_arrow_key_pressed = true;
+	}
+	if (any_arrow_key_pressed)
+	{
+		int action;
+		if (_keysPressed[UP])
+		{
+			action = Robot::FORWARD;
+			if (_keysPressed[LEFT])
+			{
+				action = Robot::FORWARD_LEFT;
+			}
+			else if (_keysPressed[RIGHT])
+			{
+				action = Robot::FORWARD_RIGHT;
+			}
+		}
+		else if (_keysPressed[DOWN])
+		{
+			action = Robot::BACKWARD;
+		}
+		else
+		{
+			if (_keysPressed[LEFT])
+			{
+				action = Robot::FORWARD_STRONG_LEFT;
+			}
+			else if (_keysPressed[RIGHT])
+			{
+				action = Robot::FORWARD_STRONG_RIGHT;
+			}
+		}
+		for (int i = 0; i < _numEnvs; i++)
+		{
+			Robot::getActionTwist((Robot::Action)action, _actions[i]);
+		}
+	}
 	// we put the wait connection here so that window will not be in blank screen.
-	if(!_ros_node_ptr->m_env_connected){
+	if (!_ros_node_ptr->m_env_connected && !any_arrow_key_pressed)
+	{
 		_ros_node_ptr->waitConnection();
 		return;
 	}
 
 	RosNode::Status s;
-	if (_ros_node_ptr == nullptr)
+	if (_ros_node_ptr == nullptr && !any_arrow_key_pressed)
 		return; // should throw Exception
-	s = _ros_node_ptr->getActions(_actions,_ros_envs_reset, wait_time);
+	if (!any_arrow_key_pressed)
+		s = _ros_node_ptr->getActions(_actions, _ros_envs_reset, wait_time);
 	/* do nothing if not message from all agents received */
-	if (s == RosNode::Status::NOT_ALL_AGENT_MSG_RECEIVED)
+	if (!any_arrow_key_pressed && s == RosNode::Status::NOT_ALL_AGENT_MSG_RECEIVED)
 	{
 		return;
 	}
-	else if (s == RosNode::Status::SIM_CLOSE)
+	else if (!any_arrow_key_pressed && s == RosNode::Status::SIM_CLOSE)
 	{
 		cmdStopTraining(ConsoleParameters(0, NULL));
 		INFO("Training done!");
 		return;
 	}
-	else if(s == RosNode::Status::ENV_RESET){
+	else if (!any_arrow_key_pressed && s == RosNode::Status::ENV_RESET)
+	{
 		for (int i = 0; i < _numEnvs; i++)
 		{
 			Environment::EpisodeState s = _envs[i].getEpisodeState();
 			if (_ros_envs_reset[i])
-			{	
-				if(s != Environment::RUNNING){
-						_levelResetMeasure.startTime();
-				_envs[i].reset(false);
-				_levelResetMeasure.endTime();
-				}else{
+			{
+				if (s != Environment::RUNNING)
+				{
+					_levelResetMeasure.startTime();
+					_envs[i].reset(false);
+					_levelResetMeasure.endTime();
+				}
+				else
+				{
 					//ROS_ERROR_STREAM("Something wrong with the env: " << i);
 				}
 			}
-			
 		}
 	}
-	else if (s == RosNode::Status::ALL_AGENT_MSG_RECEIVED)
-	{	
+	else if (any_arrow_key_pressed || s == RosNode::Status::ALL_AGENT_MSG_RECEIVED)
+	{
 		for (int i = 0; i < _numEnvs; i++)
 		{
 			Environment::EpisodeState s = _envs[i].getEpisodeState();
@@ -457,12 +506,13 @@ void Arena::rosUpdate(float wait_time = 0.0f)
 			}
 		}
 	}
-		if (_SETTINGS->video.enabled && !_videoDisabled)
-		{
-			refreshLevelResetTime();
-		}
+	if (_SETTINGS->video.enabled && !_videoDisabled)
+	{
+		refreshLevelResetTime();
+	}
 	// measuring FPS
-		_physicsTimer.update(false);
-		_ros_node_ptr->publishStates(_dones, _meanReward.getMean(), _meanSuccess.getMean());
+	_physicsTimer.update(false);
+	// if (!any_arrow_key_pressed)
+	_ros_node_ptr->publishStates(_dones, _meanReward.getMean(), _meanSuccess.getMean());
 }
 #endif
