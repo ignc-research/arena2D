@@ -11,6 +11,9 @@
 #include "ConsoleParameters.hpp"
 #include <level/LevelFactory.hpp>
 
+#include "Evaluation.hpp"
+extern Evaluation _evaluation;
+
 /* forward declaration */
 class Environment;
 
@@ -100,8 +103,11 @@ public:
 
 	/* override functions from b2ContactListener
 	 */
-	void BeginContact(b2Contact *contact) override;
-	void EndContact(b2Contact *contact) override;
+   
+	void BeginContact(b2Contact * contact) override;
+	void EndContact(b2Contact * contact) override;
+	void RequestReset() override;
+
 
 	/* reset environment
 	 * @param robot_position_reset passed to level reset function

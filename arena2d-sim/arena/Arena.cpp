@@ -1,6 +1,9 @@
 /* Author: Cornelius Marx */
 #include "Arena.hpp"
 
+//global variable
+Evaluation _evaluation;
+
 // sigint handler
 static Arena *ARENA = NULL; // arena instance
 void sigintHandler(int state)

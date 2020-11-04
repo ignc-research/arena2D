@@ -83,12 +83,14 @@ LevelSVG::~LevelSVG()
 
 void LevelSVG::resetRobot()
 {
+
 	b2Vec2 pos(0, 0);
 	if (_currentFileIndex >= 0)
 	{
 		_spawnAreas[_currentFileIndex].getRandomPoint(pos);
 	}
 	_levelDef.robot->reset(pos, f_frandomRange(0, 2 * M_PI));
+
 }
 
 void LevelSVG::reset(bool robot_position_reset)
@@ -111,10 +113,13 @@ void LevelSVG::reset(bool robot_position_reset)
 	}
 
 	// reset robot position to random position
+
 	if (robot_position_reset)
+
 	{
 		resetRobot();
 	}
+
 
 	// spawn goal
 	randomGoalSpawnUntilValid(&_spawnAreas[_currentFileIndex]);

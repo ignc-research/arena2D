@@ -1,59 +1,54 @@
 import time
-import fc_lstm
-import fc_gru
+import sys
+print(sys.path)
+from dqn_models import fc
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-from torch.nn.utils.rnn import pack_sequence
 import numpy
 import random
-from collections import deque
+import collections
 
 ### hyper parameters ###
 MEAN_REWARD_BOUND = 98.0	# training is considered to be done if the mean reward reaches this value
 NUM_ACTIONS = 6				# total number of discrete actions the robot can perform
-DISCOUNT_FACTOR = 0.99		# discount factor for reward estimation (often denoted by gamma)
+DISCOUNT_FACTOR = 0.9		# discount factor for reward estimation (often denoted by gamma)
 SYNC_TARGET_STEPS = 2000	# target net is synchronized with net every X steps
 LEARNING_RATE = 0.00025 	# learning rate for optimizer
 EPSILON_START = 1			# start value of epsilon
 EPSILON_MAX_STEPS = 10**6	# how many steps until epsilon reaches minimum
 EPSILON_END = 0.02			# min epsilon value
-BATCH_SIZE = 4				# batch size for training after every step
+BATCH_SIZE = 64				# batch size for training after every step
 TRAINING_START = 1000		# start training only after the first X steps
-MEMORY_SIZE = 2**20			# last X states will be stored in a buffer (memory), from which the batches are sampled
-N_STEPS = 2					# number of steps when evaluating bellman equation
-DOUBLE = True				# activate double DQN
+MEMORY_SIZE = 1000000		# last X states will be stored in a buffer (memory), from which the batches are sampled
+N_STEPS = 2
+DOUBLE = True
 #######################
 
-USE_GRU = True	# use GRU instead of LSTM
-if USE_GRU:
-	AGENT_NAME="dqn_gru_agent"
-else:
-	AGENT_NAME="dqn_lstm_agent"
+AGENT_NAME="dqn_agent"
+
+
 
 class Agent:
-	def __init__(self, device_name, model_name, num_observations, num_envs, num_threads, training_data_path):
+	def __init__(self, device, model_name, num_observations, num_envs, num_threads, training_data_path):
+
+		# DQN does only work with one environment
 		assert(num_envs == 1)
-		self.device = torch.device(device_name)
+		self.device = torch.device(device)
+		self.num_observations = num_observations
 		self.training_data_path = training_data_path
 
 		# creating xp buffers on gpu for faster sampling
 		self.tensor_state_buffer = torch.zeros(MEMORY_SIZE, num_observations ,dtype=torch.float).to(self.device)# state
-		# rewards with applied N-Step: buffer[t] = reward_t + discount*buffer[t+1] + ... discount^(N-1)*buffer[t+N-1]
-		self.tensor_reward_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.float).to(self.device)
+		self.tensor_reward_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.float).to(self.device)# rewards
 		self.tensor_action_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.long).to(self.device)# the action that was chosen
 		self.tensor_done_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.bool).to(self.device)# episode has ended
-		self.tensor_step_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.int16).to(self.device)# step index in episode (starting at 0)
+
 
 		# creating net and target net
-		if USE_GRU:
-			self.net = fc_gru.FC_GRU(num_observations, NUM_ACTIONS)
-			self.tgt_net = fc_gru.FC_GRU(num_observations, NUM_ACTIONS)
-		else:
-			self.net = fc_lstm.FC_LSTM(num_observations, NUM_ACTIONS)
-			self.tgt_net = fc_lstm.FC_LSTM(num_observations, NUM_ACTIONS)
-
+		self.net = fc.FC_DQN(num_observations, NUM_ACTIONS)
+		self.tgt_net = fc.FC_DQN(num_observations, NUM_ACTIONS)
 
 		# copy to device
 		self.net.to(self.device)
@@ -62,6 +57,7 @@ class Agent:
 		# showing net to user
 		print(self.net)
 
+		# creating writer
 		self.episode_start = 0
 
 		# load model parameters from file if given
@@ -81,18 +77,18 @@ class Agent:
 
 		self.new_state_discount = DISCOUNT_FACTOR**N_STEPS
 		# time metrics
-		self.sampling_times = deque(maxlen=100)
-		self.batch_forward_times =deque(maxlen=100)
-		self.loss_calc_times = deque(maxlen=100)
-		self.backward_times = deque(maxlen=100)
-		self.optimize_times = deque(maxlen=100)
-		self.gpu_pre_copy_times = deque(maxlen=100)
-		self.gpu_copy_times = deque(maxlen=100)
+		self.sampling_times = collections.deque(maxlen=100)
+		self.batch_forward_times =collections.deque(maxlen=100)
+		self.loss_calc_times = collections.deque(maxlen=100)
+		self.backward_times = collections.deque(maxlen=100)
+		self.optimize_times = collections.deque(maxlen=100)
+		self.gpu_pre_copy_times = collections.deque(maxlen=100)
+		self.gpu_copy_times = collections.deque(maxlen=100)
 		self.measure_gpu_times = False
 
 		# training metrics
-		self.mean_loss_buffer = deque(maxlen=100)
-		self.mean_value_buffer = deque(maxlen=100)
+		self.mean_loss_buffer = collections.deque(maxlen=100)
+		self.mean_value_buffer = collections.deque(maxlen=100)
 		self.mean_loss = 0
 		self.mean_value = 0
 
@@ -125,44 +121,22 @@ class Agent:
 		self.last_observation = observation
 		self.epsilon_decay()
 		self.start_gpu_measure()
-		action = -1
 		# insert current state into buffer
 		idx = self.frame_idx%MEMORY_SIZE
 		self.tensor_state_buffer[idx] = torch.FloatTensor(observation);
-		self.tensor_step_buffer[idx] = self.episode_frames
 		self.stop_gpu_measure(self.gpu_pre_copy_times)
 		if random.random() <= self.epsilon: # random action
 			action = random.randrange(0, NUM_ACTIONS)
 		else:
-			# pack sequence
-			sequence = self.pack_episodes([idx])
-			q = self.net(sequence)
-			max_value, act_v = torch.max(q, dim=1)
+			state_v_batch = self.tensor_state_buffer[idx].view(1, self.num_observations)
+			q_vals_v = self.net(state_v_batch)
+			max_value, act_v = torch.max(q_vals_v, dim=1)
 			self.mean_value_buffer.append(max_value.item())
 			action = int(act_v.item())
 
-		self.last_action = action
-		return action
-	
-	def pack_episodes(self, indicies):
-		sequence_list = []
-		for i in indicies:
-			sequence = None
-			episode_step_index = int(self.tensor_step_buffer[i])
-			start_index = i-episode_step_index
-			if start_index < 0: # wrap around -> two part sequence
-				# sequence part 1
-				seq1 = torch.narrow(self.tensor_state_buffer, dim=0, start=int(MEMORY_SIZE+start_index), length=int(-start_index))
-				# sequence part 2
-				seq2 = torch.narrow(self.tensor_state_buffer, dim=0, start=0, length=int(i+1))
-				sequence = torch.cat((seq1, seq2), 0)
-			else:# continuous sequence 
-				sequence = torch.narrow(self.tensor_state_buffer, dim=0, start=int(start_index), length=episode_step_index+1)
-			# add sequence to list
-			sequence_list.append(sequence)
-		# packing all together
-		return pack_sequence(sequence_list, enforce_sorted=False)
+		self.last_action = action;
 
+		return action
 	
 	def post_step(self, new_observation, reward, is_done, mean_reward, mean_success):
 		self.start_gpu_measure()
@@ -184,11 +158,7 @@ class Agent:
 			for i in range(1, max_steps):
 				pre_idx = (MEMORY_SIZE+idx-i)%MEMORY_SIZE
 				self.tensor_done_buffer[pre_idx] = True
-
-		# stop gpu measure
 		self.stop_gpu_measure(self.gpu_copy_times)
-
-		# calculate metrics
 		self.mean_reward = mean_reward
 		self.total_reward += reward
 		self.mean_success = mean_success
@@ -196,13 +166,12 @@ class Agent:
 			self.mean_value = numpy.mean(list(self.mean_value_buffer))
 		if len(self.mean_loss_buffer) > 0:
 			self.mean_loss = numpy.mean(list(self.mean_loss_buffer))
-
-		# count total frames/episode frames
+		# count total frames
 		self.frame_idx += 1
 		self.episode_frames += 1
 
 		if is_done != 0: # episode done
-			self.episode_idx += 1 # increment episode count
+			self.episode_idx += 1
 
 			# check if new best mean
 			self.check_best_mean()
@@ -288,6 +257,11 @@ class Agent:
 		print("  Mean value:  %.3f"%(self.mean_value))
 		# reset timer
 		self.last_time = time.perf_counter()
+	
+	def get_stats(self):
+		return [("Epsilon", self.epsilon),
+				("Mean Value", self.mean_value),
+				("Mean Loss", self.mean_loss)]
 		
 	
 	# check if new best mean and if reached boundary
@@ -298,7 +272,7 @@ class Agent:
 	
 	def save_model_weights(self, filename):
 		print("***Saving model weights to %s***"%(filename))
-		torch.save(self.net.state_dict(), self.training_data_path+filename)
+		torch.save(self.net.state_dict(), self.training_data_path + filename)
 		with open("%s%s.txt"%(self.training_data_path, filename), "w") as f:
 			f.write("Episode:       %d\n"%(self.episode_idx))
 			f.write("Start episode: %d\n"%(self.episode_start))
@@ -328,7 +302,7 @@ class Agent:
 	def sample(self, batch_size):
 		# sample random elements
 		random_indicies = None
-		if self.frame_idx <= MEMORY_SIZE: # buffer not overflowed yet
+		if self.frame_idx <= MEMORY_SIZE: # buffer not filled completely yet
 			random_indicies = numpy.random.choice(self.frame_idx-N_STEPS, batch_size)
 		else:
 			forbidden_lower_i = (MEMORY_SIZE + self.frame_idx-N_STEPS)%MEMORY_SIZE
@@ -338,25 +312,22 @@ class Agent:
 				for i in range(0, batch_size): 
 					x = numpy.random.choice(MEMORY_SIZE-N_STEPS) + forbidden_upper_i +1
 					random_indicies[i] = x
-			else: # no wrap around
+			else:
 				for i in range(0, batch_size): 
 					x = numpy.random.choice(MEMORY_SIZE-N_STEPS)
 					if x >= forbidden_lower_i:
 						x += N_STEPS
 					random_indicies[i] = x
-
+		random_indicies_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
 		# sample next state indicies of random states
 		current_idx = self.frame_idx%MEMORY_SIZE
-		random_indicies_next = []
-		for i in random_indicies:
-			random_indicies_next.append((i+N_STEPS)%MEMORY_SIZE)
-
-		# copy indicies to gpu for faster sampling
-		random_indicies_v = torch.tensor(random_indicies).to(self.device)
+		for i in range(0, len(random_indicies)):
+			random_indicies[i] = (random_indicies[i]+N_STEPS)%MEMORY_SIZE
+		random_indicies_next_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
 
 		# get actual tensors from indicies
-		state = self.pack_episodes(random_indicies)
-		new_state = self.pack_episodes(random_indicies_next)
+		state = self.tensor_state_buffer[random_indicies_v]
+		new_state = self.tensor_state_buffer[random_indicies_next_v]
 		action = self.tensor_action_buffer[random_indicies_v]
 		reward = self.tensor_reward_buffer[random_indicies_v]
 		is_done = self.tensor_done_buffer[random_indicies_v]
@@ -370,7 +341,7 @@ class Agent:
 		# estimate action values of next states
 		if DOUBLE:# double dqn
 			next_state_actions = self.net(next_states).max(1)[1]
-			next_state_values = self.tgt_net(next_states).gather(1, next_state_actions.unsqueeze(-1)).squeeze(-1)
+			next_state_values= self.tgt_net(next_states).gather(1, next_state_actions.unsqueeze(-1)).squeeze(-1)
 		else:
 			next_state_values = self.tgt_net(next_states).max(1)[0]
 		# set estimated state values of done states to 0
@@ -387,23 +358,9 @@ class Agent:
 		self.stop_gpu_measure(self.loss_calc_times)
 		self.mean_loss_buffer.append(l.item())
 		return l
-	
-	def get_stats(self):
-		return [("Epsilon", self.epsilon),
-				("Mean Value", self.mean_value),
-				("Mean Loss", self.mean_loss)]
 
 	def stop(self):
+		# shutting down writer
 		if not self.training_done:
 			self.save_model_weights("%s_episode%d.dat"%(AGENT_NAME, self.episode_idx))
 
-		return_str = "Best Mean Reward: "
-		if self.best_mean_reward is None:
-			return_str += "-"
-		else:
-			return_str +=str(self.best_mean_reward)
-
-		return_str += "\n\n"
-		return_str += str(self.net)
-
-		return return_str

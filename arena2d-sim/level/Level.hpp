@@ -30,8 +30,7 @@ struct LevelDef{
 };
 
 /* base class for all levels */
-class Level
-{
+class Level{
 public:
 	/* constructor
 	 * @param w Box2D world to create level in
@@ -57,8 +56,11 @@ public:
 	 * @param robot_position_reset if set to false, robot_position is expected to not change for the new level configuration (if possible)
 	 */
 
+	virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();}
+//virtual void reset(){ randomGoalSpawnUntilValid();} //arena-gru branch
+
 	//virtual void reset(bool robot_position_reset){ if(robot_position_reset){resetRobotToCenter();} randomGoalSpawnUntilValid();} //master
-	virtual void reset(){ randomGoalSpawnUntilValid();} //arena-gru branch
+	
 
 	/* called for every frame to be drawn on the screen
 	 * use this function for additional visualizations
@@ -91,6 +93,12 @@ public:
 	 * @return current position of the goal or (0,0) if goal does not exist
 	 */
 	b2Vec2 getGoalPosition(){return (_goal ==  NULL) ? b2Vec2(0,0) : _goal->GetTransform().p;}
+
+	/* check if robot had contact with a human
+ 	 * @return true if contact with human and false otherwise
+	 */
+	virtual bool checkHumanContact(b2Fixture * other_fixture){return false;}
+
 
 protected:
 	/* check whether goal position is such that robot does not touch it initially
@@ -131,6 +139,18 @@ protected:
 	      return ((X_area && Y_area) && r_g);
 	}
 
+
+
+    /* spawns goal at a random position in the current goal spawn area
+ * if the goal position is not valid with respect to the robot_position (see checkValidGoalSpawn()) another random position is sampled and the check is performed again
+ * this is repeated until a valid position is found
+ * if after the 10th iteration no valid position was found, the goal is spawned regardless at the last position sampled
+ * @param goal_spawn if this parameter is NULL, the member RectSpawn _goalSpawnArea is used for sampling spawn positions,
+                      else the RectSpawn pointed to by this parameter is used for sapling
+ */
+    bool obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p);
+
+    bool obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRect*>& existing_boxes, b2Vec2 &p, int obstacle_type);
 
 	/* create rectangular border around level origin (0,0) with given dimensions and add to body list
 	 * @param half_width half the width (along x-axis) of border rect
@@ -178,8 +198,10 @@ protected:
 	/* reset robot position to (0,0) with random orientation
 	 */
 
+
 	//void resetRobotToCenter(){_levelDef.robot->reset(b2Vec2_zero, f_frandomRange(0, 2*M_PI));}
 	void resetRobotToCenter(){_levelDef.robot->reset(b2Vec2(-0.5,-0.5), f_frandomRange(0, 2*M_PI));}              //reset new robot position(-1.5, -1.5)
+
 
 	/* destroy all bodies in _bodyList and clear list, clears goal spawn area
 	 */

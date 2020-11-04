@@ -55,6 +55,14 @@ set(ARENA_SOURCES
 	arena/LidarCast.cpp
 	arena/RectSpawn.cpp
 	arena/RectSpawn.hpp
+	arena/Evaluation.hpp
+	arena/Evaluation.cpp
+	level/Wanderers.hpp
+	level/Wanderers.cpp
+	level/LevelHuman.cpp
+	level/LevelHuman.hpp
+	level/LevelMaze.cpp
+	level/LevelMaze.hpp
 
 # engine
 	engine/shader/Color2DShader.cpp

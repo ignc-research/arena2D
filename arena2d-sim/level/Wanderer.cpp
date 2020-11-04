@@ -1,4 +1,5 @@
 #include "Wanderer.hpp"
+#include "Wanderers.hpp"
 
 Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
 					float velocity, float change_rate, float stop_rate, float max_angle_velo, unsigned int type)
@@ -7,11 +8,16 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
 	_changeRate = change_rate;
 	_stopRate = stop_rate;
 	_type = type;
+
 	_maxAngleVel = max_angle_velo;
 
 	// creating body
 	b2BodyDef body_def;
-	body_def.type = b2_dynamicBody;
+	if (type == WANDERER_ID_HUMAN){
+        body_def.type = b2_dynamicBody_human;
+	} else {
+        body_def.type = b2_dynamicBody;
+    }
 	body_def.allowSleep = false;
 	body_def.position = position;
 	body_def.linearDamping = 0;
@@ -20,7 +26,11 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
 	_body = w->CreateBody(&body_def);
 
 	// initial velocity update
+
+	//updateVelocity();
+
 	updateVelocity();
+
 }
 
 void Wanderer::addCircle(float radius, const b2Vec2 & pos)
@@ -51,7 +61,7 @@ Wanderer::~Wanderer()
 	_body = NULL;
 }
 
-void Wanderer::update()
+void Wanderer::update(bool chat_flag)
 {
 	if(f_random() <= _changeRate)
 		updateVelocity();

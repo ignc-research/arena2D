@@ -7,8 +7,8 @@
 #define LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
 
 /* randomly generated level with static obstacles and optional dynamic obstacles */
-class LevelRandom : public Level
-{
+class LevelRandom : public Level{
+
 public:
 	/* constructor
 	 */
@@ -38,6 +38,7 @@ private:
 
 	/* if set to true, create dynamic obstacles (wanderers) in addition to static */
 	bool _dynamic;
+    bool _human;
 
 	/* list that stores all wanderers for dynamic level */
 	std::list<Wanderer*> _wanderers;

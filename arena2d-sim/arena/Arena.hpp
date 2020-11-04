@@ -27,6 +27,9 @@
 #include "RosNode.hpp"
 #endif
 
+#include "Evaluation.hpp"
+extern Evaluation _evaluation;
+
 // python callback functions
 enum PyAgentFunction{PYAGENT_FUNC_PRE_STEP, PYAGENT_FUNC_POST_STEP, PYAGENT_FUNC_GET_STATS, PYAGENT_FUNC_STOP, PYAGENT_FUNC_NUM};
 extern const char * PYAGENT_FUNC_NAMES[PYAGENT_FUNC_NUM];
@@ -406,11 +409,17 @@ private:
 
 	/* if set to true no training data is recorded*/
 	bool _noTrainingRecord;
+
+
+	/* if set to true, additional data for the Evaluation of the agent is recorded*/
+	bool _doEvaluation;
+
 #ifdef SUPPORT_ROS_AGENT
 	std::unique_ptr<RosNode> _ros_node_ptr;
 	bool _use_ros_agent = false;
 	bool* _ros_envs_reset;
 #endif // SUPPORT_ROS_AGENT
+
 };
 
 
