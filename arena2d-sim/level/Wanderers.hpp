@@ -16,6 +16,9 @@ extern Evaluation _evaluation;
 #define WANDERER_ID_HUMAN 0
 #define WANDERER_ID_ROBOT 1
 
+#define MODE_RANDOM 0
+#define MODE_FOLLOW_PATH 1
+
 /* WandererInfo to save informations of wanderers and sort them based on their distances
  * @param index to distinguish the wanderers
  * @param distance distance between robot and wanderer

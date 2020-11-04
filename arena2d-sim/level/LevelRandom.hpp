@@ -2,7 +2,7 @@
 #define LEVELSTATIC_H
 
 #include "Level.hpp"
-#include "Wanderer.hpp"
+#include "Wanderers.hpp"
 
 #define LEVEL_RANDOM_GOAL_SPAWN_AREA_BLOCK_SIZE 0.1 // maximum size of block when creating quad tree of goal spawn area
 
@@ -12,11 +12,11 @@ class LevelRandom : public Level{
 public:
 	/* constructor
 	 */
-	LevelRandom(const LevelDef & d, bool dynamic = false) : Level(d), _dynamic(dynamic){}
+	LevelRandom(const LevelDef & d, bool dynamic = false, bool human = false) :Level(d), _dynamic(dynamic), _human(human), wanderers(d){}
 
 	/* destructor
 	 */
-	~LevelRandom(){freeWanderers();}
+	~LevelRandom(){}
 
 	/* reset
 	 */
@@ -24,7 +24,9 @@ public:
 
 	/* update
 	 */
-	void update() override;
+	void update() override{
+        wanderers.update();
+	};
 
 	/* render spawn area
 	 * overriding to visualize spawn area for dynamic obstacles
@@ -41,7 +43,7 @@ private:
     bool _human;
 
 	/* list that stores all wanderers for dynamic level */
-	std::list<Wanderer*> _wanderers;
+    Wanderers wanderers;
 
 	/* spawn area for dynamic obstacles */
 	RectSpawn _dynamicSpawn;

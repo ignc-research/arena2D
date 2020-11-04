@@ -226,8 +226,7 @@ void Environment::getGoalDistance(float &l2, float &angle)
 }
 
 void Environment::reset(bool robot_position_reset)
-
-{	
+{
 	_evaluation.reset();
 	// reset level
 	if(_level != NULL)
@@ -252,7 +251,6 @@ void Environment::reset(bool robot_position_reset)
 	_evaluation.saveGoalDistance(goal_distance, goal_angle);
 	_evaluation.countAction(_robot->getBody()->GetTransform());
 }
-
 
 void Environment::RequestReset() {
     if(_level != NULL)

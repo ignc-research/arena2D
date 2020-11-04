@@ -10,7 +10,7 @@ if(POLICY CMP0072)
 	cmake_policy(SET CMP0072 OLD) # use legacy OpenGL drivers
 endif()
 
-option(SUPPORT_ROS_AGENT  "if set to true, arena simualtor will compiled with ros \n 
+option(USE_ROS  "if set to true, arena simualtor will compiled with ros \n 
 					   and agent can communicate with the simulator with ros messages and \n
 					   services otherwise we will only use py_AGENT " OFF)
 
@@ -23,10 +23,11 @@ find_package(OpenGL REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(PythonLibs REQUIRED)
 
-if(SUPPORT_ROS_AGENT)
-	add_compile_options("-DSUPPORT_ROS_AGENT")
-	message(STATUS "SUPPORT_ROS_AGENT is enabled")
+if(USE_ROS)
+	add_compile_options("-DUSE_ROS")
+	message(STATUS "USE_ROS is enabled")
 	find_package(Boost)
+	find_package(OpenCV REQUIRED )
 	find_package(catkin REQUIRED COMPONENTS
 	roscpp
 	roslib
@@ -34,10 +35,12 @@ if(SUPPORT_ROS_AGENT)
 	std_msgs
 	sensor_msgs
 	arena2d_msgs
+	nav_msgs
 	message_generation
 	rostest
 	roslaunch)
-	include_directories(${catkin_INCLUDE_DIRS})
+	include_directories(${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+	message("OpenCV package is loaded from: ${OpenCV_INCLUDE_DIRS}")			
 	roslaunch_add_file_check(launch)
 	###################################
 	## catkin specific configuration ##
@@ -54,6 +57,7 @@ if(SUPPORT_ROS_AGENT)
 		CATKIN_DEPENDS # necessary for using package defined msgs and srvs.
 			message_runtime
 			sensor_msgs 
+			nav_msgs
 			arena2d_msgs
 		)
 	
@@ -110,8 +114,8 @@ add_custom_command(	OUTPUT ${SCRIPT_C_STRING_CPP_FILE} ${SCRIPT_C_STRING_HEADER_
 include(sources.cmake)
 
 # add ros related source files 
-if(SUPPORT_ROS_AGENT)
-list(APPEND ARENA_SOURCES arena/RosNode.cpp arena/RosNode.hpp)
+if(USE_ROS)
+list(APPEND ARENA_SOURCES arena/RosNode.cpp arena/RosNode.hpp level/LevelStaticMap.hpp level/LevelStaticMap.cpp)
 endif()
 
 
@@ -158,8 +162,8 @@ set(ARENA_LINK_LIBRARIES
 	${FREETYPE_LIBRARIES}
 	${PYTHON_LIBRARIES}
 	)
-if(SUPPORT_ROS_AGENT)
-	list(APPEND ARENA_LINK_LIBRARIES ${catkin_LIBRARIES})
+if(USE_ROS)
+	list(APPEND ARENA_LINK_LIBRARIES ${catkin_LIBRARIES} ${OpenCV_LIBS})
 endif()
 
 target_link_libraries(${PROJECT_NAME} "${ARENA_LINK_LIBRARIES}" pthread ${CMAKE_DL_LIBS} box2d util)

@@ -79,8 +79,9 @@ class Arena2dEnvWrapper(gym.Env):
             while not self.resp_received:
                 self.response_con.wait(0.5)
                 if not self.resp_received:
-                    rospy.logerr(
-                        f"Environement wrapper [{self._idx_env}] didn't get the feedback within 0.5s from arena simulator after sending action")
+                    rospy.logwarn(
+                        "Environement wrapper [{}] didn't get the feedback within 0.5s \
+                             from arena simulator after sending action".format(self._idx_env))
                     break
             self.resp_received = False
         rospy.logdebug("step out")
@@ -92,10 +93,11 @@ class Arena2dEnvWrapper(gym.Env):
         error_showed = False
         with self.response_con:
             while not self.resp_received:
-                self.response_con.wait(0.5)
+                self.response_con.wait(1.5)
                 if not self.resp_received:
-                    rospy.logerr(
-                        f"Environement wrapper [{self._idx_env}] didn't get the feedback within 0.5s from arena simulator after sending reset command")
+                    rospy.logwarn(
+                        "Environement wrapper [{}] didn't get the feedback within 1.5s from arena \
+                            simulator after sending reset command".format(self._idx_env))
                     break
             self.resp_received = False
         return self.obs
@@ -123,7 +125,10 @@ class Arena2dEnvWrapper(gym.Env):
         rospy.loginfo("env[{:d}] connected with arena-2d simulator, took {:3.1f}s.".format(self._idx_env, .1 * times))
         # time.sleep(1)
 
-    def _pubRosAgentReq(self, action: Union[List, Tuple, RosAgentReq] = None, env_reset: bool = False, env_close: bool = False):
+    def _pubRosAgentReq(self,
+                        action: Union[List, Tuple, RosAgentReq] = None,
+                        env_reset: bool = False,
+                        env_close: bool = False):
         req_msg = RosAgentReq()
 
         if env_close:
@@ -135,7 +140,8 @@ class Arena2dEnvWrapper(gym.Env):
             req_msg.env_reset = False
             if not self._is_action_space_discrete:
                 assert isinstance(action, (list, tuple, np.ndarray)) and len(
-                    action) == 2, "Type of action must be one of (list, tuple, numpy.ndarray) and length is equal to 2, current type of action is '{:4d}' ".format(type(action))
+                    action) == 2, "Type of action must be one of (list, tuple, numpy.ndarray) and \
+                         length is equal to 2, current type of action is '{:4d}' ".format(type(action))
 
                 req_msg.action.linear = action[0]
                 req_msg.action.angular = action[1]
@@ -151,7 +157,8 @@ class Arena2dEnvWrapper(gym.Env):
         with self.response_con:
             obs = resp.observation.ranges
             goal_distance_angle = resp.goal_pos
-            # in current settings the observation not only contains laser scan but also contains the relative distance and angle to goal position.
+            # in current settings the observation not only contains laser scan but also
+            # contains the relative distance and angle to goal position.
             self.obs = np.array(obs + goal_distance_angle).reshape([1, -1])
             # print("obs:"+obs.__str__()+" gda: "+goal_distance_angle.__str__())
             self.reward = resp.reward

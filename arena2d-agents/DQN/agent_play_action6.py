@@ -3,7 +3,7 @@ from dqn_models import fc
 import torch
 import pathlib
 
-NUM_ACTIONS = 7
+NUM_ACTIONS = 6
 
 DEFAULT_MODEL = "../arena2d-agents/DQN/best.dat"
 
