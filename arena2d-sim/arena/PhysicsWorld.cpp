@@ -16,6 +16,7 @@ PhysicsWorld::PhysicsWorld()
     _sleepColor_human.set(0x000000FF);
 	_dynamicColor.set(0x4ea5ffFF);
 	_dynamicColor.brighten(0.3);
+	_dynamicColor_robotPepper.set(0xff8c00FF);
 	_sensorColor.set(0xf3c355FF);
 	_sleepColor.set(0x999999FF);
 	_staticColor.set(0x000000FF);
@@ -100,6 +101,15 @@ void PhysicsWorld::debugDrawWorld(b2World * w, unsigned int flags, uint16 catego
 					continue;
 				if(b->IsAwake())
 					color = _dynamicColor;
+				else
+					color = _sleepColor;
+			}break;
+			case b2_dynamicBody_robotPepper:
+			{
+				if((flags & PHYSICS_RENDER_DYNAMIC) == 0)
+					continue;
+				if(b->IsAwake())
+					color = _dynamicColor_robotPepper;
 				else
 					color = _sleepColor;
 			}break;

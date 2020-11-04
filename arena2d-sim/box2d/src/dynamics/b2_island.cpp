@@ -205,7 +205,7 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 		b->m_sweep.c0 = b->m_sweep.c;
 		b->m_sweep.a0 = b->m_sweep.a;
 
-		if (b->m_type == b2_dynamicBody || b->m_type == b2_dynamicBody_human)
+		if (b->m_type == b2_dynamicBody || b->m_type == b2_dynamicBody_human || b->m_type == b2_dynamicBody_robotPepper)
 		{
 			// Integrate velocities.
 			v += h * (b->m_gravityScale * gravity + b->m_invMass * b->m_force);

@@ -649,7 +649,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 
 				b2BodyType typeA = bA->m_type;
 				b2BodyType typeB = bB->m_type;
-				b2Assert(typeA == b2_dynamicBody || typeB == b2_dynamicBody || typeA == b2_dynamicBody_human || typeB == b2_dynamicBody_human);
+				b2Assert(typeA == b2_dynamicBody || typeB == b2_dynamicBody || typeA == b2_dynamicBody_human || typeB == b2_dynamicBody_human || typeA == b2_dynamicBody_robotPepper || typeB == b2_dynamicBody_robotPepper);
 
 				bool activeA = bA->IsAwake() && typeA != b2_staticBody;
 				bool activeB = bB->IsAwake() && typeB != b2_staticBody;
@@ -660,8 +660,8 @@ void b2World::SolveTOI(const b2TimeStep& step)
 					continue;
 				}
 
-				bool collideA = bA->IsBullet() || (typeA != b2_dynamicBody && typeA != b2_dynamicBody_human);
-				bool collideB = bB->IsBullet() || (typeB != b2_dynamicBody && typeB != b2_dynamicBody_human);
+				bool collideA = bA->IsBullet() || (typeA != b2_dynamicBody && typeA != b2_dynamicBody_human && typeA != b2_dynamicBody_robotPepper);
+				bool collideB = bB->IsBullet() || (typeB != b2_dynamicBody && typeB != b2_dynamicBody_human && typeB != b2_dynamicBody_robotPepper);
 
 				// Are these two non-bullet dynamic bodies?
 				if (collideA == false && collideB == false)
@@ -777,7 +777,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 		for (int32 i = 0; i < 2; ++i)
 		{
 			b2Body* body = bodies[i];
-			if (body->m_type == b2_dynamicBody || body->m_type == b2_dynamicBody_human)
+			if (body->m_type == b2_dynamicBody || body->m_type == b2_dynamicBody_human || body->m_type == b2_dynamicBody_robotPepper)
 			{
 				for (b2ContactEdge* ce = body->m_contactList; ce; ce = ce->next)
 				{
@@ -801,7 +801,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 
 					// Only add static, kinematic, or bullet bodies.
 					b2Body* other = ce->other;
-					if ((other->m_type == b2_dynamicBody || other->m_type == b2_dynamicBody_human) &&
+					if ((other->m_type == b2_dynamicBody || other->m_type == b2_dynamicBody_human || other->m_type == b2_dynamicBody_robotPepper) &&
 						body->IsBullet() == false && other->IsBullet() == false)
 					{
 						continue;
@@ -879,7 +879,7 @@ void b2World::SolveTOI(const b2TimeStep& step)
 			b2Body* body = island.m_bodies[i];
 			body->m_flags &= ~b2Body::e_islandFlag;
 
-			if (body->m_type != b2_dynamicBody && body->m_type != b2_dynamicBody_human)
+			if (body->m_type != b2_dynamicBody && body->m_type != b2_dynamicBody_human && body->m_type != b2_dynamicBody_robotPepper)
 			{
 				continue;
 			}

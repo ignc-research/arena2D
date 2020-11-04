@@ -15,6 +15,7 @@ extern Evaluation _evaluation;
 
 #define WANDERER_ID_HUMAN 0
 #define WANDERER_ID_ROBOT 1
+#define WANDERER_ID_ROBOT_PEPPER 2
 
 #define MODE_RANDOM 0
 #define MODE_FOLLOW_PATH 1

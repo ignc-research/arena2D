@@ -70,16 +70,21 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
 
                 for(int i=0;i<waypoint_list.size();i++)
                 {
-                    Wanderer *w =new Wanderer(_levelDef.world, waypoint_list[i][0],_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT,MODE_FOLLOW_PATH,
-                    waypoint_list[i],stop_counter_threshold);
+                    
                     if(i==0){
+                        Wanderer *w =new Wanderer(_levelDef.world, waypoint_list[i][0],_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT_PEPPER,MODE_FOLLOW_PATH,
+                    waypoint_list[i],stop_counter_threshold);
                         w->addRobotPepper(_SETTINGS->stage.dynamic_obstacle_size);
+                        _robot_wanderers.push_back(w);
                     }else{
+                        Wanderer *w =new Wanderer(_levelDef.world, waypoint_list[i][0],_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT,MODE_FOLLOW_PATH,
+                    waypoint_list[i],stop_counter_threshold);
                         w->addCircle(_SETTINGS->stage.dynamic_obstacle_size / 2.f);
+                        _robot_wanderers.push_back(w);
 
                     }
                     
-                    _robot_wanderers.push_back(w);
+                    
     
                 }
 

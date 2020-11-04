@@ -22,7 +22,7 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position, float velocity, unsigne
 	// random location param
 	_changeRate = change_rate;
 	_stopRate = stop_rate;
-	_type = type;
+	
 
 	_maxAngleVel = max_angle_velo;
 
@@ -30,9 +30,11 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position, float velocity, unsigne
 	b2BodyDef body_def;
 	if (type == WANDERER_ID_HUMAN){
         body_def.type = b2_dynamicBody_human;
-	} else {
-        body_def.type = b2_dynamicBody;
-    }
+	} else if(type == WANDERER_ID_ROBOT_PEPPER) {
+        body_def.type = b2_dynamicBody_robotPepper;
+    }else{
+		body_def.type = b2_dynamicBody;
+	}
 	body_def.allowSleep = false;
 	body_def.position = position;
 	body_def.linearDamping = 0;
