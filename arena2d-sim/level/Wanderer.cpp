@@ -57,13 +57,28 @@ void Wanderer::addCircle(float radius, const b2Vec2 & pos)
 void Wanderer::addRobotPepper(float length_triangle)
 {
 	// base
+	float sqr3=sqrt(3);
+	float r=0.5/(1+sqr3+1)*length_triangle;
 	b2PolygonShape triangle_shape;
-	b2Vec2 verts_triangle[3];
+	b2Vec2 verts_triangle[6];
 	
+	/*
 	verts_triangle[0].Set(0.0f, length_triangle*sqrt(3)/2); 
 	verts_triangle[1].Set(length_triangle/2, 0); 
 	verts_triangle[2].Set(-length_triangle/2, 0); 
 	triangle_shape.Set(verts_triangle, 3);
+	*/
+	
+	
+	verts_triangle[0].Set(0.5*length_triangle-sqr3*r,			0.0f); 
+	verts_triangle[1].Set(-0.5*length_triangle+sqr3*r,			0.0f); 
+	verts_triangle[2].Set(-0.5*length_triangle+0.5*sqr3*r,  	0.866*r); 
+	verts_triangle[3].Set(-0.5*sqr3*r,						0.5*sqr3*length_triangle-2*r); 
+	verts_triangle[4].Set( 0.5*sqr3*r,						0.5*sqr3*length_triangle-2*r); 
+	verts_triangle[5].Set(0.5*length_triangle-0.5*sqr3*r,	0.5*sqr3*r); 
+	triangle_shape.Set(verts_triangle,6);
+	
+
 
 	b2FixtureDef fix;
 	fix.filter.categoryBits = COLLIDE_CATEGORY_PLAYER;
@@ -78,8 +93,21 @@ void Wanderer::addRobotPepper(float length_triangle)
 	for(int i=0;i<3;i++)
 	{
 		b2CircleShape circle;
-		circle.m_radius = 0.3*length_triangle;
-		circle.m_p = verts_triangle[i];
+		circle.m_radius = r;
+		b2Vec2 center;
+		switch(i) {
+  			case 0:
+    			center.Set(0.5*length_triangle-1.732*circle.m_radius,circle.m_radius);
+    			break;
+  			case 1:
+    			center.Set(-0.5*length_triangle+1.732*circle.m_radius,circle.m_radius);
+    			break;
+			case 2:
+    			center.Set(0.0,0.866*length_triangle-1.732*circle.m_radius);
+    			break;
+  			
+		}
+		circle.m_p=center;
 
 		b2FixtureDef d;
 		d.filter.categoryBits = COLLIDE_CATEGORY_PLAYER;
