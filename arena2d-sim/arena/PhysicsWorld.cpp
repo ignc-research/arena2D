@@ -16,7 +16,8 @@ PhysicsWorld::PhysicsWorld()
     _sleepColor_human.set(0x000000FF);
 	_dynamicColor.set(0x4ea5ffFF);
 	_dynamicColor.brighten(0.3);
-	_dynamicColor_robotPepper.set(0xff8c00FF);
+	_dynamicColor_robotPepper.set(0xff1a1aFF); // yellow 0xff8c00FF
+	_dynamicColor_robotPepper.brighten(0.3);
 	_sensorColor.set(0xf3c355FF);
 	_sleepColor.set(0x999999FF);
 	_staticColor.set(0x000000FF);
