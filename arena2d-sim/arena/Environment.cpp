@@ -134,7 +134,7 @@ void Environment::initializeTraining()
 
 
 	_robot->reset(b2Vec2(-.5,-.5)); // 0,0
-	reset();
+	reset(true);
 
 }
 

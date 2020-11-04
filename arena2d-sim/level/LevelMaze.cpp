@@ -304,8 +304,8 @@ b2Body* LevelMaze::generateRandomBody(float min_radius, float max_radius, zRect 
 		return b;
 }
 */
-	_dynamicSpawn.render();
-}
+// 	_dynamicSpawn.render();
+// }
 
 
 

@@ -155,12 +155,12 @@ void LevelCustom::reset(bool robot_position_reset) {
 
 		wanderers.reset(_dynamicSpawn, _dynamic, _human );
 
-        for (int i = 0; i < num_dynamic_obstacles; i++) {
-            b2Vec2 p;
-            _dynamicSpawn.getRandomPoint(p);
-            WandererBipedal *w = new WandererBipedal(_levelDef.world, p, dynamic_speed, 0.1, 0.05);
-            _wanderers.push_back(w);
-        }
+        // for (int i = 0; i < num_dynamic_obstacles; i++) {
+        //     b2Vec2 p;
+        //     _dynamicSpawn.getRandomPoint(p);
+        //     WandererBipedal *w = new WandererBipedal(_levelDef.world, p, dynamic_speed, 0.1, 0.05);
+        //     _wanderers.push_back(w);
+        // }
 
     }
 
