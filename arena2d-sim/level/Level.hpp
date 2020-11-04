@@ -117,7 +117,7 @@ protected:
 	 * @param goal_spawn if this parameter is NULL, the member RectSpawn _goalSpawnArea is used for sampling spawn positions,
 	 					 else the RectSpawn pointed to by this parameter is used for sampling
 	 */
-	void randomGoalSpawnUntilValid(RectSpawn * goal_spawn = NULL);
+	virtual void randomGoalSpawnUntilValid(RectSpawn * goal_spawn = NULL);
 
 
 	void randomGoalSpawnUntilValidForMaze(RectSpawn * goal_spawn = NULL);
@@ -129,7 +129,7 @@ protected:
 		_goalSpawnArea.addCheeseRect(main_rect, holes);
 	}
 
-	
+
 	void calculateSpawnArea(){_goalSpawnArea.calculateArea();}
 
 	/* add a new function to avoid the goal spawns in the areas where the walls could be generated
