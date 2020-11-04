@@ -1,5 +1,4 @@
 #include "Arena.hpp"
-
 const char * PYAGENT_FUNC_NAMES[PYAGENT_FUNC_NUM] = {
 	"pre_step",
 	"post_step",

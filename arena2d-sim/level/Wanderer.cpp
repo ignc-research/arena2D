@@ -8,7 +8,8 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
 	_changeRate = change_rate;
 	_stopRate = stop_rate;
 	_type = type;
-    _maxAngleVel = max_angle_velo;
+
+	_maxAngleVel = max_angle_velo;
 
 	// creating body
 	b2BodyDef body_def;
@@ -25,7 +26,11 @@ Wanderer::Wanderer(b2World * w, const b2Vec2 & position,
 	_body = w->CreateBody(&body_def);
 
 	// initial velocity update
+
 	//updateVelocity();
+
+	updateVelocity();
+
 }
 
 void Wanderer::addCircle(float radius, const b2Vec2 & pos)

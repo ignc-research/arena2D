@@ -18,11 +18,15 @@ extern Evaluation _evaluation;
 class Environment;
 
 // EnvironmentThread representing thread that performs steps on multiple Environments
-struct EnvironmentThread{
+struct EnvironmentThread
+{
 	/* thread state */
-	enum State{	WAITING,
-				RUNNING,
-				EXIT};
+	enum State
+	{
+		WAITING,
+		RUNNING,
+		EXIT
+	};
 
 	/* constructor */
 	EnvironmentThread();
@@ -31,10 +35,10 @@ struct EnvironmentThread{
 	~EnvironmentThread();
 
 	/* thread_function */
-	static int thread_func(void * data);
+	static int thread_func(void *data);
 
 	/* initialize environment thread */
-	void init(Environment * _env, int _num_envs, int _env_index, const Twist * _action);
+	void init(Environment *_env, int _num_envs, int _env_index, const Twist *_action);
 
 	/* perform step in environments */
 	void step();
@@ -43,10 +47,10 @@ struct EnvironmentThread{
 	void wait_finish();
 
 	/* array of all environments */
-	Environment * env;
+	Environment *env;
 
 	/* array of actions to be performed in environments */
-	const Twist * action;
+	const Twist *action;
 
 	/* number of environments this thread is responsible for */
 	int num_envs;
@@ -58,13 +62,13 @@ struct EnvironmentThread{
 	State state;
 
 	/* mutex for securing state */
-	SDL_mutex * state_mutex;
+	SDL_mutex *state_mutex;
 
 	/* conditional to signal changing of state */
-	SDL_cond * state_cond;
+	SDL_cond *state_cond;
 
 	/* sdl thread */
-	SDL_Thread * thread;
+	SDL_Thread *thread;
 };
 
 /* abstraction to allow for multiple instanciations of level and robot */
@@ -72,9 +76,11 @@ class Environment : public b2ContactListener
 {
 public:
 	/* episode state */
-	enum EpisodeState{	RUNNING,		// episode is still running
-						POSITIVE_END,	// episode is over, goal reached
-						NEGATIVE_END	// episode is over, timeout or obstacle hit
+	enum EpisodeState
+	{
+		RUNNING,	  // episode is still running
+		POSITIVE_END, // episode is over, goal reached
+		NEGATIVE_END  // episode is over, timeout or obstacle hit
 	};
 
 	/* constructor */
@@ -88,18 +94,20 @@ public:
 	 * @param params parameter to pass to level specific create function
 	 * @return 0 on success, -1 on error
 	 */
-	int loadLevel(const char* level_name, const ConsoleParameters & params);
+	int loadLevel(const char *level_name, const ConsoleParameters &params);
 
 	/* perform pre_step, all step iterations and post_step
 	 * @param action the action to perform on each step iteration
 	 */
-	void stepAll(const Twist & action);
+	void stepAll(const Twist &action);
 
 	/* override functions from b2ContactListener
 	 */
+   
 	void BeginContact(b2Contact * contact) override;
 	void EndContact(b2Contact * contact) override;
 	void RequestReset() override;
+
 
 	/* reset environment
 	 * @param robot_position_reset passed to level reset function
@@ -114,39 +122,46 @@ public:
 	/* get episode state
 	 * @return enum indicating episode state
 	 */
-	EpisodeState getEpisodeState(){return _episodeState;}
+	EpisodeState getEpisodeState() { return _episodeState; }
 
 	/* get physics world of this environment
 	 * @return Box2D world
 	 */
-	b2World* getWorld(){return _world;}
+	b2World *getWorld() { return _world; }
 
 	/* render environment
 	 * viewport, camera-/projection-matrix must be set
 	 */
-	void render(const Camera & cam, const zRect & aabb);
+	void render(const Camera &cam, const zRect &angle);
+	/* get robot position
+     * @param x
+	 * @param y robot coordinate
+	 * @param angle is set to the angle(radian).
+	 */
+
+	void getRobotPos(float &x, float &y, float &angle);
 
 	/* get distance to goal
 	 * @param l2 is set to the l2 distance from robot to goal
 	 * @param angle is set to the angle (degree) from the robot's facing direction to goal
 	 */
-	void getGoalDistance(float & l2, float & angle);
+	void getGoalDistance(float &l2, float &angle);
 
 	/* get scan observation
 	 * @param num_samples is set to the number of samples in the returned array
 	 * @return array containing laser samples (distance to obstacles)
 	 */
-	const float* getScan(int & num_samples){return _robot->getSamples(num_samples);}
+	const float *getScan(int &num_samples) { return _robot->getSamples(num_samples); }
 
 	/* get reward from current step
 	 * @return reward
 	 */
-	float getReward(){return _reward;}
+	float getReward() { return _reward; }
 
 	/* get total reward from current episode
 	 * @return total reward
 	 */
-	float getTotalReward(){return _totalReward;}
+	float getTotalReward() { return _totalReward; }
 
 	/* initialize training
 	 */
@@ -155,36 +170,36 @@ public:
 	/* get level currently loaded in environment
 	 * @return current level
 	 */
-	 Level* getLevel(){return _level;}
+	Level *getLevel() { return _level; }
 
 private:
 	/* prepare simulation step
 	 * @param action the action to perform on simulation step
 	 */
-	void pre_step(const Twist & action);
+	void pre_step(const Twist &action);
 
 	/* perform single simulation step
 	 */
-	void step();// do single step iteration
+	void step(); // do single step iteration
 
 	/* calculate rewards after simulation step
 	 */
 	void post_step();
 
 	/* physics world */
-	b2World * _world;
+	b2World *_world;
 
 	/* copy of global physics settings */
 	f_physicsSettings _physicsSettings;
 
 	/* copy of global training settings */
-	f_trainingSettings _trainingSettings;// copy of settings to avoid read conflicts
+	f_trainingSettings _trainingSettings; // copy of settings to avoid read conflicts
 
 	/* level currently loaded in environment */
-	Level * _level;
+	Level *_level;
 
 	/* robot controlled by agent/user */
-	Robot * _robot;
+	Robot *_robot;
 
 	/* action to be performed on next step */
 	Twist _action;
@@ -199,15 +214,15 @@ private:
 	float _reward;
 
 	/* accumulated reward for one episode */
-	float _totalReward; 
+	float _totalReward;
 
 	/* simulated time of current episode in seconds */
-	float _episodeTime; 
+	float _episodeTime;
 
 	/* number of steps performed for current episode */
 	int _episodeStepCount;
 
- 	/* number of complete episodes from this environment since training start */
+	/* number of complete episodes from this environment since training start */
 	int _episodeCount;
 
 	/* state of episode */
@@ -215,4 +230,3 @@ private:
 };
 
 #endif
-

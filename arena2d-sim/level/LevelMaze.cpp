@@ -1,14 +1,21 @@
-/* Author: Deyu Wang
+
+/* Author: Deyu Wang( modified by Junhui Li)
+
  * 1. This code is generated from the old version from gitlab.
  * 2. There will be 5 walls randomly generated in the maze.
  * 3. Because the longest wall will be generated at center of the stage, the robot will spawn in the bottom left,
  * which means the "resetRobotToCenter()" function in "Level.hpp" is changed.
+
  * The new spawn point now is (-1.5, -1.5)
+
+
+
  * 4. The radius of the statistic obstacles are also decreased, otherwise the way could be blocked.
  */
 
 
 #include "LevelMaze.hpp"
+
 
 void LevelMaze::reset(bool robot_position_reset)
 {
@@ -18,6 +25,7 @@ void LevelMaze::reset(bool robot_position_reset)
 		wanderers.freeWanderers();
 	if(_dynamic)
 	    wanderers.freeRobotWanderers();
+
 
 	// get constants
 	const float half_width = _SETTINGS->stage.level_size/2.f;
@@ -37,6 +45,7 @@ void LevelMaze::reset(bool robot_position_reset)
 	// create border around level
 	createBorder(half_width, half_height);
 
+
 	if(robot_position_reset){
 		int randomNumber = (rand() % 4);
 		switch (randomNumber) {
@@ -55,6 +64,7 @@ void LevelMaze::reset(bool robot_position_reset)
 		}
 		//resetRobotToCenter();
 	}
+
 
         // calculate spawn area for static obstacles
 	RectSpawn static_spawn;
@@ -89,6 +99,7 @@ void LevelMaze::reset(bool robot_position_reset)
 
 
 	// dynamic obstacles
+
 	if(_dynamic || _human){
 		_dynamicSpawn.clear();
 		_dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
@@ -198,10 +209,44 @@ float LevelMaze::getReward()
 
 
 
+	if(_dynamic){
+		_dynamicSpawn.clear();
+		_dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER, dynamic_radius);
+		_dynamicSpawn.calculateArea();
+		for(int i = 0; i < num_dynamic_obstacles; i++){
+			b2Vec2 p;
+			_dynamicSpawn.getRandomPoint(p);
+			Wanderer * w = new Wanderer(_levelDef.world, dynamic_radius, p, dynamic_speed, 0.1, 0.0, 0);			
+			_wanderers.push_back(w);
+		}
+	}
+
+	randomGoalSpawnUntilValidForMaze();
+
+}
+
+void LevelMaze::freeWanderers()
+{
+	for(std::list<Wanderer*>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++){
+		delete (*it);
+	}
+	_wanderers.clear();
+}
+
+void LevelMaze::update()
+{
+	for(std::list<Wanderer*>::iterator it = _wanderers.begin(); it != _wanderers.end(); it++){
+		(*it)->update();
+	}
+
+}
+
+
 void LevelMaze::renderGoalSpawn()
 {
 	Level::renderGoalSpawn();
 	Z_SHADER->setColor(zColor(0.1, 0.9, 0.0, 0.5));
+
 	
 }
 */
@@ -259,6 +304,11 @@ b2Body* LevelMaze::generateRandomBody(float min_radius, float max_radius, zRect 
 		return b;
 }
 */
+	_dynamicSpawn.render();
+}
+
+
+
 // functions to generate four short walls in four specific areas
 b2Body* LevelMaze::generateRandomWalls11(int index, zRect * aabb){
 	b2BodyDef def;

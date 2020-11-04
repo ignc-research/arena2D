@@ -37,6 +37,8 @@ set(ARENA_SOURCES
 	level/LevelRandom.hpp
 	level/LevelCustom.cpp
 	level/LevelCustom.hpp
+	level/LevelMaze.cpp
+	level/LevelMaze.hpp
 	level/LevelSVG.cpp
 	level/LevelSVG.hpp
 	level/Wanderer.cpp

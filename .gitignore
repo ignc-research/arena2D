@@ -49,6 +49,7 @@ __pycache__
 settings.st
 training_*
 
+
 #vscode
 .vscode/
-
+**/.vscode

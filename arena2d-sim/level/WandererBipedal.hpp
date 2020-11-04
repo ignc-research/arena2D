@@ -2,10 +2,12 @@
 #define WANDERERBIPEDAL_H
 
 #include "Wanderer.hpp"
+
 #include <arena/PhysicsWorld.hpp>
 #include <engine/zVector2d.hpp>
 #include <engine/GlobalSettings.hpp>
 #include <ctime>
+
 
 #define HUMAN_LEG_SIZE 0.09f
 #define HUMAN_LEG_DISTANCE 0.04f
@@ -47,6 +49,7 @@ protected:
     //preventing eternal stuck in chat
     int chat_reset_threshold;
     int chat_reset_counter;
+
 
 };
 

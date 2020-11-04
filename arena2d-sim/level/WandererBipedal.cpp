@@ -12,6 +12,7 @@ WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
 					float velocity, float change_rate, float stop_rate, float max_angle_change, unsigned int type):
 					Wanderer(w, position, velocity, change_rate, stop_rate, max_angle_change, type)
 {
+            
 	float r = HUMAN_LEG_SIZE/2.f;
 	float offset = HUMAN_LEG_DISTANCE/2.0f;
     step_frequency_factor = 0.1;
@@ -141,4 +142,5 @@ void WandererBipedal::updateVelocity()
     //wanderer orientation  faces in direction of velocity
     _body->SetTransform(_body->GetPosition(), atan2(v_rot.y,v_rot.x));
     //printf("update DONE\n");
+
 }

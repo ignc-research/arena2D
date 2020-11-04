@@ -454,7 +454,11 @@ CommandStatus Arena::cmdStopTraining(const ConsoleParameters & params)
 					ERROR_F("Call to Function '%s' failed!", PYAGENT_FUNC_NAMES[PYAGENT_FUNC_STOP]);
 				}
 				else if(PyUnicode_Check(ret)){
+					#ifdef ARENA_PYTHON_VERSION_3
 					agent_results = PyUnicode_AsUTF8(ret);
+					#else
+					agent_results = PyString_AsString(ret);
+					#endif
 				}
 				else if(ret != Py_None)
 				{

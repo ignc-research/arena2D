@@ -22,6 +22,10 @@
 #include "CSVWriter.hpp"
 #include <Python.h>
 #include <script_sources.generated.h>
+#include <memory>
+#ifdef SUPPORT_ROS_AGENT
+#include "RosNode.hpp"
+#endif
 
 #include "Evaluation.hpp"
 extern Evaluation _evaluation;
@@ -150,7 +154,6 @@ private:
 	 			a single done flag if #envs==1
 	 */
 	PyObject* packAllPyDones();
-
 	/* create directory to put training data (e.g. plots in)
 	 * @param agent_path path to agent script
 	 * @return -1 on error, 0 on success
@@ -190,7 +193,6 @@ private:
 	 * issues command when entered by user
 	 */
 	void updateConsole(zEventList & evtList);
-
 	/* update user/agent robot control
 	 * call agent callbacks in python script
 	 * update physics
@@ -243,6 +245,13 @@ private:
 	 * called if an episode ends
 	 */
 	void printEpisodeResults(float total_reward);
+
+#ifdef SUPPORT_ROS_AGENT
+
+	void rosUpdate(float wait_time);
+
+#endif // SUPPORT_ROS_AGENG
+
 
 	/* regular font */
 	zFont * _monospaceRegular;
@@ -401,8 +410,16 @@ private:
 	/* if set to true no training data is recorded*/
 	bool _noTrainingRecord;
 
+
 	/* if set to true, additional data for the Evaluation of the agent is recorded*/
 	bool _doEvaluation;
+
+#ifdef SUPPORT_ROS_AGENT
+	std::unique_ptr<RosNode> _ros_node_ptr;
+	bool _use_ros_agent = false;
+	bool* _ros_envs_reset;
+#endif // SUPPORT_ROS_AGENT
+
 };
 
 
