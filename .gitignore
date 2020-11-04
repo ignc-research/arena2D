@@ -49,7 +49,17 @@ __pycache__
 settings.st
 training_*
 
+<<<<<<< HEAD
 
 #vscode
 .vscode/
+=======
+#vscode
+.vscode/
+
+#any hiddden file or dir
+**/.*
+
+# editor related folder
+>>>>>>> arena-ros
 **/.vscode

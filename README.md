@@ -49,6 +49,7 @@ If you use the arena2d platform in your research, please cite the following [pap
 ````
 
 ## Updates
+* 20/10/2020:** add support for loading static map, full description please refer to the LEVEL part in the `arena2d-sim`'s README.
 * 15/09/2020:** full support for stable DRL baselines: https://github.com/hill-a/stable-baselines(s. branch arena-ros)
 * 15/08/2020:** including a new class to simulate 2d humans
 * 29/07/2020:** including integration into ROS melodic see branch arena-ros

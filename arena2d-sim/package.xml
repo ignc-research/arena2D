@@ -33,6 +33,7 @@
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>arena2d_msgs</depend>
+  <depend>nav_msgs</depend>
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
   <build_depend>roscpp</build_depend>

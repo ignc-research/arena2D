@@ -12,6 +12,10 @@
 
 #include "LevelHuman.hpp"
 #include "LevelMaze.hpp"
+#ifdef USE_ROS
+#include "LevelStaticMap.hpp"
+#endif
+
 
 
 // singleton-get macro
@@ -76,7 +80,8 @@ public:
 	Level* createLevelRandom(const LevelDef & d, const ConsoleParameters & params)
 	{
 		bool level_dynamic = params.getFlag("--dynamic");
-		return new LevelRandom(d, level_dynamic);
+        bool level_human = params.getFlag("--human");
+		return new LevelRandom(d, level_dynamic, level_human);
 	}
 
 	/*custom level */
@@ -91,8 +96,9 @@ public:
 	/*human level */
 	Level* createLevelHuman(const LevelDef & d, const ConsoleParameters & params)
 	{
+        bool level_dynamic = params.getFlag("--dynamic");
 		bool level_human = params.getFlag("--human");
-		return new LevelHuman(d, level_human);
+		return new LevelHuman(d, level_dynamic,level_human);
 	}
 
 	/*maze level */
@@ -103,6 +109,14 @@ public:
 		return new LevelMaze(d, level_dynamic, level_human);
 	}
 
+	#ifdef USE_ROS
+	// static map level
+	Level* createLevelStaticMap(const LevelDef & d, const ConsoleParameters & params){
+		bool level_dynamic = params.getFlag("--dynamic");
+		bool level_human = params.getFlag("--human");
+		return new LevelStaticMap(d,level_dynamic,level_human);
+	}
+	#endif
 
 
 private:

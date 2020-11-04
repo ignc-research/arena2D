@@ -24,7 +24,6 @@ void RectSpawn::addCheeseRect(zRect main_rect, const b2World * w, uint16 collide
 	_collisionCheckParams.collide_mask = collide_mask;
 	_collisionCheckParams.aabbs.clear();
 	checkCollision(margin_rect, w);
-
 	// add aabbs that collided with main rect
 	addCheeseRect(main_rect, _collisionCheckParams.aabbs, margin);
 }
@@ -35,7 +34,6 @@ void RectSpawn::addCheeseRect(zRect main_rect, const std::vector<zRect> & holes,
 		addRect(main_rect, margin);
 		return;
 	}
-
 	// make main rect smaller by margin
 	main_rect.w -= margin;
 	main_rect.h -= margin;

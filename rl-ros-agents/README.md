@@ -45,8 +45,8 @@ Offically ros packages are only built for python2. In some cases mixing useage o
     ```bash
     $ mkdir -p ~/python3_ws/src
     $ cd ~/python3_ws/src
-    $ git clone --depth=1 git@github.com:ros/geometry.git
-    $ git clone --depth=1 git@github.com:ros/geometry2.git
+    $ git clone --depth=1 https://github.com/ros/geometry.git
+    $ git clone --depth=1 https://github.com/ros/geometry2.git
     ``` 
 2. When this README document is created, there is a duplicate name error. If you have the same issue, please solve it 
 refer to the methods introduced [here](https://github.com/ros/geometry/issues/213#issuecomment-643552794)

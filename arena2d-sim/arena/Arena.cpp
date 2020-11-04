@@ -71,17 +71,20 @@ int Arena::init(int argc, char **argv)
 			puts(ARENA_HELP_STRING);
 			exit(0);
 		}
-		else if(!strcmp(argv[arg_i], "--run")){
-			if(arg_i+1 < argc){
-				command_index = arg_i+1;
-				arg_i++;// skip next argument run command
+		else if (!strcmp(argv[arg_i], "--run"))
+		{
+			if (arg_i + 1 < argc)
+			{
+				command_index = arg_i + 1;
+				arg_i++; // skip next argument run command
 			}
-			else{
+			else
+			{
 				printf("No commands given for option --run!\n");
 				exit(0);
 			}
 		}
-#ifdef SUPPORT_ROS_AGENT
+#ifdef USE_ROS
 		else if (!strcmp(argv[arg_i], "--use_ros_agent"))
 		{
 			_use_ros_agent = true;
@@ -89,7 +92,7 @@ int Arena::init(int argc, char **argv)
 #endif
 		else
 		{
-#ifdef SUPPORT_ROS_AGENT
+#ifdef USE_ROS
 			// unknown command should redirect to ros init.
 			ros_argv.push_back(argv[arg_i]);
 			ros_argc++;
@@ -108,7 +111,7 @@ int Arena::init(int argc, char **argv)
 	initCommands();
 
 	/* init global settings*/
-	if (_SETTINGS_OBJ->init((GLOBAL_PACKAGE_PATH+"/settings.st").c_str()))
+	if (_SETTINGS_OBJ->init((GLOBAL_PACKAGE_PATH + "/settings.st").c_str()))
 	{
 		return -1;
 	}
@@ -356,6 +359,18 @@ int Arena::init(int argc, char **argv)
 #endif
 	INFO("Initialization done! Running Arena...\n");
 	_run = true;
+#ifdef USE_ROS
+	if (_use_ros_agent)
+	{
+		_ros_node_ptr = std::unique_ptr<RosNode>(new RosNode(_envs, _numEnvs, ros_argc, ros_argv.data()));
+	}
+	else
+	{
+		_ros_node_ptr = nullptr;
+	}
+	_ros_envs_reset = new bool[_numEnvs];
+
+#endif
 
 	/* load initial level */
 	std::string level_cmd = std::string("level ") + _SETTINGS->stage.initial_level.c_str();
@@ -386,18 +401,6 @@ int Arena::init(int argc, char **argv)
 
 	_playSimulation = false;
 
-#ifdef SUPPORT_ROS_AGENT
-	if (_use_ros_agent)
-	{
-		_ros_node_ptr = std::unique_ptr<RosNode>(new RosNode(_envs, _numEnvs, ros_argc, ros_argv.data()));
-	}
-	else
-	{
-		_ros_node_ptr = nullptr;
-	}
-	_ros_envs_reset = new bool[_numEnvs];
-
-#endif
 	return 0;
 }
 
@@ -531,8 +534,9 @@ void Arena::quit()
 	Z_LOG->del();
 }
 
-void Arena::reset(bool robot_position_reset){
-	for(int i = 0; i < _numEnvs; i++)
+void Arena::reset(bool robot_position_reset)
+{
+	for (int i = 0; i < _numEnvs; i++)
 	{
 		_levelResetMeasure.startTime();
 		_envs[i].reset(robot_position_reset);
@@ -674,11 +678,11 @@ void Arena::run()
 				// measure fps
 				_videoTimer.update(false);
 			}
-#ifdef SUPPORT_ROS_AGENT
+#ifdef USE_ROS
 			if (_use_ros_agent)
 			{
 				rosUpdate(0.0f);
-				
+
 				_updateTimer.update(!_videoDisabled);
 			}
 			else
@@ -699,11 +703,11 @@ void Arena::run()
 		{
 			_updateTimer.setTargetFPS(_SETTINGS->physics.fps);
 			_physicsTimer.setTargetFPS(_SETTINGS->physics.fps);
-#ifdef SUPPORT_ROS_AGENT
+#ifdef USE_ROS
 			if (_use_ros_agent)
 			{
-				rosUpdate(0.1f); // main thread will try to invoke the callbacks and wait for maximum .1f second
-				_updateTimer.update(false); // no fps limit ALWAYS!!!! no meaning for limiting the fps if video is 
+				rosUpdate(0.1f);			// main thread will try to invoke the callbacks and wait for maximum .1f second
+				_updateTimer.update(false); // no fps limit ALWAYS!!!! no meaning for limiting the fps if video is
 			}
 			else
 			{
@@ -715,7 +719,6 @@ void Arena::run()
 			_updateTimer.update(_trainingMode); // no fps limit in training mode
 #endif
 			iteration++;
-			
 		}
 	}
 }
