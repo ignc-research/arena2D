@@ -57,7 +57,7 @@ void LevelCustom::reset(bool robot_position_reset) {
         zRect aabb;
         //makes sure obstacle spawns on free space
         int randomNumber = (rand() % 6);
-        bool spawn_valid = obstacleSpawnUntilValid(&static_spawn, existing_boxes, p, randomNumber);
+        bool spawn_valid = obstacleSpawnUntilValid(&static_spawn, existing_boxes, p, randomNumber,robot_diameter);
         //printf("obstacle point found\n");
         float random_length;
         float random_width;
