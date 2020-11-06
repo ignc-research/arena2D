@@ -3,7 +3,9 @@
 
 #include <arena/PhysicsWorld.hpp>
 #include <engine/zVector2d.hpp>
+#include <vector>
 
+#define NEAR_REGION_DISTANCE 0.05f
 
 /* A Wanderer is a dynamic obstacle that 'wanders' around randomly at a constant speed
  * The userData field of the Box2D body of an object of the Wanderer class will be set to 'this',
@@ -21,8 +23,8 @@ public:
 	 * @param max_angle_velo maximum +/- angle velocity in deg when changing direction
 	 * @param type user defined object type to identify wanderer later
 	 */
-	Wanderer(b2World * w, const b2Vec2 & position, float velocity,
-				float change_rate, float stop_rate, float max_angle_velo = 30.0f, unsigned int type = 0);
+	Wanderer(b2World * w, const b2Vec2 & position, float velocity, unsigned int type, unsigned int mode=0,
+			std::vector<b2Vec2> waypoints={}, int stop_counter_threshold=20, float change_rate=1.0f, float stop_rate=0.1f, float max_angle_velo = 30.0f);
 
 	/* destructor, removes body from world
 	 */
@@ -65,30 +67,65 @@ public:
 	 * @param radius radius of circle
 	 */
 	void addCircle(float radius, const b2Vec2 & pos = b2Vec2_zero);
+
+
+	void addRobotPepper(float length_triangle);
+
 protected:
 
 	/* update velocity
 	 * this function is called in update() if a randomly sampled value [0, 1] is less than the change rate
 	 */
-	virtual void updateVelocity();
+	virtual void updateVelocityRandomMode();
+
+	virtual void updateVelocityPathMode();
 	
 	/* Box2D body */
 	b2Body * _body;
 
+	/* Initial poistion of the wanderer*/ 
+	b2Vec2 _initPosition;
+
 	/* constant velocity with which to move if not stopping */
 	float _velocity;
 
+	/* wanderer type (specified by user) */
+	unsigned int _type;  // 0: human  1: dynamic obstacle(circle, polygon)
+
+	unsigned int _mode;  // 0: radom  1: follow path
+
+
+	// Path follow *******************************************
+	/* Waypoints poistion of the wanderer*/
+	std::vector<b2Vec2> _waypoints;
+
+	/*index of way Point*/
+	int _indexWaypoint;
+
+	bool _directForward;
+
+	/* Stop counter threshold */
+	int _stopCounterThreshold;
+
+	/* Counter for counting stop time*/
+	int _stopCounter;
+
+	/* Counter for counting trail times*/
+	int _timeOutCounter;
+
+	// Random move *******************************************
 	/* [0, 1] how often to change velocity */
 	float _changeRate;
-
-	/* */
+	
+	/* max Angle Velocity */
 	float _maxAngleVel;
 
 	/* [0, 1] how likely velocity is set to 0 on change */
 	float _stopRate;
 
-	/* wanderer type (specified by user) */
-	unsigned int _type;
+	float _distanceToNext_pre;
+
+	
 };
 
 #endif

@@ -8,13 +8,15 @@
 #include "WandererBipedal.hpp"
 #include "math.h"
 
-WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position,
-					float velocity, float change_rate, float stop_rate, float max_angle_change, unsigned int type):
-					Wanderer(w, position, velocity, change_rate, stop_rate, max_angle_change, type)
+
+WandererBipedal::WandererBipedal(b2World * w, const b2Vec2 & position, float velocity, unsigned int type, unsigned int mode,
+	                std::vector<b2Vec2> waypoints, int stop_counter_threshold, 
+                    float change_rate, float stop_rate, float max_angle_velo):Wanderer(w, position, velocity,type,mode,waypoints,stop_counter_threshold, change_rate, stop_rate, max_angle_velo)
 {
+            
 	float r = HUMAN_LEG_SIZE/2.f;
 	float offset = HUMAN_LEG_DISTANCE/2.0f;
-    step_frequency_factor = 0.1;
+    step_frequency_factor = 0.1*velocity/0.08/1.5;
     step_width_factor = 0.1;
 	addCircle(r, b2Vec2(offset+r, 0));
 	addCircle(r, b2Vec2(-offset-r, 0));
@@ -74,11 +76,21 @@ void WandererBipedal::update(bool chat_flag)
         _counter = _counter + step_frequency_factor;
     }
 //    if(f_random() <= _changeRate)
-        updateVelocity();
+        //updateVelocity();
+
+    if(_mode==0) // random mode
+	{
+		updateVelocityRandomMode();
+
+	}
+	else if(_mode==1)// path follow mode
+	{
+		updateVelocityPathMode();
+	}
 }
 
 
-void WandererBipedal::updateVelocity()
+void WandererBipedal::updateVelocityRandomMode()
 {
     //printf("update velocity\n");
     float max_angle = f_rad(30);
@@ -140,5 +152,16 @@ void WandererBipedal::updateVelocity()
     _body->SetLinearVelocity(b2Vec2(v_rot.x, v_rot.y));
     //wanderer orientation  faces in direction of velocity
     _body->SetTransform(_body->GetPosition(), atan2(v_rot.y,v_rot.x));
+    //printf("update DONE\n");
+
+}
+
+
+void WandererBipedal::updateVelocityPathMode()
+{
+    Wanderer::updateVelocityPathMode();
+	b2Vec2 v = _body->GetLinearVelocity();
+    //wanderer orientation  faces in direction of velocity
+    _body->SetTransform(_body->GetPosition(), atan2(v.y,v.x));
     //printf("update DONE\n");
 }

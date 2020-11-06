@@ -7,7 +7,7 @@
 #include <vector>
 #include <engine/zVector2d.hpp>
 #include <box2d/box2d.h>
-
+#include <iostream>
 
 
 /* class represents axis aligned rectangular spawn areas */
