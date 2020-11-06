@@ -138,7 +138,7 @@ bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2V
 
 
 bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRect *> &existing_boxes, b2Vec2 &p,
-                                    int obstacle_type) {
+                                    int obstacle_type, float robot_diameter) {
     int scale_factor = 2.5;
     bool spawn_found = false;
     //printf("obstacleSpawnUntilValid\n");
@@ -158,18 +158,18 @@ bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRe
             if (obstacle_type == 2) {
                 center.x = 0 + max_horizontal_width/2.0f;
                 center.y = 0;
-                center.w = max_horizontal_width/2.0f + 0.4f;
-                center.h = 0.9f;
+                center.w = max_horizontal_width/2.0f + 0.4f + robot_diameter;
+                center.h = 0.9f + robot_diameter;
             } else if (obstacle_type == 4 ) {
                 center.x = 0;
                 center.y = 0 + max_vertial_height/2.0f;
-                center.w = 0.9f;
-                center.h = max_vertial_height/2.0f + 0.4f;
+                center.w = 0.9f + robot_diameter;
+                center.h = max_vertial_height/2.0f + 0.4f + robot_diameter;
             } else {
                 center.x = 0;
                 center.y = 0;
-                center.w = 0.9f;
-                center.h = 0.9f;
+                center.w = 0.9f + robot_diameter;
+                center.h = 0.9f + robot_diameter;
             }
 
             zVector2D pointi;

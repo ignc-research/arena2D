@@ -124,7 +124,7 @@ protected:
  */
     bool obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2Vec2*>& existing_positions, b2Vec2 &p);
 
-    bool obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRect*>& existing_boxes, b2Vec2 &p, int obstacle_type);
+    bool obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRect*>& existing_boxes, b2Vec2 &p, int obstacle_type, float robot_diameter);
 
 	/* create rectangular border around level origin (0,0) with given dimensions and add to body list
 	 * @param half_width half the width (along x-axis) of border rect
