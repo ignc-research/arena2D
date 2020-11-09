@@ -26,12 +26,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.normalization import LayerNorm
 
-
-
-
-
-
-
 class PositionalEmbedding(nn.Module):
     def __init__(self, demb):
         super(PositionalEmbedding, self).__init__()
@@ -266,10 +260,11 @@ class RelPartialLearnableMultiHeadAttn(RelMultiHeadAttn):
         self.r_net = nn.Linear(self.d_model, self.n_head * self.d_head, bias=False)
 
     def forward(self, w, r, r_w_bias, r_r_bias, attn_mask=None, mems=None, use_stable_version=False):
-        qlen, rlen, bsz = w.size(0), r.size(0), w.size(1)
+        qlen, rlen, bsz = w.size(0), r.size(0), w.size(1)        
 
         #if using stable version, then want layernorm of memory as well before MHA
         if mems is not None:
+            #print("w.size:",w.shape,"mems:",mems.shape)
             cat = torch.cat([mems, w], 0)
 
             w_heads = self.qkv_net(cat) if not use_stable_version else self.qkv_net(self.layer_norm(cat))
@@ -341,12 +336,12 @@ class RelPartialLearnableMultiHeadAttn(RelMultiHeadAttn):
 # TODO : DEBUG, sanity check the memtransformerLM implementation with the one in the Stabilizing paper
 class MemTransformerLM(nn.Module):
     def __init__(self, n_layer, n_head, d_model, d_head, d_inner,
-                 dropout, dropatt, tie_weight=True, d_embed=None,
+                 dropout, dropatt, mem_len=1, tie_weight=True, d_embed=None,
                  div_val=1,
-                 tgt_len=None, ext_len=0, mem_len=1,
+                 tgt_len=None, ext_len=0, 
                  cutoffs=[], adapt_inp=False,
                  same_length=False, clamp_len=-1,
-                 use_gate=True, use_stable_version=True):
+                 use_gate=False, use_stable_version=False):
         super(MemTransformerLM, self).__init__()
         #self.n_token = n_token # TODO : Check this is not being used anywhere
 

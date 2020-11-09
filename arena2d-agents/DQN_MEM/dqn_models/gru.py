@@ -6,8 +6,8 @@ from torch.nn.utils.rnn import PackedSequence
 embedding_size_first = 128
 #embedding_size_second = 128             #number of nodes in embedding layer of the fc network
 HIDDEN_SHAPE_SECOND = 64
-hidden_dim = 64             #number of nodes in GRU  
-layer_dim = 3                  #number of gru layers 1 3 5 7
+hidden_dim = 64                          #number of nodes in GRU  
+layer_dim = 2                            #number of gru layers 1 3 5 7
 ##############################
 
 class GRUModel(nn.Module):
@@ -29,7 +29,7 @@ class GRUModel(nn.Module):
     def forward(self, x:PackedSequence, h):
         embedding=self.embedding(x.data)
         embedding = PackedSequence(embedding, x.batch_sizes, x.sorted_indices, x.unsorted_indices)
-        out, h = self.gru(embedding,h)
+        out, h = self.gru(embedding,h)        
         out = self.fc(h[-1,:,:])	
         return out,h.data
 
@@ -37,3 +37,5 @@ class GRUModel(nn.Module):
         weight = next(self.parameters()).data
         hidden = weight.new(self.layer_dim, batch_size, self.hidden_dim).zero_().cuda()
         return hidden
+
+

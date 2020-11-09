@@ -11,13 +11,13 @@ import random
 import collections
 
 ### hyper parameters ###
-MEAN_REWARD_BOUND = 120.0	# training is considered to be done if the mean reward reaches this value
-NUM_ACTIONS = 7				# total number of discrete actions the robot can perform
+MEAN_REWARD_BOUND = 98.0	# training is considered to be done if the mean reward reaches this value
+NUM_ACTIONS = 5				# total number of discrete actions the robot can perform
 DISCOUNT_FACTOR = 0.99		# discount factor for reward estimation (often denoted by gamma)
 SYNC_TARGET_STEPS = 2000	# target net is synchronized with net every X steps
 LEARNING_RATE = 0.00025 	# learning rate for optimizer
 EPSILON_START = 1			# start value of epsilon
-EPSILON_MAX_STEPS = 10**6	# how many steps until epsilon reaches minimum
+EPSILON_MAX_STEPS = 10**5	# how many steps until epsilon reaches minimum
 EPSILON_END = 0.02			# min epsilon value
 BATCH_SIZE = 64				# batch size for training after every step
 TRAINING_START = 1000		# start training only after the first X steps

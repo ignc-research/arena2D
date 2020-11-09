@@ -1,10 +1,3 @@
-
-'''
-Here is the implementation of stabilized transformers on top of the original transformer. Here I leave
-out the additions of transformer-XL since this will be easier to get to work.
-The next step will be adding in Memory and Relative Encodings from transformer-XL
-'''
-
 from torch.nn.modules import TransformerEncoderLayer, TransformerEncoder, TransformerDecoder, TransformerDecoderLayer
 from torch.nn import MultiheadAttention
 import math
@@ -16,30 +9,6 @@ from torch.nn.modules import Linear
 from torch.autograd import Variable
 import torch.nn.functional as F
 from torch.nn import Dropout
-
-
-
-'''
-It will be extremely slow to re embed the past 512 images for each move we take so defintely want to cache
-while keeping gradients attached. (hold them without adding positional encodings since will have to change those). 
-
-Possible Changes:
-May need to change how I initialize parameters (look at transformer-XL)
-
-How can we actually train this efficiently? (how do they use replay memory and so on (this is all Pantehas part I think)
-For this model, just assume we get an input, and return a possible action ****
-
-TO DO:
-Check if dropout applied after attention layer in newer models (how should dropout be applied in Transformer XL?)
-What does layernorm do when it encounters each component in the layer being a vector? (Would think it should go elementwise on the activations
-Check if any dropout within the gate? 
-Look up how params should be initialized *** (in the gate for example)
-
-
-'''
-
-
-
 
 '''
 GRU gating layer used in Stabilizing transformers in RL.

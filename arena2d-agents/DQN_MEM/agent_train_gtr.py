@@ -25,8 +25,8 @@ TRAINING_START = 200		# start training only after the first X steps
 MEMORY_SIZE = 1000000		# last X states will be stored in a buffer (memory), from which the batches are sampled
 N_STEPS = 2
 DOUBLE = True
-#SEQ_LENGTH=300                     #64 10 # 32 20
-additional_state=2              #reward and action of the last step
+seed=111111
+SEQ_LENGTH=64                     #64 10 # 32 20
 #######################
 
 AGENT_NAME="dqn_agent"
@@ -43,16 +43,26 @@ class Agent:
 		self.training_data_path = training_data_path
 
 		# creating xp buffers on gpu for faster sampling
-		self.tensor_state_buffer = torch.zeros(MEMORY_SIZE, num_observations+additional_state,dtype=torch.float).to(self.device)# state
+		self.tensor_state_buffer = torch.zeros(MEMORY_SIZE, num_observations ,dtype=torch.float).to(self.device)# state
 		self.tensor_reward_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.float).to(self.device)# rewards
 		self.tensor_action_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.long).to(self.device)# the action that was chosen
 		self.tensor_done_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.bool).to(self.device)# episode has ended
 		self.tensor_step_buffer = torch.zeros(MEMORY_SIZE, dtype=torch.int16).to(self.device)# step index in episode (starting at 0)
 
+		# Set the random seed manually for reproducibility
+		numpy.random.seed(seed)
+		torch.manual_seed(seed)
+		if torch.cuda.is_available():
+			torch.backends.cudnn.deterministic =True
+			if self.device != torch.device('cuda'):
+				print('WARNING: You have a CUDA device, so you should probably run with --cuda')
+			else:
+				torch.cuda.manual_seed_all(seed)
+
 
 		# creating net and target net
-		self.net = Gtr.TransformerDqn(NUM_ACTIONS,num_observations+additional_state)
-		self.tgt_net = Gtr.TransformerDqn(NUM_ACTIONS,num_observations+additional_state)
+		self.net = Gtr.TransformerDqn(NUM_ACTIONS,num_observations)
+		self.tgt_net = Gtr.TransformerDqn(NUM_ACTIONS,num_observations)
 
 		# copy to device
 		self.net.to(self.device)
@@ -73,7 +83,7 @@ class Agent:
 		self.epsilon = EPSILON_START
 
 		# create optimizer
-		self.optimizer = optim.Adam(self.net.parameters(), lr=LEARNING_RATE)
+		self.optimizer = Gtr.get_std_opt(self.net,LEARNING_RATE)
 
 		# mean rewards
 		self.best_mean_reward = None
@@ -118,19 +128,17 @@ class Agent:
 		self.total_reward = 0.0
 		self.episode_frames = 0
 		self.last_observation = None
-		self.last_reward= 0
-		self.last_action= -1
 	
 	def pre_step(self, observation):
 		# measuring gpu times only every 100 frames (better performance)
 		self.measure_gpu_times = (self.frame_idx%100 == 0)
-		self.last_observation =[self.last_reward,self.last_action]+observation
+		self.last_observation = observation
 		self.epsilon_decay()
 		self.start_gpu_measure()
 		# insert current state into buffer
 		idx = self.frame_idx%MEMORY_SIZE
 		self.tensor_step_buffer[idx]=int(self.episode_frames)
-		self.tensor_state_buffer[idx] = torch.FloatTensor(self.last_observation)
+		self.tensor_state_buffer[idx] = torch.FloatTensor(observation);
 		self.stop_gpu_measure(self.gpu_pre_copy_times)
 		if random.random() <= self.epsilon: # random action
 			action = random.randrange(0, NUM_ACTIONS)
@@ -151,9 +159,8 @@ class Agent:
 		self.start_gpu_measure()
 		idx = self.frame_idx%MEMORY_SIZE
 		if is_done: # save next state if done, because next pre_step will have different state
-			self.tensor_state_buffer[(idx+1)%MEMORY_SIZE] = torch.FloatTensor([reward,self.last_action]+new_observation)
+			self.tensor_state_buffer[(idx+1)%MEMORY_SIZE] = torch.FloatTensor(new_observation)
 		self.tensor_reward_buffer[idx] = reward
-		self.last_reward = reward
 		self.tensor_action_buffer[idx] = self.last_action
 		self.tensor_done_buffer[idx] = (is_done != 0)
 		# update reward from last n steps
@@ -204,7 +211,7 @@ class Agent:
 				self.tgt_net.load_state_dict(self.net.state_dict())
 
 			# optimizing weights through SGD
-			self.optimizer.zero_grad()
+			self.optimizer.optimizer.zero_grad()
 			self.start_gpu_measure()
 			batch = self.sample(BATCH_SIZE)
 			self.stop_gpu_measure(self.sampling_times)
@@ -315,33 +322,34 @@ class Agent:
 		# sample random elements
 		random_indicies = None
 		if self.frame_idx <= MEMORY_SIZE: # buffer not filled completely yet
-			random_indicies = torch.randint(self.frame_idx-N_STEPS, (batch_size,)).to(self.device)
+			random_indicies = numpy.random.choice(self.frame_idx-N_STEPS, batch_size)
 		else:
 			forbidden_lower_i = (MEMORY_SIZE + self.frame_idx-N_STEPS)%MEMORY_SIZE
 			forbidden_upper_i = (MEMORY_SIZE + self.frame_idx-1)%MEMORY_SIZE
-			random_indicies = torch.empty(batch_size, dtype=torch.long).to(self.device)
+			random_indicies = numpy.empty(batch_size, dtype=numpy.long)
 			if forbidden_lower_i > forbidden_upper_i: # wrap around
 				for i in range(0, batch_size): 
-					x = torch.randint(MEMORY_SIZE-N_STEPS,(1,)) + forbidden_upper_i +1
+					x = numpy.random.choice(MEMORY_SIZE-N_STEPS) + forbidden_upper_i +1
 					random_indicies[i] = x
 			else:
 				for i in range(0, batch_size): 
-					x = torch.randint(MEMORY_SIZE-N_STEPS,(1,))
+					x = numpy.random.choice(MEMORY_SIZE-N_STEPS)
 					if x >= forbidden_lower_i:
 						x += N_STEPS
 					random_indicies[i] = x
-		#random_indicies_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
+		random_indicies_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
 		# sample next state indicies of random states
-		#current_idx = self.frame_idx%MEMORY_SIZE
-		random_indicies_next = (random_indicies+N_STEPS)%MEMORY_SIZE
-		#random_indicies_next_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
+		current_idx = self.frame_idx%MEMORY_SIZE
+		for i in range(0, len(random_indicies)):
+			random_indicies[i] = (random_indicies[i]+N_STEPS)%MEMORY_SIZE
+		random_indicies_next_v = torch.tensor(random_indicies, dtype=torch.long).to(self.device)
 
 		# get actual tensors from indicies
-		state = self.pack_episodes(random_indicies)
-		new_state = self.pack_episodes(random_indicies_next)
-		action = self.tensor_action_buffer[random_indicies]
-		reward = self.tensor_reward_buffer[random_indicies]
-		is_done = self.tensor_done_buffer[random_indicies]
+		state = self.pack_episodes(random_indicies_v)
+		new_state = self.pack_episodes(random_indicies_next_v)
+		action = self.tensor_action_buffer[random_indicies_v]
+		reward = self.tensor_reward_buffer[random_indicies_v]
+		is_done = self.tensor_done_buffer[random_indicies_v]
 		return (state, new_state, action, reward, is_done)
 		
 	def pack_episodes(self, indicies):
@@ -363,7 +371,11 @@ class Agent:
 				#print(sequence)
 			sequence_list.append(sequence)
 		# packing all together
-		pack_seq=pad_sequence(sequence_list,padding_value=10000.0).data.to(self.device).flip([0])
+		pack_seq=pad_sequence(sequence_list,padding_value=10000.0).data.to(self.device)
+		if(pack_seq.shape[0]>SEQ_LENGTH):
+		        pack_seq=torch.narrow(pack_seq, dim=0, start=0, length=SEQ_LENGTH).flip([0])
+		else:                
+                        pack_seq=pack_seq.flip([0])
 		#print(pack_seq.shape)
 		return pack_seq #sequence_list.view(bs,SEQ_LENGTH,NUM_INPUTS).transpose(0,1).to(self.device)
 

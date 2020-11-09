@@ -1,28 +1,15 @@
-from dqn_models import vanillaTransformer as vtxl
+from dqn_models import vanillaTransformer as vt
 import torch.nn as nn
 import torch
 import math
 from torch.autograd import Variable
-'''
 
-TO DO:
-Add in layer normalization to transformer encoder
-Remember at test time since we already have a well trained model, I think we don't send in 
-extra states anymore when computing the Q-values (can try both). If do send extras then need to make 
-sure the dropout is turned off in transformer encoder but not in the first embedding layers. 
-
-Right now dropout scales the outputs during training, is this what we want for those first layers?
-Check that dropout implementation in pytorch has different dropout per element in the batch #$$$$$$$$$$
-
-
-DQN now takes as input a set of states, then feeds each one through the embedder B times,
-which will help encoder uncertainty of the embeddings, and then feed the combined results through 
-transformer encoder
-'''
-#embedder_params={'dropout':0.1,'B':3,}
-#encoder_layer_params={'d_model':256,'nhead':8}
+output_features=256
+embedding_size=256              # number of output neurons of the embedding layer
+HIDDEN_SHAPE_1 = 256
+HIDDEN_SHAPE_2 = 256
 class CartPoleEmbedder(nn.Module):
-    def __init__(self,input_size,dropout=0.1, B=1, embedding_size=384):
+    def __init__(self,input_size,dropout=0.1, B=1, embedding_size=output_features):
         '''
         :param B: Number of times we embed each state (with dropout each time)
 
@@ -31,63 +18,41 @@ class CartPoleEmbedder(nn.Module):
         super(CartPoleEmbedder, self).__init__()
         self.B = B
         self.dropout_p = dropout
-        self.layer1 = nn.Sequential(
-            nn.Linear(input_size, embedding_size),
-            nn.ReLU(),
-            nn.Dropout(p=dropout)
-        )
+        self.embedding = nn.Sequential(nn.Linear(input_size, HIDDEN_SHAPE_1),
+                                       nn.ReLU(), 
+                                       nn.Linear(HIDDEN_SHAPE_1, embedding_size))
 
-        self.layer2 = nn.Sequential(
-            nn.Linear(embedding_size, embedding_size),
-            nn.ReLU(),
-            nn.Dropout(p=dropout)
-        )
-
-        self.layer3 = nn.Linear(embedding_size,embedding_size)
         self.layer4 = nn.Linear(input_size,embedding_size)
 
         #now need to combine the B copies of the elements
         #Can start by using just linear combo then move to nonlinear combo
-
-
-        '''
-        self.layer3 = nn.Sequential(
-            nn.Linear(embedding_size, embedding_size),
-            nn.ReLU()
-        )
-        '''
 
     def forward(self,input,is_training=True):
         #want to now stack B copies of input on top of eachother
         #Batch dim is dim 0
         input = torch.cat(self.B*[input])
 
-        #The dropout implementation in pytorch applies dropout differently per element in batch
-        #which is what we want
-
-        #hidden = self.layer1(input)
-        #hidden = self.layer2(hidden)
-        return self.layer4(input)
+        return self.embedding(input)
 
 
 
 class TransformerDqn(nn.Module):
 
-    def __init__(self,output_size,input_size,num_encoder_layers=1):
+    def __init__(self,output_size,input_size,num_encoder_layers=3):
         '''
         :param embedder: module to embed the states
         :param output_size: number of actions we can choose
         '''
 
         #dropout = 0.1
-        hidden_size=384
-
+        self.hidden_size=output_features
+        self.d_model=output_features
         super(TransformerDqn, self).__init__()
         self.embedder = CartPoleEmbedder(input_size=input_size)
-        self.pos_encoder = PositionalEncoding(d_model=384, dropout=0.1)
-        self.encoder_layer = vtxl.StableTransformerLayer(d_model=384,nhead=6,dim_feedforward=256, dropout=0.1, use_gate = True)
-        self.encoder = vtxl.TransformerEncoder(encoder_layer=self.encoder_layer,num_layers=num_encoder_layers)
-        self.output_layer = nn.Linear(hidden_size,output_size)
+        self.pos_encoder = PositionalEncoding(d_model=output_features, dropout=0.1)
+        self.encoder_layer = vt.StableTransformerLayer(d_model=output_features,nhead=4,dim_feedforward=128, dropout=0.1, use_gate = False)
+        self.encoder = vt.TransformerEncoder(encoder_layer=self.encoder_layer,num_layers=num_encoder_layers)
+        self.output_layer = nn.Linear(self.hidden_size,output_size)
 
     def forward(self,input):
         '''
@@ -126,6 +91,42 @@ def generate_square_subsequent_mask(sz):
     mask = (torch.triu(torch.ones(sz, sz)) == 1).float().transpose(0, 1)
     mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
     return mask
+
+
+# now our optimizer (uses adam but changes learning rate over time)
+# is in paper and http://nlp.seas.harvard.edu/2018/04/03/attention.html#optimizer
+class NoamOpt:
+    "Optim wrapper that implements rate."
+
+    def __init__(self, model_size, factor, warmup, optimizer):
+        self.optimizer = optimizer
+        self._step = 0
+        self.warmup = warmup
+        self.factor = factor
+        self.model_size = model_size
+        self._rate = 0
+
+    def step(self):
+        "Update parameters and rate"
+        self._step += 1
+        rate = self.rate()
+        for p in self.optimizer.param_groups:
+            p['lr'] = rate
+        self._rate = rate
+        self.optimizer.step()
+
+    def rate(self, step=None):
+        "Implement `lrate` above"
+        if step is None:
+            step = self._step
+        return self.factor * \
+               (self.model_size ** (-0.5) *
+                min(step ** (-0.5), step * self.warmup ** (-1.5)))
+
+
+def get_std_opt(model,lr):
+    return NoamOpt(model.d_model, 1, 4000,
+                   torch.optim.Adam(model.parameters(), lr=lr, betas=(0.9, 0.98), eps=1e-9))
 
 
 
