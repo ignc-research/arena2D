@@ -37,6 +37,8 @@ set(ARENA_SOURCES
 	level/LevelRandom.hpp
 	level/LevelCustom.cpp
 	level/LevelCustom.hpp
+	level/LevelMaze.cpp
+	level/LevelMaze.hpp
 	level/LevelSVG.cpp
 	level/LevelSVG.hpp
 	level/Wanderer.cpp
@@ -57,10 +59,6 @@ set(ARENA_SOURCES
 	arena/Evaluation.cpp
 	level/Wanderers.hpp
 	level/Wanderers.cpp
-	level/LevelHuman.cpp
-	level/LevelHuman.hpp
-	level/LevelMaze.cpp
-	level/LevelMaze.hpp
 
 # engine
 	engine/shader/Color2DShader.cpp
