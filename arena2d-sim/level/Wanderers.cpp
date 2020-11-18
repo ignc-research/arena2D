@@ -20,7 +20,7 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
     if (_wanderers.size() > 0) freeWanderers();
     if (_robot_wanderers.size() > 0) freeRobotWanderers();
     // adding a human wanderers
-    int _mode=MODE_FOLLOW_PATH;
+    int _mode=MODE_RANDOM;
     if (_dynamic) 
     {
         if(_mode==MODE_RANDOM)
@@ -107,8 +107,7 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
                 WandererBipedal *w =new WandererBipedal(_levelDef.world, p,_SETTINGS->stage.obstacle_speed,WANDERER_ID_HUMAN,MODE_RANDOM,
                     waypoints,stop_counter_threshold,
                     change_rate, stop_rate , max_angle_velo);
-                w->addRobotPepper(_SETTINGS->stage.dynamic_obstacle_size);
-                _robot_wanderers.push_back(w);
+                _wanderers.push_back(w);
 
             }
         }
