@@ -20,27 +20,156 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
     if (_wanderers.size() > 0) freeWanderers();
     if (_robot_wanderers.size() > 0) freeRobotWanderers();
     // adding a human wanderers
+    int _mode=MODE_FOLLOW_PATH;
+    if (_dynamic) 
+    {
+        if(_mode==MODE_RANDOM)
+        {
 
-    if (_dynamic) {
-        for (int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++) {
-            b2Vec2 p;
-            _dynamicSpawn.getRandomPoint(p);
-            Wanderer *w = new Wanderer(_levelDef.world, p,
-                                       _SETTINGS->stage.obstacle_speed,
-                                       0.1, 0.05, 60.0f, WANDERER_ID_ROBOT);
-            w->addCircle(_SETTINGS->stage.dynamic_obstacle_size / 2.f);
-            _robot_wanderers.push_back(w);
+            for (int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
+                b2Vec2 p;
+                _dynamicSpawn.getRandomPoint(p);
+                std::vector<b2Vec2> waypoints={p};
+                int stop_counter_threshold=1;
+                float change_rate=0.5f;
+                float stop_rate=0.05f;
+                float max_angle_velo=60.0f;
+                Wanderer *w =new Wanderer(_levelDef.world, p,_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT,MODE_RANDOM,
+                    waypoints,stop_counter_threshold,
+                    change_rate, stop_rate , max_angle_velo);
+                w->addRobotPepper(_SETTINGS->stage.dynamic_obstacle_size);
+                _robot_wanderers.push_back(w);
+
+            }
+        }
+        else if(_mode==MODE_FOLLOW_PATH)
+        {          
+                // stop counter threshold (int) >1
+                int stop_counter_threshold=1;
+
+                // init position & waypoints
+                b2Vec2 p0,p1,p2,p3,p4,p5,p6;
+                
+                std::vector<std::vector<b2Vec2>> waypoint_list;
+                 std::vector<b2Vec2> waypoints;
+
+                p0.Set(-3.5,3);
+                p1.Set(-3.5,1);
+                p2.Set(1,1);
+                p3.Set(5,1);
+                p4.Set(5,4);
+                waypoints={p0,p1,p2,p3,p4};
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(0,3);
+                p1.Set(2,4);
+                p2.Set(3,4);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+
+                for(int i=0;i<waypoint_list.size();i++)
+                {
+                    
+                    if(i==0){
+                        Wanderer *w =new Wanderer(_levelDef.world, waypoint_list[i][0],_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT_PEPPER,MODE_FOLLOW_PATH,
+                    waypoint_list[i],stop_counter_threshold);
+                        w->addRobotPepper(_SETTINGS->stage.dynamic_obstacle_size);
+                        _robot_wanderers.push_back(w);
+                    }else{
+                        Wanderer *w =new Wanderer(_levelDef.world, waypoint_list[i][0],_SETTINGS->stage.obstacle_speed,WANDERER_ID_ROBOT,MODE_FOLLOW_PATH,
+                    waypoint_list[i],stop_counter_threshold);
+                        w->addCircle(_SETTINGS->stage.dynamic_obstacle_size / 2.f);
+                        _robot_wanderers.push_back(w);
+
+                    }
+                    
+                    
+    
+                }
 
         }
+
     }
+
     if(_human){
-        for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++) {
-            b2Vec2 p;
-            _dynamicSpawn.getRandomPoint(p);
-            _wanderers.push_back(new WandererBipedal(_levelDef.world, p,
-                                                     _SETTINGS->stage.obstacle_speed,
-                                                     0.1, 0.05, 60.0f, WANDERER_ID_HUMAN));
+        if(_mode==MODE_RANDOM)
+        {
+
+            for (int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
+                b2Vec2 p;
+                _dynamicSpawn.getRandomPoint(p);
+                std::vector<b2Vec2> waypoints={p};
+                int stop_counter_threshold=1;
+                float change_rate=0.5f;
+                float stop_rate=0.05f;
+                float max_angle_velo=60.0f;
+                WandererBipedal *w =new WandererBipedal(_levelDef.world, p,_SETTINGS->stage.obstacle_speed,WANDERER_ID_HUMAN,MODE_RANDOM,
+                    waypoints,stop_counter_threshold,
+                    change_rate, stop_rate , max_angle_velo);
+                w->addRobotPepper(_SETTINGS->stage.dynamic_obstacle_size);
+                _robot_wanderers.push_back(w);
+
+            }
         }
+        else if(_mode==MODE_FOLLOW_PATH)
+        {          
+                // stop counter threshold (int) >1
+                int stop_counter_threshold=50;
+
+                // init position & waypoints
+                b2Vec2 p0,p1,p2,p3,p4,p5,p6;
+                
+                std::vector<std::vector<b2Vec2>> waypoint_list;
+                std::vector<b2Vec2> waypoints;
+
+                p0.Set(-0,2.5);
+                p1.Set(-0.5,2.5);
+                p2.Set(1,3);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(-0.5,2.5);
+                p1.Set(0.7,2.5);
+                p2.Set(0,2);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(1,4.5);
+                p1.Set(0.8,4.5);
+                p2.Set(1,4);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(0.6,4.6);
+                p1.Set(1.2,4.6);
+                p2.Set(1,5);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(-1,0);
+                p1.Set(-2,-0.5);
+                p2.Set(-0.5,1);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+                p0.Set(1,0);
+                p1.Set(2,-0.5);
+                p2.Set(0.5,1);
+                waypoints={p0,p1,p2};
+                waypoint_list.push_back(waypoints);
+
+                for(int i=0;i<waypoint_list.size();i++)
+                {
+                    WandererBipedal *w =new WandererBipedal(_levelDef.world, waypoint_list[i][0],_SETTINGS->stage.obstacle_speed,WANDERER_ID_HUMAN,MODE_FOLLOW_PATH,
+                    waypoint_list[i],stop_counter_threshold);
+                    _wanderers.push_back(w);
+    
+                }
+
+        }
+
+
     }
     //reset all lists
     _old_infos_of_wanderers.clear();
@@ -51,6 +180,7 @@ void Wanderers::reset(RectSpawn & _dynamicSpawn, bool _dynamic, bool _human) {
 
     calculateDistanceAngle();
     getClosestWanderers();
+    //std::cout<<"=============Finish reset wanderes"<<std::endl;
 }
 
 void Wanderers::update(){
@@ -102,6 +232,9 @@ void Wanderers::updateHuman(){
             _wanderers[i]->setPosition(new_position);
         }
         //update wanderer position and velocity
+        #ifdef USE_ROS
+        _wanderers[i]->setPosition(position);
+        #endif 
         _wanderers[i]->update(chat_flag);
     }
 

@@ -2,10 +2,12 @@
 #define WANDERERBIPEDAL_H
 
 #include "Wanderer.hpp"
+
 #include <arena/PhysicsWorld.hpp>
 #include <engine/zVector2d.hpp>
 #include <engine/GlobalSettings.hpp>
 #include <ctime>
+
 
 #define HUMAN_LEG_SIZE 0.09f
 #define HUMAN_LEG_DISTANCE 0.04f
@@ -13,10 +15,11 @@
 /* human wanderer represented by two circles (legs)
  */
 class WandererBipedal : public Wanderer{
-public:
+    public:
 	/* constructor */
-    WandererBipedal(b2World * w,const b2Vec2 & position, float velocity,
-					float change_rate, float stop_rate, float max_angle_change = 60.0f, unsigned int type = 0);
+    WandererBipedal(b2World * w, const b2Vec2 & position, float velocity, unsigned int type, unsigned int mode=0,
+	                std::vector<b2Vec2> waypoints={}, int stop_counter_threshold=1, 
+                    float change_rate=1.0f, float stop_rate=0.1f, float max_angle_velo = 60.0f);
 
 	/* return radius of circle surrounding all fixtures
 	 */
@@ -31,7 +34,11 @@ protected:
     /* update velocity
      * this function is called in update() if a randomly sampled value [0, 1] is less than the change rate
      */
-    void updateVelocity() override;
+    //void updateVelocity() override;
+
+    void updateVelocityRandomMode() override;
+
+	void updateVelocityPathMode() override;
 
     float _counter;
 
@@ -47,6 +54,7 @@ protected:
     //preventing eternal stuck in chat
     int chat_reset_threshold;
     int chat_reset_counter;
+
 
 };
 

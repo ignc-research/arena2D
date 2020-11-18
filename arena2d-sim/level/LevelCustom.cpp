@@ -11,10 +11,12 @@
 void LevelCustom::reset(bool robot_position_reset) {
     // clear old bodies and spawn area
     clear();
+
     if(_human)
         wanderers.freeWanderers();
     if(_dynamic)
         wanderers.freeRobotWanderers();
+
 
     float half_width = _SETTINGS->stage.level_size / 2.f;
     float half_height = _SETTINGS->stage.level_size / 2.f;
@@ -29,6 +31,10 @@ void LevelCustom::reset(bool robot_position_reset) {
     const zRect big_main_rect(0, 0, half_width + max_obstacle_radius, half_height + max_obstacle_radius);
 
     int num_obstacles = _SETTINGS->stage.num_obstacles;
+
+    if(robot_position_reset){
+        resetRobotToCenter();
+    }
 
     if(robot_position_reset){
         resetRobotToCenter();
@@ -51,7 +57,7 @@ void LevelCustom::reset(bool robot_position_reset) {
         zRect aabb;
         //makes sure obstacle spawns on free space
         int randomNumber = (rand() % 6);
-        bool spawn_valid = obstacleSpawnUntilValid(&static_spawn, existing_boxes, p, randomNumber);
+        bool spawn_valid = obstacleSpawnUntilValid(&static_spawn, existing_boxes, p, randomNumber, robot_diameter);
         //printf("obstacle point found\n");
         float random_length;
         float random_width;
@@ -139,13 +145,23 @@ void LevelCustom::reset(bool robot_position_reset) {
     _goalSpawnArea.calculateArea();
 
     if (_dynamic || _human) {
+
         _dynamicSpawn.clear();
         //printf("addCheeseRect\n");
         _dynamicSpawn.addCheeseRect(main_rect, _levelDef.world, COLLIDE_CATEGORY_STAGE | COLLIDE_CATEGORY_PLAYER,
                                     dynamic_radius);
         //printf("calculateArea\n");
         _dynamicSpawn.calculateArea();
+
 		wanderers.reset(_dynamicSpawn, _dynamic, _human );
+
+        // for (int i = 0; i < num_dynamic_obstacles; i++) {
+        //     b2Vec2 p;
+        //     _dynamicSpawn.getRandomPoint(p);
+        //     WandererBipedal *w = new WandererBipedal(_levelDef.world, p, dynamic_speed, 0.1, 0.05);
+        //     _wanderers.push_back(w);
+        // }
+
     }
 
     randomGoalSpawnUntilValid();

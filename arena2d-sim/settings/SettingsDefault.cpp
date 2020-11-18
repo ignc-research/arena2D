@@ -76,7 +76,7 @@ void GlobalSettings::setToDefault()
 	_settings.stage.max_obstacle_size = 1.0;
 	_settings.stage.goal_size = 0.1;
 	_settings.stage.svg_path = "svg_levels/";
-
+	_settings.stage.static_map_ros_service_name = "/static_map";
 	// robot
 	_settings.robot.laser_noise = 0;
 	_settings.robot.laser_max_distance = 3.5;

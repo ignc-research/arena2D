@@ -1,6 +1,6 @@
 /* author: Cornelius Marx */
 #include "GlobalSettings.hpp"
-
+const std::string GLOBAL_PACKAGE_PATH = "@PACKAGE_PATH@";
 SDL_Keycode sGamePadButton::getKeycode(const SDL_Event & e)
 {
 	switch(e.type){

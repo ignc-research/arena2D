@@ -10,6 +10,11 @@
 #include "LevelRandom.hpp"
 #include "LevelCustom.hpp"
 #include "LevelMaze.hpp"
+#ifdef USE_ROS
+#include "LevelStaticMap.hpp"
+#endif
+
+
 
 // singleton-get macro
 #define LEVEL_FACTORY LevelFactory::get()
@@ -92,6 +97,15 @@ public:
 		bool level_dynamic = params.getFlag("--dynamic");
 		return new LevelMaze(d, level_dynamic, level_human);
 	}
+
+	#ifdef USE_ROS
+	// static map level
+	Level* createLevelStaticMap(const LevelDef & d, const ConsoleParameters & params){
+		bool level_dynamic = params.getFlag("--dynamic");
+		bool level_human = params.getFlag("--human");
+		return new LevelStaticMap(d,level_dynamic,level_human);
+	}
+	#endif
 
 
 private:

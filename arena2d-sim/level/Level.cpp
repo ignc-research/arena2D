@@ -138,7 +138,7 @@ bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<b2V
 
 
 bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRect *> &existing_boxes, b2Vec2 &p,
-                                    int obstacle_type) {
+                                    int obstacle_type, float robot_diameter) {
     int scale_factor = 2.5;
     bool spawn_found = false;
     //printf("obstacleSpawnUntilValid\n");
@@ -158,18 +158,18 @@ bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRe
             if (obstacle_type == 2) {
                 center.x = 0 + max_horizontal_width/2.0f;
                 center.y = 0;
-                center.w = max_horizontal_width/2.0f + 0.4f;
-                center.h = 0.9f;
+                center.w = max_horizontal_width/2.0f + 0.4f + robot_diameter;
+                center.h = 0.9f + robot_diameter;
             } else if (obstacle_type == 4 ) {
                 center.x = 0;
                 center.y = 0 + max_vertial_height/2.0f;
-                center.w = 0.9f;
-                center.h = max_vertial_height/2.0f + 0.4f;
+                center.w = 0.9f + robot_diameter;
+                center.h = max_vertial_height/2.0f + 0.4f + robot_diameter;
             } else {
                 center.x = 0;
                 center.y = 0;
-                center.w = 0.9f;
-                center.h = 0.9f;
+                center.w = 0.9f + robot_diameter;
+                center.h = 0.9f + robot_diameter;
             }
 
             zVector2D pointi;
@@ -229,22 +229,45 @@ bool Level::obstacleSpawnUntilValid(RectSpawn *static_spawn, const std::list<zRe
 }
 
 
-void Level::randomGoalSpawnUntilValid(RectSpawn *goal_spawn) {
-    RectSpawn *spawn = &_goalSpawnArea;
-    if (goal_spawn != NULL)// use custom goal spawn
-    {
-        spawn = goal_spawn;
-    }
 
-    b2Vec2 robot_position = _levelDef.robot->getPosition();
-    // spawn goal at random position
-    b2Vec2 spawn_position(0, 0);
-    int count = 0;
-    do {
-        spawn->getRandomPoint(spawn_position);
-        count++;
-    } while (!checkValidGoalSpawn(robot_position, spawn_position) && count < 10);
-    spawnGoal(spawn_position);
+
+void Level::randomGoalSpawnUntilValidForMaze(RectSpawn * goal_spawn)
+{
+	RectSpawn * spawn = &_goalSpawnArea;
+	if(goal_spawn != NULL)// use custom goal spawn
+	{
+		spawn = goal_spawn;
+	}
+
+	b2Vec2 robot_position = _levelDef.robot->getPosition();
+	// spawn goal at random position
+	b2Vec2 spawn_position(0,0);
+	int count = 0;
+	do{
+		spawn->getRandomPoint(spawn_position);
+		count++;
+	}while(!checkValidGoalSpawn_Walls(robot_position,spawn_position) && count < 100);
+	spawnGoal(spawn_position);
+}
+
+void Level::randomGoalSpawnUntilValid(RectSpawn * goal_spawn)
+{
+	RectSpawn * spawn = &_goalSpawnArea;
+	if(goal_spawn != NULL)// use custom goal spawn
+	{
+		spawn = goal_spawn;
+	}
+
+	b2Vec2 robot_position = _levelDef.robot->getPosition();
+	// spawn goal at random position
+	b2Vec2 spawn_position(0,0);
+	int count = 0;
+	do{
+		spawn->getRandomPoint(spawn_position);
+		count++;
+	}while(!checkValidGoalSpawn(robot_position, spawn_position) && count < 10);
+	spawnGoal(spawn_position);
+
 }
 
 b2Body *Level::addRandomShape(const b2Vec2 &position, float min_radius, float max_radius, zRect *aabb) {
@@ -285,7 +308,11 @@ b2Body *Level::addRandomShape(const b2Vec2 &position, float min_radius, float ma
     return addShape(&shape);
 }
 
-void Level::renderGoalSpawn() {
-    Z_SHADER->setColor(zColor(LEVEL_GOAL_SPAWN_COLOR));
-    _goalSpawnArea.render();
+
+
+void Level::renderGoalSpawn()
+{
+	Z_SHADER->setColor(zColor(LEVEL_GOAL_SPAWN_COLOR));
+	_goalSpawnArea.render();
+
 }
