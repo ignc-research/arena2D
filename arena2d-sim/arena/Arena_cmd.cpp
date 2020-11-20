@@ -60,8 +60,8 @@ void Arena::initCommands()
 	_commands.registerCommand(&Arena::cmdSet, "set", "<settings_expression>",
 								"set an option in the settings, e.g. set \"robot.laser_noise = 0.01\"; note that some changes (e.g. video) only take effect after restarting");
 
-	_commands.registerCommand(&Arena::cmdStartTraining, "run_agent", "<agent.py> [--model <path>] [--device <device>] [--no_record]",
-								"start training with specified python script; if flag --no_record is set then no training directory will be created and no training data is recorded");
+	_commands.registerCommand(&Arena::cmdStartTraining, "run_agent", "<agent.py> [--model <path>] [--device <device>] [--no_record] [--evaluate]",
+								"start training with specified python script; if flag --no_record is set then no training directory will be created and no training data is recorded; if flag --evaluate is set then data for the evaluation of a test is recorded");
 
 	_commands.registerCommand(&Arena::cmdStopTraining, "stop_agent", "",
 								"stop agent script");

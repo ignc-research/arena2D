@@ -106,7 +106,9 @@ To access a given option you need to specify the categories separated by `.`, fo
 ## Built-in Levels
 The simulator comes with a few built-in levels which are listed below:
 * ```empty```: An empty level with just a border surrounding the level area.
-* ```random```: Randomly generated obstacles. Add flag ```--dynamic``` to add moving obstacles.
+* ```random```: Randomly generated obstacles. Add flag ```--dynamic``` to add moving obstacles. Add flag ```--human``` to add humans.
+* ```custom```: Randomly generated obstacles and corridors. Add flag ```--dynamic``` to add moving obstacles. Add flag ```--human``` to add humans.
+* ```maze```: Randomly generated obstacles in a randomly shaped maze. Add flag ```--dynamic``` to add moving obstacles. Add flag ```--human``` to add humans. 
 * ```svg```: Custom SVG-levels that are loaded from the folder ```svg_levels/```. The path to the folder can be specified in the settings file with the option ```stage.svg_path```.
 * ```static_map```: A level that receives the map info from the ros map server. To use this level make sure the code is compiled with `catkin_make -DUSE_ROS=ON` to compile the whole code and use `rosrun map_server map_server <your-map-file>.yaml` to provide a map service. A handy command to arena2d-sim in this mode is
 ```bash
@@ -161,10 +163,12 @@ While the training is running you should disable the video mode by pressing `F3`
 This will stop the rendering and remove the FPS lock to ensure maximum performance.
 
 ## Evaluation
-When a training has finished, this agent can be evaluated with the command `run_agent <agent_test_script> --evaluate`.
-Specify the path to the trained agent weigths by passing `--model <model_name>`.
+When a training session is finished, then the trained agent can be tested with the command `run_agent <agent_test_script> --model <model_name> --evaluate`. 
+* `<agent_test_script>`: Path to the test script of the trained agent. The agent_test_script should contain a counter, which stops after the episode ending "is_done" was for example 10000 times counted in the post-step. An example agent_test_script can be seen in arena-agents/DQN/agent_test.py. 
+* `--model <model_name>`: Specify the path to the model of the trained agent. Tip: Train the agent without the `--no_record`-flag and use the path to the model.dat-file in the new created training folder.
+* `--evaluate`: Starts to record additional data to a `evaluation.csv` file in the folder of the model.
 
-This process will record additional data to a `evaluation.csv` file in the folder of the model. By running the `evaluation.py` script this additional data will be plotted in a new folder `evaluation`.
+By running the `evaluation.py` script this additional data will be plotted in a new folder `evaluation`. 
 
 
 ## Agent Implementation
