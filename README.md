@@ -40,12 +40,15 @@ Our design principles are:
 If you use the arena2d platform in your research, please cite the following [paper](https://arxiv.org/abs/2008.00516):
 
 ````
-@article{kastner2020deep,
-  title={Deep-Reinforcement-Learning-Based Semantic Navigation of Mobile Robots in Dynamic Environments},
-  author={K{\"a}stner, Linh and Marx, Cornelius and Lambrecht, Jens},
-  journal={arXiv preprint arXiv:2008.00516},
-  year={2020}
-}
+@INPROCEEDINGS{9216798,
+  author={L. {Kästner} and C. {Marx} and J. {Lambrecht}},
+  booktitle={2020 IEEE 16th International Conference on Automation Science and Engineering (CASE)}, 
+  title={Deep-Reinforcement-Learning-Based Semantic Navigation of Mobile Robots in Dynamic Environments}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={1110-1115},
+  doi={10.1109/CASE48305.2020.9216798}}
 ````
 
 ## Updates
