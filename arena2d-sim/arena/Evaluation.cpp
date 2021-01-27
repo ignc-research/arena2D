@@ -30,7 +30,7 @@ void Evaluation::init(const char * model){
 
     if(myfile.is_open()){
         // write head of csv file
-        myfile << "Episode,Ending,Goal_Distance,Goal_Angle,Robot_Position_x,Robot_Position_y,Robot_Direction_x,Robot_Direction_y,";
+        myfile << "Episode,Ending,Goal_Distance,Goal_Angle,Robot_Position_x,Robot_Position_y,Robot_Direction_x,Robot_Direction_y,Robot_Action,";
         for(int i = 0; i < _SETTINGS->stage.num_dynamic_obstacles; i++){
             myfile << "Human" << i+1;
             if(i < _SETTINGS->stage.num_dynamic_obstacles - 1) myfile << ",";
@@ -75,7 +75,7 @@ void Evaluation::countTimeout(){
 
 void Evaluation::saveDistance(std::list<float> & distances){
     if(initialized){
-        myfile << ",,,,,,,,";
+        myfile << ",,,,,,,,,";
         for(std::list<float>::iterator hd = distances.begin(); hd != distances.end(); hd++){
             if(std::next(hd) == distances.end()){
                 myfile << *hd;
@@ -94,6 +94,12 @@ void Evaluation::countAction(const b2Transform & robot_transform){
         robot_facing.rotate(robot_transform.q.GetAngle());
         myfile << ",,,," << robot_transform.p.x << "," << robot_transform.p.y << "," 
         << robot_facing.x << "," << robot_facing.y <<std::endl;
+    }
+}
+
+void Evaluation::saveAction(Robot::Action a){
+    if(initialized){
+        myfile << ",,,,,,,," << a <<std::endl;
     }
 }
 

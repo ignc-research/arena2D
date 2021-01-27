@@ -16,24 +16,16 @@ LevelFactory::LevelFactory()
 
 	// static
 	REGISTER_LEVEL_FUNC(LevelFactory::createLevelRandom, "random", "[--dynamic]""[--human]",
-								"Randomized static Level and optional dynamic obstacles (flag --dynamic)");
+								"Randomized static Level random, optional dynamic obstacles (flag --dynamic) and optional humans (flag --human)");
 
 	// static
 	REGISTER_LEVEL_FUNC(LevelFactory::createLevelCustom, "custom", "[--dynamic]""[--human]",
-								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
+								"Randomized static Level custom, optional dynamic obstacles (flag --dynamic) and optional humans (flag --human)");
 
-	// static
-	REGISTER_LEVEL_FUNC(LevelFactory::createLevelHuman, "human", "[--dynamic]""[--human]",
-								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
 
 	// static
 	REGISTER_LEVEL_FUNC(LevelFactory::createLevelMaze, "maze", "[--dynamic]""[--human]",
-								"Custom static Level and optional dynamic obstacles (flag --dynamic)");
-	// Maze level
-	//REGISTER_LEVEL(LevelMaze, "maze","","My new custom level with a maze");
-
-	REGISTER_LEVEL_FUNC(LevelFactory::createLevelMaze, "maze", "[--dynamic]",
-								"maze static Level and optional dynamic obstacles (flag --dynamic)");
+								"Randomized static Level maze, optional dynamic obstacles (flag --dynamic) and optional humans (flag --human)");
 
 	// svg
 	REGISTER_LEVEL(LevelSVG, "svg", "", "Levels loaded from svg-files");

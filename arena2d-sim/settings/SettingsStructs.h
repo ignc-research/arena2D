@@ -62,7 +62,7 @@ typedef struct
 	float dynamic_obstacle_size;		// size of dynamic obstacle
 	int num_dynamic_obstacles;			// number of dynamic obstacles in static_dynamic level
 	float obstacle_speed;				// in m/s for dynamic obstacles
-	float max_time_chatting;	// maximum time for chatting between two wanderers
+	float max_time_chatting;			// maximum time for chatting between two wanderers
 	float goal_size;					// diameter of circular goal to reach
 	string svg_path;					// path to folder where svg files are stored
 	string static_map_ros_service_name; //name of map service provided ros map server.
@@ -86,7 +86,7 @@ typedef struct
 	float reward_distance_to_human_decreased; // reward when distance to human decreases
 	float reward_distance_to_human_increased; // reward when distance to human increases
 	int num_obs_humans; // maximum number of humans the agent can observe inside the camera view
-	int reward_function; // choose between different reward functions (1 = distance rewards only for observed humans, 2 = distance rewards for all humans in level)
+	int reward_function; // choose between different distance reward functions (1 = constant + only observed humans in camera angle; 2 = constant + for all humans; 3 = linear dependent + for all humans; 4 = linear dependent + only observed humans in camera angle)
 } f_trainingSettings;
 
 typedef struct
