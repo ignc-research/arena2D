@@ -4,5 +4,6 @@
 
     <arg name="model" default="burger"      doc="model type [burger, jackal, ridgeback, agvota, rto, rto_real]"/>
     <param name="model" value="$(arg model)" />
-
+    <arg name="mode" default="continuous"      doc="mode type [continuous, discrete]"/>
+    <param name="mode" value="$(arg mode)" />    
 </launch>
