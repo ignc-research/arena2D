@@ -4,7 +4,7 @@ from rl_ros_agents.env_wappers.arena2dEnv import get_arena_envs, Arena2dEnvWrapp
 from rl_ros_agents.utils.callbacks import SaveOnBestTrainingRewardCallback
 from rl_ros_agents.utils import getTimeStr
 from stable_baselines import A2C
-from stable_baselines.common.policies import MlpPolicy
+from stable_baselines.common.policies import MlpLstmPolicy
 import tensorflow as tf
 import random
 import numpy as np
@@ -47,7 +47,7 @@ def main(log_dir = None,name_results_root_folder = "results",use_reward_bound = 
     # set temporary model path, if training was interrupted by the keyboard, the current model parameters will be saved.
     path_temp_model = os.path.join(logdir,"A2C_TEMP")
     if not args.restart_training:
-        model = A2C(MlpPolicy, envs, verbose=1, gamma=GAMMA, n_steps=N_STEPS, max_grad_norm=MAX_GRAD_NORM,
+        model = A2C(MlpLstmPolicy, envs, verbose=1, gamma=GAMMA, n_steps=N_STEPS, max_grad_norm=MAX_GRAD_NORM,
                     learning_rate=LEARNING_RATE,  tensorboard_log=logdir)
         reset_num_timesteps = True
     else:

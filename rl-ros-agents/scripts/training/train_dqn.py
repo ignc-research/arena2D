@@ -55,7 +55,7 @@ def main(log_dir=None, name_results_root_folder="results"):
         logdir = log_dir
     reward_bound = REWARD_BOUND
     # get arena environments and custom callback
-    env = Monitor(Arena2dEnvWrapper(0, True), os.path.join(logdir, "arena_env0"))
+    env = Monitor(Arena2dEnvWrapper(0), os.path.join(logdir, "arena_env0"))
     # env = Arena2dEnvWrapper(0, True)
     call_back = SaveOnBestTrainingRewardCallback(500, logdir, 1, reward_bound)
     # set temporary model path, if training was interrupted by the keyboard, the current model parameters will be saved.
