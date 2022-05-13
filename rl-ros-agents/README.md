@@ -18,28 +18,61 @@ When the training get started, seveal instances of the environment wrapper will 
 The definitions of the request and response message can be found [here](../arena2d_msgs/msg). In each training step all environments will send the request in parallel and will be blocked util response messages are received. The main thread in the arena simulator will firstly collect the request messages and send the response messages back after finishing the updates.
 
 ## Prerequisites
-1. Standard ROS setup. The link can be found [here](http://wiki.ros.org/melodic/Installation/Ubuntu) (Code has been tested with Melodic on Ubuntu 18.04)
-2. Python3 and dependencies. its recommended to use conda to install necessary packages listed in the `envoronment.yml`.
-    ```
-     conda env create -f environment.yml
-    ```
+   - Standard ROS setup. The link can be found [here](http://wiki.ros.org/noetic/Installation/Ubuntu) (currently we use ubuntu 20.04 and ros-noetic).
+   - install conda and necessary dependencies:
+   1. install conda see [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
+   2. `$ sudo apt-get install cmake libsdl2-dev libfreetype-dev`
+   3. in this repository `$ conda env create -f environment.yml`
+
 ## Building
 1. Create a catkin workspace:
-    ```bash
+    ```
     $ mkdir -p ~/ARENA2d_ws/src
     $ cd ~/ARENA2d_ws/
-    $ rosws update
     ```
-2. Clone this repository in the src-folder of your catkin workspace and checkout the branch `arena-ros`. Compile tehe code and add the workspace to the ROS environment with:
-    ```bash
-    $ catkin_make -DSUPPORT_ROS_AGENT=ON
+2. Clone this repository in the src-folder of your catkin workspace and checkout the branch `arena-ros`.  
+ 
+    Compile the code and add the workspace to the ROS environment with:
+    ```
+    $ cd ~/ARENA2d_ws/src
+    $ git clone https://github.com/ignc-research/arena2D.git # this repository
+    $ cd arena2D
+    $ git checkout arena-ros 
+
+    you will see this:
+
+    Branch 'arena-ros' set up to track remote branch 'arena-ros' from 'origin'.
+    Switched to a new branch 'arena-ros'
+
+    $ cd ~/ARENA2d_ws
+    $ pip install empy
+	$ vim vim ~/.bashrc
+	$ export PYTHONPATH=$PYTHONPATH:~/anaconda3/envs/arena2d/lib/python3.6/site-packages # copy this in the bottom, then use wq! to quit
+	$ source ~/.bashrc
+    $ catkin_make -DUSE_ROS=ON
     $ source devel/setup.bash
     ```
-3. Make sure `rl_ros_agents`is included in the PYTHONPATH. Append following command to your `.bashrc`:
-    ```bash
-    $ export PYTHONPATH=${path_to_this_package}/rl_ros_agents:${PYTHONPATH}
+    You may encounter some compilation problems when using `catkin_make`, e.g.:
+   ```
+   $ /usr/bin/ld: /lib/x86_64-linux-gnu/libapr-1.so.0: undefined reference to `uuid_generate@UUID_1.0'
+   ```
+   to fix that, you can use following commands:
+   ```
+   $ ls ~/anaconda3/lib/libuuid*
+   $ mkdir ~/anaconda3/libuuid
+   $ mv ~/anaconda3/lib/libuuid* ~/anaconda3/libuuid
+   $ catkin_make -DUSE_ROS=ON
+   ```
+
+3. Make sure rl_ros_agents and further dependences is included in the PYTHONPATH.
     ```
-## Additional work
+    $ vim ~/.bashrc
+    $ export PYTHONPATH=~/ARENA2d_ws/src/arena2D/rl-ros-agents:${PYTHONPATH} # copy this in the bottom, then use wq! to quit
+    $ source ~/.bashrc
+    ```
+	You can check if your pythonpath is correct by using `echo $PYTHONPATH`.
+    ```
+## Additional work (not necessary)
 Offically ros packages are only built for python2. In some cases mixing useage of python3 with python2 may cause problems. Therefore we recommended building two more packages specifically.
 1. Create a python3 workspace:
     ```bash
@@ -63,26 +96,39 @@ refer to the methods introduced [here](https://github.com/ros/geometry/issues/21
     $ source ~/python3_ws/devel/setup.bash
     ```
 
-## Useage
----
-#### Training
-1. open the simulator by:
-    ```bash
+## Training
+
+1. open a terminal and run the simulator:  
+    ```
+    $ cd ~/ARENA2d_ws
+    $ source devel/setup.bash
     $ roslaunch arena2d arena_sim_video_off.launch
     OR
     $ roslaunch arena2d arena_sim_video_on.launch 
     ```
-    Turning the Video on or off have no significant difference in the training speed.
-2. running the training script:
-    ```bash
-    $ conda activate arena2d
-    $ python scripts/train_a3c.py
+- Turning the Video on or off have no significant difference in the training speed.
+- Use `model:=<model_name> mode:=<mode_name>` to choose robot and action mode  
+e.g `roslaunch arena2d arena_sim_video_on.launch model:=burger mode:=continuous`
+
+2. open a new terminal and run the training script:
     ```
-3. To visualize robot position and laserscan run the the script in an another terminal
-    ```bash
+    $ cd ~/ARENA2d_ws
+    $ source devel/setup.bash
+    $ cd ~/ARENA2d_ws/src/arena2D/rl-ros-agents
+    $ conda activate arena2d
+    $ python scripts/training/train_a3c.py
+    ```
+
+3. open a new termial and visualize robot position & laserscan:
+    ```
+    $ cd ~/ARENA2d_ws
+    $ source devel/setup.bash
+    $ cd ~/ARENA2d_ws/src/arena2D/rl-ros-agents
+    $ pip install rospkg
     $ python scripts/rviz_visualize_helper.py
     ```
+
 4. open the rviz and start it with a config file
-    ```bash
+    ```
     $ rviz -d launch/rviz_arena_config.rviz
     ```

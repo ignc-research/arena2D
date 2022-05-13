@@ -66,7 +66,13 @@ class Arena2dEnvWrapper(gym.Env):
         load_params_from_yaml(DEFAULT_OBSERVATION_SPACE)
         print(DEFAULT_OBSERVATION_SPACE)
         self._idx_env = idx_env
-        self._is_action_space_discrete = _is_action_space_discrete
+        if _is_action_space_discrete == 'discrete':
+            self._is_action_space_discrete = True
+        elif _is_action_space_discrete == 'continuous':
+            self._is_action_space_discrete = False
+        else: 
+            print(f'invalid mode\n')
+            return
         # self._action_discrete_list = ["forward", "left", "right", "strong_left", "strong_right", "backward", "stop"]
         # self._action_discrete_map = {
         #     "forward": [0.2, 0],
