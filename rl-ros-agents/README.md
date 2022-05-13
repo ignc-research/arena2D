@@ -71,7 +71,7 @@ The definitions of the request and response message can be found [here](../arena
     $ source ~/.bashrc
     ```
 	You can check if your pythonpath is correct by using `echo $PYTHONPATH`.
-    ```
+    
 ## Additional work (not necessary)
 Offically ros packages are only built for python2. In some cases mixing useage of python3 with python2 may cause problems. Therefore we recommended building two more packages specifically.
 1. Create a python3 workspace:
@@ -108,7 +108,8 @@ refer to the methods introduced [here](https://github.com/ros/geometry/issues/21
     ```
 - Turning the Video on or off have no significant difference in the training speed.
 - Use `model:=<model_name> mode:=<mode_name>` to choose robot and action mode  
-e.g `roslaunch arena2d arena_sim_video_on.launch model:=burger mode:=continuous`
+e.g `roslaunch arena2d arena_sim_video_on.launch model:=burger mode:=continuous`  
+(default: burger + continuous)
 
 2. open a new terminal and run the training script:
     ```
