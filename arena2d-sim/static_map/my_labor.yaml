@@ -1,4 +1,4 @@
-image: /headless/project/ROS/arena2D_ROS/ws_arena_dynamic2/src/arena_ros_dyn/ros_maps/my_labor.pgm
+image: /home/huajian/ARENA2d_ws/src/arena2D/arena2d-sim/static_map/my_labor.pgm
 resolution: 0.050000
 origin: [-10.000000, -10.000000, 0.000000]
 negate: 0

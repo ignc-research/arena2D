@@ -1,4 +1,9 @@
 <launch>
     <env name="ROSCONSOLE_CONFIG_FILE" value="$(find arena2d)/ros_logging_settings.conf" />
-    <node name="arena_sim" pkg="arena2d" type="arena2d" output="screen" args="--use_ros_agent --run &quot;level static_map --dynamic --human&quot;"/>
+    <node name="arena_sim" pkg="arena2d" type="arena2d" output="screen" args="--use_ros_agent --run &quot;level &quot;svg&quot; --dynamic;&quot;"/>
+    
+    <arg name="model" default="burger"      doc="model type [burger, jackal, ridgeback, agvota, rto, rto_real]"/>
+    <param name="model" value="$(arg model)" />
+    <arg name="mode" default="true"      doc="mode type [true, false]"/>
+    <param name="mode" value="$(arg mode)" />
 </launch>

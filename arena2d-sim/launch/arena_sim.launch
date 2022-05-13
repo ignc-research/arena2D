@@ -2,6 +2,8 @@
     <arg name="level_name" default="random"/>
     <arg name="level_mode" default=" "/>
     <arg name="video_mode" default="--disable-video"/>
+    <arg name="model"      default="burger"      doc="model type [burger, jackal, ridgeback, agvota, rto, rto_real]"/>
+    <param name="model" value="$(arg model)" />
     <env name="ROSCONSOLE_CONFIG_FILE" value="$(find arena2d)/ros_logging_settings.conf" />
     <node name="arena_sim" pkg="arena2d" type="arena2d" output="screen" args="--use_ros_agent $(arg video_mode)  --run &quot;level $(arg level_name) $(arg level_mode) &quot;"/>
 </launch>

@@ -49,7 +49,7 @@ void GlobalSettings::setToDefault()
 	_settings.training.episode_over_on_hit = 0;
 	_settings.training.reward_goal = 100.0f;
 	_settings.training.reward_towards_goal = 0.1f;
-	_settings.training.reward_away_from_goal = -0.2f;
+
 	_settings.training.reward_hit = -10.0f;
 	_settings.training.reward_time_out = 0.f;
 	_settings.training.num_envs = 4;
@@ -93,7 +93,7 @@ void GlobalSettings::setToDefault()
 	_settings.robot.wheel_offset.y = 0.034f;
 	_settings.robot.bevel_size.x = 0.025f;
 	_settings.robot.bevel_size.y = 0.025f;
-	_settings.robot.forward_speed.linear = 0.20;
+	_settings.robot.forward_speed.linear = 0.2;
 	_settings.robot.forward_speed.angular = 0.0;
 	_settings.robot.backward_speed.linear = -0.1;
 	_settings.robot.backward_speed.angular = 0.0;
