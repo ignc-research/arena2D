@@ -107,8 +107,8 @@ refer to the methods introduced [here](https://github.com/ros/geometry/issues/21
     $ roslaunch arena2d arena_sim_video_on.launch 
     ```
 - Turning the Video on or off have no significant difference in the training speed.
-- Use `model:=<model_name> mode:=<mode_name>` to choose robot and action mode  
-e.g `roslaunch arena2d arena_sim_video_on.launch model:=burger mode:=continuous`  
+- Use `robot_model:=<model_name> robot_mode:=<mode_name>` to choose robot and action mode  
+e.g `roslaunch arena2d arena_sim_video_on.launch robot_model:=burger robot_mode:=continuous`  
 (default: burger + continuous)
 
 2. open a new terminal and run the training script:
