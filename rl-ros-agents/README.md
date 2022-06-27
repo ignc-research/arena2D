@@ -131,5 +131,5 @@ e.g `roslaunch arena2d arena_sim_video_on.launch robot_model:=burger robot_mode:
 
 4. open the rviz and start it with a config file
     ```
-    $ rviz -d launch/rviz_arena_config.rviz
+    $ rviz -d launch/rviz_config_new.rviz
     ```
